@@ -1,5 +1,6 @@
 import { useState } from "react";
-import icon from "../icon.png";
+import icon from "/icon.png";
+import Button from "@mui/material/Button";
 import "./App.css";
 
 function App() {
@@ -12,16 +13,30 @@ function App() {
       </div>
       <h1>Annual ERP</h1>
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
+        <Button
+          variant="contained"
+          sx={{
+            borderRadius: 2,
+            fontWeight: 500,
+            backgroundColor: "#1a1a1a",
+            color: "text.primary",
+            "&:hover": {
+              borderColor: "info.main",
+              backgroundColor: "#1a1a1a",
+              boxShadow: "0 0 0 2px #770d66",
+            },
+            border: "1px solid transparent",
+            transition: "border-color 0.25s",
+          }}
+          onClick={() => setCount((count) => count + 1)}
+        >
           count is {count}
-        </button>
+        </Button>
         <p>
           Edit <code>src/App.tsx</code> and save to test HMR
         </p>
       </div>
-      <p className="read-the-docs">
-        Welcome to Annual ERP!
-      </p>
+      <p className="read-the-docs">Welcome to Annual ERP!</p>
     </>
   );
 }
