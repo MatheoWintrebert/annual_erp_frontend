@@ -1,16 +1,19 @@
+import Footer from "../components/ui/Footer";
 import React from "react";
 import icon from "/icon.png";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import CardHeader from "@mui/material/CardHeader";
-import Divider from "@mui/material/Divider";
-import Stack from "@mui/material/Stack";
-import Chip from "@mui/material/Chip";
-import Grid from "@mui/material/Grid";
-import { PrimaryButton, SecondaryButton } from "./components/Button";
+import {
+  Box,
+  Typography,
+  Container,
+  Card,
+  CardContent,
+  CardHeader,
+  Divider,
+  Stack,
+  Chip,
+  Grid,
+  Button,
+} from "@mui/material";
 
 const features = [
   {
@@ -43,7 +46,7 @@ const benefits = [
   },
 ];
 
-const HomePage: React.FC = () => {
+const SellingPage: React.FC = () => {
   return (
     <Box
       sx={{
@@ -92,12 +95,16 @@ const HomePage: React.FC = () => {
                   mt={2}
                   justifyContent="center"
                 >
-                  <PrimaryButton href="#features">
+                  <Button href="#features" color="primary" variant="contained">
                     Découvrir les fonctionnalités
-                  </PrimaryButton>
-                  <SecondaryButton href="mailto:sales@annualerp.com">
+                  </Button>
+                  <Button
+                    href="mailto:sales@annualerp.com"
+                    color="secondary"
+                    variant="outlined"
+                  >
                     Contactez-nous
-                  </SecondaryButton>
+                  </Button>
                 </Stack>
               </Stack>
             </Grid>
@@ -245,12 +252,14 @@ const HomePage: React.FC = () => {
                     </Box>
                   ))}
                 </Stack>
-                <SecondaryButton
+                <Button
                   href="mailto:sales@annualerp.com"
                   sx={{ mt: 3, alignSelf: "flex-start" }}
+                  color="secondary"
+                  variant="outlined"
                 >
                   Essayer maintenant
-                </SecondaryButton>
+                </Button>
               </Stack>
             </Grid>
             <Grid>
@@ -275,20 +284,9 @@ const HomePage: React.FC = () => {
       </Box>
 
       <Divider />
-      <Box
-        component="footer"
-        sx={{
-          bgcolor: "grey.900",
-          color: "grey.100",
-          textAlign: "center",
-          py: 2,
-          mt: "auto",
-        }}
-      >
-        &copy; {new Date().getFullYear()} Annual ERP. Tous droits réservés.
-      </Box>
+      <Footer />
     </Box>
   );
 };
 
-export default HomePage;
+export default SellingPage;
