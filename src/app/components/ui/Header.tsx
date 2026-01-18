@@ -1,5 +1,5 @@
 import React from "react";
-import { AppBar, Toolbar, Typography, Box, Button } from "@mui/material";
+import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 
 const Header: React.FC = () => (
@@ -10,14 +10,30 @@ const Header: React.FC = () => (
     sx={{ borderBottom: 1, borderColor: "divider" }}
   >
     <Toolbar>
-      <img
-        src="/icon.png"
-        alt="Annual ERP Logo"
-        style={{ height: 40, marginRight: 16 }}
-      />
-      <Typography variant="h6" color="text.primary" fontWeight={700}>
-        Annual ERP
-      </Typography>
+      <Button
+        component={RouterLink}
+        to="/home"
+        sx={{
+          p: 0,
+          minWidth: 0,
+          background: "none",
+          boxShadow: "none",
+          "&:hover": { background: "none", boxShadow: "none" },
+          display: "flex",
+          alignItems: "center",
+        }}
+        disableRipple
+        disableElevation
+      >
+        <img
+          src="/icon.png"
+          alt="Annual ERP Logo"
+          style={{ height: 40, marginRight: 16 }}
+        />
+        <Typography variant="h6" color="text.primary" fontWeight={700}>
+          Annual ERP
+        </Typography>
+      </Button>
       <Button
         component={RouterLink}
         to="/selling"
@@ -25,6 +41,14 @@ const Header: React.FC = () => (
         sx={{ ml: 2, fontWeight: 600 }}
       >
         Sell
+      </Button>
+      <Button
+        component={RouterLink}
+        to="/setup"
+        color="secondary"
+        sx={{ ml: 2, fontWeight: 600 }}
+      >
+        Setup
       </Button>
       <Box flexGrow={1} />
       <Button
