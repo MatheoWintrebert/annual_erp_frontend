@@ -1,9 +1,8 @@
 import React from "react";
 import { Box, Container, Grid, Typography } from "@mui/material";
-import DashboardPlaceholder from "../components/ui/DashboardPlaceholder";
-import Header from "../components/ui/Header";
-import Footer from "../components/ui/Footer";
-
+import Header from "../../components/ui/Header";
+import Footer from "../../components/ui/Footer";
+import DashboardPlaceholder from "./components/DashboardPlaceholder";
 const dashboards = [
   { title: "Fullness Dashboard", data: [] },
   { title: "Expiry Dashboard", data: [] },

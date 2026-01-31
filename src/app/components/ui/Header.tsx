@@ -44,11 +44,19 @@ const Header: React.FC = () => (
       </Button>
       <Button
         component={RouterLink}
-        to="/setup"
+        to="/custom"
         color="secondary"
         sx={{ ml: 2, fontWeight: 600 }}
       >
         Setup
+      </Button>
+      <Button
+        component={RouterLink}
+        to="/palettier"
+        color="secondary"
+        sx={{ ml: 2, fontWeight: 600 }}
+      >
+        Palettier
       </Button>
       <Box flexGrow={1} />
       <Button

@@ -9,11 +9,12 @@ import {
   Input,
   FormHelperText,
   Button,
+  Card,
 } from "@mui/material";
-import Header from "../components/ui/Header";
-import Footer from "../components/ui/Footer";
+import Header from "../../components/ui/Header";
+import Footer from "../../components/ui/Footer";
 
-const SetupPage: React.FC = () => {
+const CustomPage: React.FC = () => {
   const [companyName, setCompanyName] = React.useState("");
   const [logoUrl, setLogoUrl] = React.useState("");
   return (
@@ -30,20 +31,12 @@ const SetupPage: React.FC = () => {
           >
             Setup Your Company
           </Typography>
-          <Box
-            component="form"
-            sx={{
-              mt: 4,
-              display: "flex",
-              flexDirection: "column",
-              gap: 2,
-              maxWidth: 400,
-            }}
-          >
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                // handle form submission here
+          <Box sx={{ display: "flex", flexDirection: "row" }}>
+            <Box
+              component="form"
+              sx={{
+                display: "flex",
+                flexDirection: "column",
               }}
             >
               <Stack spacing={2} direction="column" sx={{ marginBottom: 4 }}>
@@ -91,7 +84,34 @@ const SetupPage: React.FC = () => {
                   Submit
                 </Button>
               </Box>
-            </form>
+            </Box>
+            <Card
+              variant="outlined"
+              sx={{
+                marginLeft: "auto",
+                padding: 3,
+                maxWidth: 400,
+                alignSelf: "center",
+              }}
+            >
+              <Typography
+                variant="h6"
+                gutterBottom
+                fontWeight={600}
+                align="center"
+              >
+                Need Help with Setup?
+              </Typography>
+              <Typography variant="body1" color="text.secondary" align="center">
+                Optional integration support is available directly from the web
+                app. Since each company uses different data formats, we can
+                develop a custom integration to connect your existing systems,
+                automate barcode transfers, and fully configure the pallet
+                storage tool. This service ensures a reliable setup tailored to
+                your operational data and workflows. <br />
+                Contact us to learn more about it.
+              </Typography>
+            </Card>
           </Box>
         </Container>
       </Box>
@@ -100,4 +120,4 @@ const SetupPage: React.FC = () => {
   );
 };
 
-export default SetupPage;
+export default CustomPage;

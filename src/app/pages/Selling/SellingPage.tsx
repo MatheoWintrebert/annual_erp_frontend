@@ -1,4 +1,4 @@
-import Footer from "../components/ui/Footer";
+import Footer from "../../components/ui/Footer";
 import React from "react";
 import icon from "/icon.png";
 import {
