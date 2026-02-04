@@ -1,7 +1,6 @@
 import { useState } from "react";
 import icon from "/icon.png";
 import Button from "@mui/material/Button";
-import "./App.css";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -28,7 +27,9 @@ function App() {
             border: "1px solid transparent",
             transition: "border-color 0.25s",
           }}
-          onClick={() => setCount((count) => count + 1)}
+          onClick={() => {
+            setCount((count) => count + 1);
+          }}
         >
           count is {count}
         </Button>

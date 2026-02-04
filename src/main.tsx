@@ -2,19 +2,27 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import Router from "./Router";
-import '@fontsource/roboto/300.css';
-import '@fontsource/roboto/400.css';
-import '@fontsource/roboto/500.css';
-import '@fontsource/roboto/700.css';
-import { ThemeProvider, CssBaseline } from '@mui/material';
-import theme from './theme';
+import "@fontsource/space-grotesk/400.css";
+import "@fontsource/space-grotesk/500.css";
+import "@fontsource/space-grotesk/600.css";
+import "@fontsource/space-grotesk/700.css";
+import "@fontsource/inter/400.css";
+import "@fontsource/inter/500.css";
+import "@fontsource/inter/600.css";
+import "@fontsource/inter/700.css";
+import { CssBaseline } from "@mui/material";
+import { CompanySettingsProvider } from "./app/context/CompanySettingsContext";
 
+const rootElement = document.getElementById("root");
+if (!rootElement) {
+  throw new Error("Root element not found");
+}
 
-createRoot(document.getElementById("root")!).render(
+createRoot(rootElement).render(
   <StrictMode>
-    <ThemeProvider theme={theme}>
+    <CompanySettingsProvider>
       <CssBaseline />
       <Router />
-    </ThemeProvider>
+    </CompanySettingsProvider>
   </StrictMode>
 );

@@ -1,109 +1,97 @@
-import React from "react";
 import {
   Box,
   Container,
   Typography,
   Stack,
-  TextField,
-  MenuItem,
   Button,
-  Paper,
   Divider,
-  Collapse,
-  Checkbox,
-  FormControlLabel,
+  CircularProgress,
+  Alert,
+  Snackbar,
 } from "@mui/material";
-import { useForm, Controller, useFieldArray } from "react-hook-form";
-import Header from "../../components/ui/Header.tsx";
-import Footer from "../../components/ui/Footer.tsx";
-import NumberSpinner from "../../components/NumberSpinner.tsx";
-import AddIcon from "@mui/icons-material/Add";
+import { useForm, useFieldArray } from "react-hook-form";
+import type { FieldPath } from "react-hook-form";
+import { useState, useEffect, useCallback } from "react";
+import type { FC, ReactNode } from "react";
+import Header from "../../components/ui/Header";
+import Footer from "../../components/ui/Footer";
+import NumberSpinner from "../../components/NumberSpinner";
+import { PalettierFormCard } from "./components";
+import type { PalettierType, FormData, CreatePalettierPayload } from "./types";
+import { createDefaultPalettier } from "./types";
 
-interface PalettierType {
-  id: string;
-  name: string;
-  isCustom: boolean;
-}
+const API_BASE_URL = "http://localhost:3333";
 
-interface PalettierFormData {
-  name: string;
-  typeId: string | null;
-  isNewType: boolean;
-  newTypeName: string;
-  dimensionX: number;
-  dimensionY: number;
-  dimensionZ: number;
-}
+const PalettierPage: FC = () => {
+  const [palettierCount, setPalettierCount] = useState(1);
+  const [palettierTypes, setPalettierTypes] = useState<PalettierType[]>([]);
+  const [isLoadingTypes, setIsLoadingTypes] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-interface FormData {
-  palettierCount: number;
-  palettiers: PalettierFormData[];
-}
+  const getDefaultTypeId = useCallback((): number | "" => {
+    return palettierTypes.length > 0 ? palettierTypes[0].id : "";
+  }, [palettierTypes]);
 
-// Default palettier types (would come from API in real app)
-const DEFAULT_PALETTIER_TYPES: PalettierType[] = [
-  { id: "client", name: "Client", isCustom: false },
-  { id: "company", name: "Entreprise", isCustom: false },
-  { id: "refrigerated", name: "Réfrigéré", isCustom: false },
-  { id: "dangerous", name: "Matières dangereuses", isCustom: false },
-  { id: "chemical", name: "Produits chimiques", isCustom: false },
-  { id: "fragile", name: "Fragile", isCustom: false },
-];
-
-const getDefaultPalettier = (): PalettierFormData => ({
-  name: "",
-  typeId: DEFAULT_PALETTIER_TYPES[0].id,
-  isNewType: false,
-  newTypeName: "",
-  dimensionX: 1,
-  dimensionY: 1,
-  dimensionZ: 1,
-});
-
-const PalettierPage: React.FC = () => {
-  const [palettierCount, setPalettierCount] = React.useState(1);
-  const [palettierTypes, setPalettierTypes] = React.useState<PalettierType[]>(
-    DEFAULT_PALETTIER_TYPES
-  );
-
-  const handleNumericKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    const allowedKeys = [
-      "Backspace",
-      "Delete",
-      "ArrowLeft",
-      "ArrowRight",
-      "Tab",
-    ];
-    if (
-      !allowedKeys.includes(e.key) &&
-      (e.key < "0" || e.key > "9") &&
-      !e.ctrlKey &&
-      !e.metaKey
-    ) {
-      e.preventDefault();
-    }
-  };
-
-  const { control, handleSubmit, watch, setValue } = useForm<FormData>({
-    defaultValues: {
-      palettierCount: 1,
-      palettiers: [getDefaultPalettier()],
-    },
-  });
+  const { control, handleSubmit, setValue, reset, getValues } =
+    useForm<FormData>({
+      defaultValues: {
+        palettiers: [createDefaultPalettier("")],
+      },
+    });
 
   const { fields, append, remove } = useFieldArray({
     control,
     name: "palettiers",
   });
 
-  const handleCountChange = (newCount: number) => {
+  const fetchPalettierTypes = useCallback(async (): Promise<void> => {
+    try {
+      setIsLoadingTypes(true);
+      setError(null);
+      const response = await fetch(`${API_BASE_URL}/palettier-types`);
+
+      if (!response.ok) {
+        throw new Error("Échec du chargement des types de palettiers");
+      }
+
+      const types = (await response.json()) as PalettierType[];
+      setPalettierTypes(types);
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Une erreur est survenue";
+      setError(message);
+    } finally {
+      setIsLoadingTypes(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void fetchPalettierTypes();
+  }, [fetchPalettierTypes]);
+
+  useEffect(() => {
+    if (palettierTypes.length > 0) {
+      reset({
+        palettiers: [createDefaultPalettier(palettierTypes[0].id)],
+      });
+    }
+  }, [palettierTypes, reset]);
+
+  const handleCountChange = (newCount: number): void => {
     setPalettierCount(newCount);
     const currentCount = fields.length;
+    const defaultTypeId = getDefaultTypeId();
 
     if (newCount > currentCount) {
-      for (let i = currentCount; i < newCount; i++) {
-        append(getDefaultPalettier());
-      }
+      const pallettiersToAdd = Array.from(
+        { length: newCount - currentCount },
+        () => createDefaultPalettier(defaultTypeId)
+      );
+      pallettiersToAdd.forEach((p) => {
+        append(p);
+      });
     } else if (newCount < currentCount) {
       for (let i = currentCount - 1; i >= newCount; i--) {
         remove(i);
@@ -111,38 +99,200 @@ const PalettierPage: React.FC = () => {
     }
   };
 
-  const onSubmit = (data: FormData) => {
-    const processedPalettiers = data.palettiers.map((palettier) => {
-      const processed = { ...palettier };
+  const createPalettierType = async (
+    name: string
+  ): Promise<PalettierType | null> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/palettier-types`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, description: "" }),
+      });
 
-      if (palettier.isNewType && palettier.newTypeName.trim()) {
-        const newTypeId = `custom-${palettier.newTypeName.toLowerCase().replace(/\s+/g, "-")}`;
-        const existingType = palettierTypes.find((t) => t.id === newTypeId);
-
-        if (!existingType) {
-          const newType: PalettierType = {
-            id: newTypeId,
-            name: palettier.newTypeName.trim(),
-            isCustom: true,
-          };
-          setPalettierTypes((prev) => [...prev, newType]);
-        }
-
-        processed.typeId = newTypeId;
+      if (!response.ok) {
+        throw new Error("Échec de la création du type");
       }
 
-      return {
-        name: processed.name,
-        typeId: processed.typeId,
-        dimensionX: processed.dimensionX,
-        dimensionY: processed.dimensionY,
-        dimensionZ: processed.dimensionZ,
-      };
-    });
-
-    console.log("Palettiers submitted:", processedPalettiers);
-    console.log("All palettier types:", palettierTypes);
+      const newType = (await response.json()) as PalettierType;
+      setPalettierTypes((prev) => [...prev, newType]);
+      return newType;
+    } catch (err) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : "Erreur lors de la création du type";
+      setError(message);
+      return null;
+    }
   };
+
+  const handleAddNewType = async (index: number): Promise<void> => {
+    const formValues = getValues();
+    const newTypeName = formValues.palettiers[index]?.newTypeName ?? "";
+
+    if (!newTypeName.trim()) {
+      return;
+    }
+
+    const trimmedName = newTypeName.trim();
+    const existingType = palettierTypes.find(
+      (t) => t.name.toLowerCase() === trimmedName.toLowerCase()
+    );
+
+    const idx = String(index);
+    const typeIdPath = `palettiers.${idx}.typeId` as FieldPath<FormData>;
+    const isNewTypePath = `palettiers.${idx}.isNewType` as FieldPath<FormData>;
+    const newTypeNamePath =
+      `palettiers.${idx}.newTypeName` as FieldPath<FormData>;
+
+    if (existingType) {
+      setValue(typeIdPath, existingType.id as never);
+      setValue(isNewTypePath, false as never);
+      setValue(newTypeNamePath, "" as never);
+      return;
+    }
+
+    const newType = await createPalettierType(trimmedName);
+
+    if (newType) {
+      setValue(typeIdPath, newType.id as never);
+      setValue(isNewTypePath, false as never);
+      setValue(newTypeNamePath, "" as never);
+    }
+  };
+
+  const onSubmit = async (data: FormData): Promise<void> => {
+    try {
+      setIsSubmitting(true);
+      setError(null);
+
+      const pallettiersPayload: CreatePalettierPayload[] = data.palettiers.map(
+        (palettier) => ({
+          name: palettier.name,
+          typeId: palettier.typeId as number,
+          width: palettier.width,
+          depth: palettier.depth,
+          height: palettier.height,
+        })
+      );
+
+      const response = await fetch(`${API_BASE_URL}/palettiers`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ palettiers: pallettiersPayload }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Échec de l'enregistrement des palettiers");
+      }
+
+      setSuccessMessage("Palettiers enregistrés avec succès");
+      setPalettierCount(1);
+      reset({
+        palettiers: [createDefaultPalettier(getDefaultTypeId())],
+      });
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Une erreur est survenue";
+      setError(message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleCloseSnackbar = (): void => {
+    setSuccessMessage(null);
+  };
+
+  const handleCloseError = (): void => {
+    setError(null);
+  };
+
+  const renderLoadingState = (): ReactNode => (
+    <Box display="flex" justifyContent="center" py={4}>
+      <CircularProgress color="secondary" />
+    </Box>
+  );
+
+  const renderErrorState = (): ReactNode => (
+    <Alert
+      severity="error"
+      action={
+        <Button
+          color="inherit"
+          size="small"
+          onClick={() => void fetchPalettierTypes()}
+        >
+          Réessayer
+        </Button>
+      }
+    >
+      {error}
+    </Alert>
+  );
+
+  const renderForm = (): ReactNode => (
+    <Box
+      component="form"
+      onSubmit={(e) => {
+        void handleSubmit(onSubmit)(e);
+      }}
+    >
+      <Stack spacing={3} sx={{ marginBottom: 4, marginTop: 3 }}>
+        <Box display="flex" flexDirection="column" alignItems="center">
+          <Typography variant="h6" color="text.secondary" mb={2}>
+            Nombre de palettiers
+          </Typography>
+          <NumberSpinner
+            value={palettierCount}
+            onChange={handleCountChange}
+            min={1}
+            label="Nombre de palettiers"
+          />
+        </Box>
+
+        <Divider />
+
+        {palettierTypes.length === 0 && (
+          <Alert severity="info">
+            Aucun type de palettier n'existe encore. Utilisez l'option "Nouveau"
+            ci-dessous pour créer votre premier type.
+          </Alert>
+        )}
+
+        {fields.map((field, index) => (
+          <PalettierFormCard
+            key={field.id}
+            index={index}
+            control={control}
+            setValue={setValue}
+            palettierTypes={palettierTypes}
+            onAddNewType={handleAddNewType}
+          />
+        ))}
+
+        <Box display="flex" justifyContent="flex-end" mt={2}>
+          <Button
+            type="submit"
+            variant="contained"
+            color="secondary"
+            size="large"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : (
+              "Valider la configuration"
+            )}
+          </Button>
+        </Box>
+      </Stack>
+    </Box>
+  );
+
+  const hasLoadedWithoutError = !isLoadingTypes && !error;
+  const hasErrorWithNoTypes =
+    !isLoadingTypes && error && palettierTypes.length === 0;
 
   return (
     <Box minHeight="100vh" display="flex" flexDirection="column">
@@ -159,312 +309,42 @@ const PalettierPage: React.FC = () => {
             Configuration des palettiers
           </Typography>
 
-          <Box component="form" onSubmit={handleSubmit(onSubmit)}>
-            <Stack spacing={3} sx={{ marginBottom: 4, marginTop: 3 }}>
-              <Box display="flex" flexDirection="column" alignItems="center">
-                <Typography variant="h6" color="text.secondary" mb={2}>
-                  Nombre de palettiers
-                </Typography>
-                <NumberSpinner
-                  value={palettierCount}
-                  onChange={handleCountChange}
-                  min={1}
-                  label="Nombre de palettiers"
-                />
-              </Box>
-
-              <Divider />
-
-              {fields.map((field, index) => {
-                const watchIsNewType = watch(`palettiers.${index}.isNewType`);
-
-                return (
-                  <Paper
-                    key={field.id}
-                    elevation={2}
-                    sx={{ padding: 3, backgroundColor: "background.paper" }}
-                  >
-                    <Typography variant="h6" color="text.primary" mb={2}>
-                      Palettier {index + 1}
-                    </Typography>
-
-                    <Stack spacing={2}>
-                      {/* Name */}
-                      <Controller
-                        name={`palettiers.${index}.name`}
-                        control={control}
-                        rules={{ required: "Le nom est requis" }}
-                        render={({ field, fieldState: { error } }) => (
-                          <TextField
-                            {...field}
-                            label="Nom du palettier"
-                            fullWidth
-                            error={!!error}
-                            helperText={
-                              error?.message ||
-                              "Identifiant unique du palettier (ex: PAL-A01)"
-                            }
-                            placeholder="PAL-A01"
-                          />
-                        )}
-                      />
-
-                      {/* Type Selection */}
-                      <Box>
-                        <Typography
-                          variant="subtitle2"
-                          color="text.secondary"
-                          mb={1}
-                        >
-                          Type de palettier
-                        </Typography>
-                        <Stack
-                          direction={{ xs: "column", sm: "row" }}
-                          spacing={2}
-                          alignItems="center"
-                        >
-                          <Controller
-                            name={`palettiers.${index}.typeId`}
-                            control={control}
-                            rules={{
-                              required: !watchIsNewType
-                                ? "Le type est requis"
-                                : false,
-                            }}
-                            render={({ field, fieldState: { error } }) => (
-                              <TextField
-                                {...field}
-                                select
-                                label="Type existant"
-                                fullWidth
-                                disabled={watchIsNewType}
-                                error={!!error}
-                                helperText={error?.message}
-                                value={field.value ?? ""}
-                              >
-                                {palettierTypes.map((type) => (
-                                  <MenuItem key={type.id} value={type.id}>
-                                    {type.name}
-                                    {type.isCustom && " (personnalisé)"}
-                                  </MenuItem>
-                                ))}
-                              </TextField>
-                            )}
-                          />
-                          <FormControlLabel
-                            control={
-                              <Controller
-                                name={`palettiers.${index}.isNewType`}
-                                control={control}
-                                render={({ field }) => (
-                                  <Checkbox
-                                    {...field}
-                                    checked={field.value}
-                                    onChange={(e) => {
-                                      field.onChange(e.target.checked);
-                                      if (!e.target.checked) {
-                                        setValue(
-                                          `palettiers.${index}.newTypeName`,
-                                          ""
-                                        );
-                                      }
-                                    }}
-                                    icon={<AddIcon />}
-                                    checkedIcon={<AddIcon color="primary" />}
-                                  />
-                                )}
-                              />
-                            }
-                            label="Nouveau"
-                            sx={{ whiteSpace: "nowrap" }}
-                          />
-                        </Stack>
-
-                        <Collapse in={watchIsNewType}>
-                          <Stack
-                            direction="row"
-                            spacing={2}
-                            mt={2}
-                            alignItems="flex-start"
-                          >
-                            <Controller
-                              name={`palettiers.${index}.newTypeName`}
-                              control={control}
-                              rules={{
-                                required: watchIsNewType
-                                  ? "Le nom du type est requis"
-                                  : false,
-                              }}
-                              render={({ field, fieldState: { error } }) => (
-                                <TextField
-                                  {...field}
-                                  label="Nom du nouveau type"
-                                  fullWidth
-                                  error={!!error}
-                                  helperText={
-                                    error?.message ||
-                                    "Ajoutez le type pour le rendre disponible"
-                                  }
-                                  placeholder="Ex: Zone haute sécurité"
-                                />
-                              )}
-                            />
-                            <Button
-                              variant="contained"
-                              color="secondary"
-                              onClick={() => {
-                                const newTypeName = watch(
-                                  `palettiers.${index}.newTypeName`
-                                );
-                                if (newTypeName?.trim()) {
-                                  const newTypeId = `custom-${newTypeName.toLowerCase().replace(/\s+/g, "-")}`;
-                                  const exists = palettierTypes.find(
-                                    (t) => t.id === newTypeId
-                                  );
-                                  if (!exists) {
-                                    setPalettierTypes((prev) => [
-                                      ...prev,
-                                      {
-                                        id: newTypeId,
-                                        name: newTypeName.trim(),
-                                        isCustom: true,
-                                      },
-                                    ]);
-                                  }
-                                  setValue(
-                                    `palettiers.${index}.typeId`,
-                                    newTypeId
-                                  );
-                                  setValue(
-                                    `palettiers.${index}.isNewType`,
-                                    false
-                                  );
-                                  setValue(
-                                    `palettiers.${index}.newTypeName`,
-                                    ""
-                                  );
-                                }
-                              }}
-                              sx={{
-                                whiteSpace: "nowrap",
-                                minWidth: "auto",
-                                px: 3,
-                                height: 56,
-                              }}
-                            >
-                              Ajouter
-                            </Button>
-                          </Stack>
-                        </Collapse>
-                      </Box>
-
-                      <Divider />
-
-                      <Box>
-                        <Typography
-                          variant="subtitle2"
-                          color="text.secondary"
-                          mb={1}
-                        >
-                          Dimensions en nombre de cases
-                        </Typography>
-                        <Stack
-                          direction={{ xs: "column", sm: "row" }}
-                          spacing={2}
-                        >
-                          <Controller
-                            name={`palettiers.${index}.dimensionX`}
-                            control={control}
-                            rules={{
-                              required: "La dimension X est requise",
-                              min: { value: 1, message: "Minimum 1" },
-                            }}
-                            render={({ field, fieldState: { error } }) => (
-                              <TextField
-                                {...field}
-                                type="number"
-                                label="Largeur (X)"
-                                fullWidth
-                                onKeyDown={handleNumericKeyDown}
-                                slotProps={{ htmlInput: { min: 1 } }}
-                                error={!!error}
-                                helperText={error?.message}
-                                onChange={(e) =>
-                                  field.onChange(Number(e.target.value) || 1)
-                                }
-                              />
-                            )}
-                          />
-
-                          <Controller
-                            name={`palettiers.${index}.dimensionY`}
-                            control={control}
-                            rules={{
-                              required: "La dimension Y est requise",
-                              min: { value: 1, message: "Minimum 1" },
-                            }}
-                            render={({ field, fieldState: { error } }) => (
-                              <TextField
-                                {...field}
-                                type="number"
-                                label="Profondeur (Y)"
-                                fullWidth
-                                onKeyDown={handleNumericKeyDown}
-                                slotProps={{ htmlInput: { min: 1 } }}
-                                error={!!error}
-                                helperText={error?.message}
-                                onChange={(e) =>
-                                  field.onChange(Number(e.target.value) || 1)
-                                }
-                              />
-                            )}
-                          />
-
-                          <Controller
-                            name={`palettiers.${index}.dimensionZ`}
-                            control={control}
-                            rules={{
-                              required: "La dimension Z est requise",
-                              min: { value: 1, message: "Minimum 1" },
-                            }}
-                            render={({ field, fieldState: { error } }) => (
-                              <TextField
-                                {...field}
-                                type="number"
-                                label="Hauteur (Z)"
-                                fullWidth
-                                onKeyDown={handleNumericKeyDown}
-                                slotProps={{ htmlInput: { min: 1 } }}
-                                error={!!error}
-                                helperText={error?.message}
-                                onChange={(e) =>
-                                  field.onChange(Number(e.target.value) || 1)
-                                }
-                              />
-                            )}
-                          />
-                        </Stack>
-                      </Box>
-                    </Stack>
-                  </Paper>
-                );
-              })}
-
-              <Box display="flex" justifyContent="flex-end" mt={2}>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="secondary"
-                  size="large"
-                >
-                  Valider la configuration
-                </Button>
-              </Box>
-            </Stack>
-          </Box>
+          {isLoadingTypes && renderLoadingState()}
+          {hasErrorWithNoTypes && renderErrorState()}
+          {hasLoadedWithoutError && renderForm()}
         </Container>
       </Box>
       <Footer />
+
+      <Snackbar
+        open={!!successMessage}
+        autoHideDuration={4000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          {successMessage}
+        </Alert>
+      </Snackbar>
+
+      <Snackbar
+        open={!!error && palettierTypes.length > 0}
+        autoHideDuration={6000}
+        onClose={handleCloseError}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseError}
+          severity="error"
+          sx={{ width: "100%" }}
+        >
+          {error}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

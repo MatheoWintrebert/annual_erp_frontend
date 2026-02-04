@@ -9,7 +9,7 @@ import reactX from "eslint-plugin-react-x";
 import reactDom from "eslint-plugin-react-dom";
 
 export default defineConfig([
-  globalIgnores(["dist"]),
+  globalIgnores(["dist", "*.config.ts"]),
   eslintConfigPrettier,
   {
     files: ["**/*.{ts,tsx}"],
@@ -20,15 +20,13 @@ export default defineConfig([
       reactHooks.configs.flat.recommended,
       reactRefresh.configs.vite,
       reactX.configs["recommended-typescript"],
-      reactDom.configs.recommended
+      reactDom.configs.recommended,
     ],
     languageOptions: {
       parserOptions: {
         project: ["./tsconfig.node.json", "./tsconfig.app.json"],
         tsconfigRootDir: import.meta.dirname,
       },
-      project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-      tsconfigRootDir: new URL(".", import.meta.url).pathname,
       ecmaVersion: 2020,
       globals: globals.browser,
     },

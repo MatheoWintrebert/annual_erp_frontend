@@ -7,13 +7,24 @@ import {
   Box,
   Menu,
   MenuItem,
+  alpha,
+  Avatar,
+  Tooltip,
 } from "@mui/material";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useLocation } from "react-router-dom";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import { useCompanySettings } from "../../context/CompanySettingsContext";
+
+const setupRoutes = ["/custom", "/palettier", "/rules", "/product", "/palette"];
 
 const Header: React.FC = () => {
+  const location = useLocation();
   const [setupAnchorEl, setSetupAnchorEl] = useState<null | HTMLElement>(null);
   const setupMenuOpen = Boolean(setupAnchorEl);
+  const { settings } = useCompanySettings();
+
+  const isSetupActive = setupRoutes.includes(location.pathname);
+  const isSellingActive = location.pathname === "/selling";
 
   const handleSetupMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
     setSetupAnchorEl(event.currentTarget);
@@ -23,12 +34,44 @@ const Header: React.FC = () => {
     setSetupAnchorEl(null);
   };
 
+  const navButtonStyles = (isActive: boolean) => ({
+    ml: 2,
+    fontWeight: 600,
+    position: "relative",
+    color: isActive ? "secondary.main" : "text.secondary",
+    "&::after": {
+      content: '""',
+      position: "absolute",
+      bottom: 4,
+      left: "50%",
+      transform: "translateX(-50%)",
+      width: isActive ? "80%" : "0%",
+      height: 2,
+      bgcolor: "secondary.main",
+      borderRadius: 1,
+      transition: "width 0.2s ease-in-out",
+    },
+    "&:hover": {
+      color: "secondary.main",
+      bgcolor: "transparent",
+      "&::after": {
+        width: "80%",
+      },
+    },
+  });
+
   return (
     <AppBar
-      position="static"
+      position="sticky"
       color="transparent"
       elevation={0}
-      sx={{ borderBottom: 1, borderColor: "divider" }}
+      sx={{
+        borderBottom: 1,
+        borderColor: (theme) => alpha(theme.palette.divider, 0.5),
+        backdropFilter: "blur(12px)",
+        bgcolor: (theme) => alpha(theme.palette.background.default, 0.8),
+        top: 3,
+      }}
     >
       <Toolbar>
         <Button
@@ -49,28 +92,39 @@ const Header: React.FC = () => {
           <img
             src="/icon.png"
             alt="Annual ERP Logo"
+            className="logo"
             style={{ height: 40, marginRight: 16 }}
           />
           <Typography variant="h6" color="text.primary" fontWeight={700}>
             Annual ERP
           </Typography>
         </Button>
+
         <Button
           component={RouterLink}
           to="/selling"
           color="secondary"
-          sx={{ ml: 2, fontWeight: 600 }}
+          sx={navButtonStyles(isSellingActive)}
         >
           Sell
         </Button>
+
         <Button
           color="secondary"
-          sx={{ ml: 2, fontWeight: 600 }}
+          sx={navButtonStyles(isSetupActive)}
           onClick={handleSetupMenuOpen}
-          endIcon={<KeyboardArrowDownIcon />}
+          endIcon={
+            <KeyboardArrowDownIcon
+              sx={{
+                transition: "transform 0.2s ease-in-out",
+                transform: setupMenuOpen ? "rotate(180deg)" : "rotate(0deg)",
+              }}
+            />
+          }
         >
           Setup
         </Button>
+
         <Menu
           anchorEl={setupAnchorEl}
           open={setupMenuOpen}
@@ -86,8 +140,8 @@ const Header: React.FC = () => {
           slotProps={{
             paper: {
               sx: {
-                border: 1,
-                borderColor: "secondary.main",
+                mt: 1,
+                minWidth: 180,
               },
             },
           }}
@@ -96,7 +150,21 @@ const Header: React.FC = () => {
             component={RouterLink}
             to="/custom"
             onClick={handleSetupMenuClose}
+            selected={location.pathname === "/custom"}
           >
+            <Box
+              component="span"
+              sx={{
+                width: 6,
+                height: 6,
+                borderRadius: "50%",
+                bgcolor:
+                  location.pathname === "/custom"
+                    ? "secondary.main"
+                    : "transparent",
+                mr: 1.5,
+              }}
+            />
             Custom
           </MenuItem>
 
@@ -104,36 +172,122 @@ const Header: React.FC = () => {
             component={RouterLink}
             to="/palettier"
             onClick={handleSetupMenuClose}
+            selected={location.pathname === "/palettier"}
           >
+            <Box
+              component="span"
+              sx={{
+                width: 6,
+                height: 6,
+                borderRadius: "50%",
+                bgcolor:
+                  location.pathname === "/palettier"
+                    ? "secondary.main"
+                    : "transparent",
+                mr: 1.5,
+              }}
+            />
             Palettier
           </MenuItem>
+
           <MenuItem
             component={RouterLink}
             to="/rules"
             onClick={handleSetupMenuClose}
+            selected={location.pathname === "/rules"}
           >
+            <Box
+              component="span"
+              sx={{
+                width: 6,
+                height: 6,
+                borderRadius: "50%",
+                bgcolor:
+                  location.pathname === "/rules"
+                    ? "secondary.main"
+                    : "transparent",
+                mr: 1.5,
+              }}
+            />
             Rules
           </MenuItem>
+
           <MenuItem
             component={RouterLink}
             to="/product"
             onClick={handleSetupMenuClose}
+            selected={location.pathname === "/product"}
           >
+            <Box
+              component="span"
+              sx={{
+                width: 6,
+                height: 6,
+                borderRadius: "50%",
+                bgcolor:
+                  location.pathname === "/product"
+                    ? "secondary.main"
+                    : "transparent",
+                mr: 1.5,
+              }}
+            />
             Products
           </MenuItem>
+
           <MenuItem
             component={RouterLink}
             to="/palette"
             onClick={handleSetupMenuClose}
+            selected={location.pathname === "/palette"}
           >
+            <Box
+              component="span"
+              sx={{
+                width: 6,
+                height: 6,
+                borderRadius: "50%",
+                bgcolor:
+                  location.pathname === "/palette"
+                    ? "secondary.main"
+                    : "transparent",
+                mr: 1.5,
+              }}
+            />
             Palettes
           </MenuItem>
         </Menu>
+
         <Box flexGrow={1} />
+
+        {settings?.logoUrl && (
+          <Tooltip title={settings.companyName || "Company"}>
+            <Avatar
+              src={settings.logoUrl}
+              alt={settings.companyName || "Company logo"}
+              variant="rounded"
+              sx={{
+                width: 36,
+                height: 36,
+                border: 1,
+                borderColor: (theme) => alpha(theme.palette.divider, 0.5),
+              }}
+            />
+          </Tooltip>
+        )}
+
         <Button
           color="primary"
           variant="outlined"
-          sx={{ ml: 2, fontWeight: 600 }}
+          sx={{
+            ml: 2,
+            fontWeight: 600,
+            borderColor: (theme) => alpha(theme.palette.primary.main, 0.2),
+            "&:hover": {
+              borderColor: "secondary.main",
+              color: "secondary.main",
+              bgcolor: (theme) => alpha(theme.palette.secondary.main, 0.08),
+            },
+          }}
           onClick={() => {
             //handleLogin();
           }}

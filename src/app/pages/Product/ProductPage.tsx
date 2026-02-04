@@ -208,7 +208,12 @@ const ProductPage: React.FC = () => {
             Entrée de lots
           </Typography>
 
-          <Box component="form" onSubmit={handleSubmit(onSubmit)}>
+          <Box
+            component="form"
+            onSubmit={(e) => {
+              void handleSubmit(onSubmit)(e);
+            }}
+          >
             <Stack spacing={3} sx={{ marginBottom: 4, marginTop: 3 }}>
               <Box display="flex" flexDirection="column" alignItems="center">
                 <Typography variant="h6" color="text.secondary" mb={2}>
@@ -225,13 +230,15 @@ const ProductPage: React.FC = () => {
               <Divider />
 
               {fields.map((field, index) => {
-                const watchIsNewProduct = watch(`lots.${index}.isNewProduct`);
+                const watchIsNewProduct = watch(
+                  `lots.${String(index)}.isNewProduct`
+                ) as boolean;
                 const watchAutoGenerateLot = watch(
-                  `lots.${index}.autoGenerateLot`
-                );
+                  `lots.${String(index)}.autoGenerateLot`
+                ) as boolean;
                 const watchAutoGenerateRef = watch(
-                  `lots.${index}.autoGenerateRef`
-                );
+                  `lots.${String(index)}.autoGenerateRef`
+                ) as boolean;
 
                 return (
                   <Paper
@@ -258,7 +265,7 @@ const ProductPage: React.FC = () => {
                           alignItems="center"
                         >
                           <Controller
-                            name={`lots.${index}.lotNumber`}
+                            name={`lots.${String(index)}.lotNumber`}
                             control={control}
                             rules={{
                               required: !watchAutoGenerateLot
@@ -273,7 +280,7 @@ const ProductPage: React.FC = () => {
                                 disabled={watchAutoGenerateLot}
                                 error={!!error}
                                 helperText={
-                                  error?.message ||
+                                  error?.message ??
                                   (watchAutoGenerateLot
                                     ? "Sera généré automatiquement"
                                     : "")
@@ -289,15 +296,15 @@ const ProductPage: React.FC = () => {
                           <FormControlLabel
                             control={
                               <Controller
-                                name={`lots.${index}.autoGenerateLot`}
+                                name={`lots.${String(index)}.autoGenerateLot`}
                                 control={control}
                                 render={({ field }) => (
                                   <Checkbox
                                     {...field}
                                     checked={field.value}
-                                    onChange={(e) =>
-                                      field.onChange(e.target.checked)
-                                    }
+                                    onChange={(e) => {
+                                      field.onChange(e.target.checked);
+                                    }}
                                   />
                                 )}
                               />
@@ -324,7 +331,7 @@ const ProductPage: React.FC = () => {
                             alignItems="center"
                           >
                             <Controller
-                              name={`lots.${index}.productReference`}
+                              name={`lots.${String(index)}.productReference`}
                               control={control}
                               rules={{
                                 required: !watchIsNewProduct
@@ -351,7 +358,7 @@ const ProductPage: React.FC = () => {
                                     );
                                     if (newValue) {
                                       setValue(
-                                        `lots.${index}.isNewProduct`,
+                                        `lots.${String(index)}.isNewProduct`,
                                         false
                                       );
                                     }
@@ -372,7 +379,7 @@ const ProductPage: React.FC = () => {
                             <FormControlLabel
                               control={
                                 <Controller
-                                  name={`lots.${index}.isNewProduct`}
+                                  name={`lots.${String(index)}.isNewProduct`}
                                   control={control}
                                   render={({ field }) => (
                                     <Checkbox
@@ -382,7 +389,7 @@ const ProductPage: React.FC = () => {
                                         field.onChange(e.target.checked);
                                         if (e.target.checked) {
                                           setValue(
-                                            `lots.${index}.productReference`,
+                                            `lots.${String(index)}.productReference`,
                                             null
                                           );
                                         }
@@ -417,7 +424,7 @@ const ProductPage: React.FC = () => {
                                   alignItems="center"
                                 >
                                   <Controller
-                                    name={`lots.${index}.newProduct.reference`}
+                                    name={`lots.${String(index)}.newProduct.reference`}
                                     control={control}
                                     rules={{
                                       required:
@@ -437,7 +444,7 @@ const ProductPage: React.FC = () => {
                                         disabled={watchAutoGenerateRef}
                                         error={!!error}
                                         helperText={
-                                          error?.message ||
+                                          error?.message ??
                                           (watchAutoGenerateRef
                                             ? "Sera générée automatiquement"
                                             : "")
@@ -451,15 +458,15 @@ const ProductPage: React.FC = () => {
                                   <FormControlLabel
                                     control={
                                       <Controller
-                                        name={`lots.${index}.autoGenerateRef`}
+                                        name={`lots.${String(index)}.autoGenerateRef`}
                                         control={control}
                                         render={({ field }) => (
                                           <Checkbox
                                             {...field}
                                             checked={field.value}
-                                            onChange={(e) =>
-                                              field.onChange(e.target.checked)
-                                            }
+                                            onChange={(e) => {
+                                              field.onChange(e.target.checked);
+                                            }}
                                           />
                                         )}
                                       />
@@ -470,7 +477,7 @@ const ProductPage: React.FC = () => {
                                 </Stack>
 
                                 <Controller
-                                  name={`lots.${index}.newProduct.name`}
+                                  name={`lots.${String(index)}.newProduct.name`}
                                   control={control}
                                   rules={{
                                     required: watchIsNewProduct
@@ -496,7 +503,7 @@ const ProductPage: React.FC = () => {
                                   spacing={2}
                                 >
                                   <Controller
-                                    name={`lots.${index}.newProduct.minimalStock`}
+                                    name={`lots.${String(index)}.newProduct.minimalStock`}
                                     control={control}
                                     rules={{
                                       min: { value: 0, message: "Minimum 0" },
@@ -528,7 +535,7 @@ const ProductPage: React.FC = () => {
                                   />
 
                                   <Controller
-                                    name={`lots.${index}.newProduct.unit`}
+                                    name={`lots.${String(index)}.newProduct.unit`}
                                     control={control}
                                     render={({
                                       field,
@@ -562,7 +569,7 @@ const ProductPage: React.FC = () => {
                                   />
 
                                   <Controller
-                                    name={`lots.${index}.newProduct.rulesId`}
+                                    name={`lots.${String(index)}.newProduct.rulesId`}
                                     control={control}
                                     render={({
                                       field,
@@ -606,7 +613,7 @@ const ProductPage: React.FC = () => {
                           spacing={2}
                         >
                           <Controller
-                            name={`lots.${index}.quantity`}
+                            name={`lots.${String(index)}.quantity`}
                             control={control}
                             rules={{
                               required: "La quantité est requise",
@@ -633,7 +640,7 @@ const ProductPage: React.FC = () => {
                           />
 
                           <Controller
-                            name={`lots.${index}.receivedDate`}
+                            name={`lots.${String(index)}.receivedDate`}
                             control={control}
                             rules={{
                               required: "La date de réception est requise",
@@ -652,7 +659,7 @@ const ProductPage: React.FC = () => {
                           />
 
                           <Controller
-                            name={`lots.${index}.expirationDate`}
+                            name={`lots.${String(index)}.expirationDate`}
                             control={control}
                             render={({ field, fieldState: { error } }) => (
                               <TextField
@@ -671,7 +678,7 @@ const ProductPage: React.FC = () => {
 
                         <Box mt={2}>
                           <Controller
-                            name={`lots.${index}.supplier`}
+                            name={`lots.${String(index)}.supplier`}
                             control={control}
                             render={({ field, fieldState: { error } }) => (
                               <TextField

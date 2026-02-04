@@ -11,6 +11,7 @@ import {
   Divider,
   IconButton,
 } from "@mui/material";
+import type { Control } from "react-hook-form";
 import { useForm, Controller, useFieldArray, useWatch } from "react-hook-form";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
@@ -37,7 +38,15 @@ interface FormData {
   palettes: PaletteFormData[];
 }
 
-const MOCK_PALETTIERS = [
+interface MockPalettier {
+  id: number;
+  name: string;
+  dimensionX: number;
+  dimensionY: number;
+  dimensionZ: number;
+}
+
+const MOCK_PALETTIERS: MockPalettier[] = [
   {
     id: 1,
     name: "Palettier Principal A",
@@ -66,15 +75,21 @@ const MOCK_PALETTIERS = [
     dimensionY: 8,
     dimensionZ: 3,
   },
-] as const;
+];
 
-const MOCK_PRODUCTS = [
+interface MockProduct {
+  id: number;
+  name: string;
+  unit: string | null;
+}
+
+const MOCK_PRODUCTS: MockProduct[] = [
   { id: 1, name: "Produit A", unit: null },
   { id: 2, name: "Produit B", unit: null },
   { id: 3, name: "Produit C", unit: null },
   { id: 4, name: "Produit D", unit: "liter" },
   { id: 5, name: "Produit E", unit: "kg" },
-] as const;
+];
 
 const PalettePage: React.FC = () => {
   const [paletteCount, setPaletteCount] = React.useState(1);
@@ -169,7 +184,12 @@ const PalettePage: React.FC = () => {
             Initialisation du stock de palettes
           </Typography>
 
-          <Box component="form" onSubmit={handleSubmit(onSubmit)}>
+          <Box
+            component="form"
+            onSubmit={(e) => {
+              void handleSubmit(onSubmit)(e);
+            }}
+          >
             <Stack spacing={3} sx={{ marginBottom: 4, marginTop: 3 }}>
               <Box display="flex" flexDirection="column" alignItems="center">
                 <Typography variant="h6" color="text.secondary" mb={2}>
@@ -215,14 +235,14 @@ const PalettePage: React.FC = () => {
 
 interface PaletteFormSectionProps {
   paletteIndex: number;
-  control: any;
+  control: Control<FormData>;
   handleNumericKeyDown: (e: React.KeyboardEvent<HTMLDivElement>) => void;
 }
 
 interface QuantityFieldProps {
   paletteIndex: number;
   productIndex: number;
-  control: any;
+  control: Control<FormData>;
   handleNumericKeyDown: (e: React.KeyboardEvent<HTMLDivElement>) => void;
 }
 
@@ -234,20 +254,17 @@ const QuantityField: React.FC<QuantityFieldProps> = ({
 }) => {
   const selectedProductId = useWatch({
     control,
-    name: `palettes.${paletteIndex}.products.${productIndex}.productId`,
-  });
+    name: `palettes.${String(paletteIndex)}.products.${String(productIndex)}.productId` as const,
+  }) as number | undefined;
 
-  const selectedProduct = MOCK_PRODUCTS.find(
-    (p) => p.id === selectedProductId
-  );
+  const selectedProduct = MOCK_PRODUCTS.find((p) => p.id === selectedProductId);
 
-  const quantityLabel = selectedProduct?.unit
-    ? `Quantité (${selectedProduct.unit})`
-    : "Quantité";
+  const unit = selectedProduct?.unit;
+  const quantityLabel = unit ? `Quantité (${unit})` : "Quantité";
 
   return (
     <Controller
-      name={`palettes.${paletteIndex}.products.${productIndex}.quantity`}
+      name={`palettes.${String(paletteIndex)}.products.${String(productIndex)}.quantity`}
       control={control}
       rules={{
         required: "La quantité est requise",
@@ -278,8 +295,8 @@ const PaletteFormSection: React.FC<PaletteFormSectionProps> = ({
 }) => {
   const selectedPalettierId = useWatch({
     control,
-    name: `palettes.${paletteIndex}.palettierId`,
-  });
+    name: `palettes.${String(paletteIndex)}.palettierId` as const,
+  }) as number | undefined;
 
   const selectedPalettier = MOCK_PALETTIERS.find(
     (p) => p.id === selectedPalettierId
@@ -291,7 +308,7 @@ const PaletteFormSection: React.FC<PaletteFormSectionProps> = ({
     remove: removeProduct,
   } = useFieldArray({
     control,
-    name: `palettes.${paletteIndex}.products`,
+    name: `palettes.${String(paletteIndex)}.products`,
   });
 
   const handleAddProduct = () => {
@@ -319,7 +336,7 @@ const PaletteFormSection: React.FC<PaletteFormSectionProps> = ({
 
       <Stack spacing={3}>
         <Controller
-          name={`palettes.${paletteIndex}.palettierId`}
+          name={`palettes.${String(paletteIndex)}.palettierId`}
           control={control}
           rules={{ required: "Le palettier est requis" }}
           render={({ field, fieldState: { error } }) => (
@@ -358,7 +375,7 @@ const PaletteFormSection: React.FC<PaletteFormSectionProps> = ({
           </Typography>
           <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
             <Controller
-              name={`palettes.${paletteIndex}.positionX`}
+              name={`palettes.${String(paletteIndex)}.positionX`}
               control={control}
               rules={{
                 required: "La position X est requise",
@@ -366,7 +383,7 @@ const PaletteFormSection: React.FC<PaletteFormSectionProps> = ({
                 max: selectedPalettier
                   ? {
                       value: selectedPalettier.dimensionX,
-                      message: `Maximum ${selectedPalettier.dimensionX}`,
+                      message: `Maximum ${String(selectedPalettier.dimensionX)}`,
                     }
                   : undefined,
               }}
@@ -390,7 +407,7 @@ const PaletteFormSection: React.FC<PaletteFormSectionProps> = ({
             />
 
             <Controller
-              name={`palettes.${paletteIndex}.positionY`}
+              name={`palettes.${String(paletteIndex)}.positionY`}
               control={control}
               rules={{
                 required: "La position Y est requise",
@@ -398,7 +415,7 @@ const PaletteFormSection: React.FC<PaletteFormSectionProps> = ({
                 max: selectedPalettier
                   ? {
                       value: selectedPalettier.dimensionY,
-                      message: `Maximum ${selectedPalettier.dimensionY}`,
+                      message: `Maximum ${String(selectedPalettier.dimensionY)}`,
                     }
                   : undefined,
               }}
@@ -422,7 +439,7 @@ const PaletteFormSection: React.FC<PaletteFormSectionProps> = ({
             />
 
             <Controller
-              name={`palettes.${paletteIndex}.positionZ`}
+              name={`palettes.${String(paletteIndex)}.positionZ`}
               control={control}
               rules={{
                 required: "La position Z est requise",
@@ -430,7 +447,7 @@ const PaletteFormSection: React.FC<PaletteFormSectionProps> = ({
                 max: selectedPalettier
                   ? {
                       value: selectedPalettier.dimensionZ,
-                      message: `Maximum ${selectedPalettier.dimensionZ}`,
+                      message: `Maximum ${String(selectedPalettier.dimensionZ)}`,
                     }
                   : undefined,
               }}
@@ -500,7 +517,9 @@ const PaletteFormSection: React.FC<PaletteFormSectionProps> = ({
                   {productFields.length > 1 && (
                     <IconButton
                       size="small"
-                      onClick={() => handleRemoveProduct(productIndex)}
+                      onClick={() => {
+                        handleRemoveProduct(productIndex);
+                      }}
                       color="error"
                     >
                       <RemoveCircleOutlineIcon />
@@ -510,7 +529,7 @@ const PaletteFormSection: React.FC<PaletteFormSectionProps> = ({
 
                 <Stack spacing={2}>
                   <Controller
-                    name={`palettes.${paletteIndex}.products.${productIndex}.productId`}
+                    name={`palettes.${String(paletteIndex)}.products.${String(productIndex)}.productId`}
                     control={control}
                     rules={{ required: "Le produit est requis" }}
                     render={({ field, fieldState: { error } }) => (
@@ -540,7 +559,7 @@ const PaletteFormSection: React.FC<PaletteFormSectionProps> = ({
                     />
 
                     <Controller
-                      name={`palettes.${paletteIndex}.products.${productIndex}.expirationDate`}
+                      name={`palettes.${String(paletteIndex)}.products.${String(productIndex)}.expirationDate`}
                       control={control}
                       render={({ field, fieldState: { error } }) => (
                         <TextField

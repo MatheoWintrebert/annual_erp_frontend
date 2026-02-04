@@ -176,7 +176,7 @@ const SellingPage: React.FC = () => {
         </Typography>
         <Grid container spacing={4}>
           {features.map((f) => (
-            <Grid>
+            <Grid key={f.title}>
               <Card
                 elevation={3}
                 sx={{

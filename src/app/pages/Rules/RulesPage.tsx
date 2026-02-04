@@ -226,7 +226,7 @@ const RulesPage: React.FC = () => {
           return { ...baseRule, config: rule.zonePriority };
         case "incompatibility":
           return { ...baseRule, config: rule.incompatibility };
-        case "storage_condition":
+        case "storage_condition": {
           const storageConfig = {
             conditionType: rule.storageCondition.conditionType,
             selectionMode: rule.storageCondition.selectionMode,
@@ -235,6 +235,7 @@ const RulesPage: React.FC = () => {
               : { palettiers: rule.storageCondition.palettiers }),
           };
           return { ...baseRule, config: storageConfig };
+        }
         case "placement":
           return { ...baseRule, config: rule.placement };
         default:
@@ -268,7 +269,12 @@ const RulesPage: React.FC = () => {
             palettes dans l'entrepôt.
           </Typography>
 
-          <Box component="form" onSubmit={handleSubmit(onSubmit)}>
+          <Box
+            component="form"
+            onSubmit={(e) => {
+              void handleSubmit(onSubmit)(e);
+            }}
+          >
             <Stack spacing={3} sx={{ marginBottom: 4, marginTop: 3 }}>
               <Box display="flex" flexDirection="column" alignItems="center">
                 <Typography variant="h6" color="text.secondary" mb={2}>
@@ -285,10 +291,12 @@ const RulesPage: React.FC = () => {
               <Divider />
 
               {fields.map((field, index) => {
-                const watchRuleType = watch(`rules.${index}.ruleType`);
+                const watchRuleType = watch(
+                  `rules.${String(index)}.ruleType`
+                ) as RuleType | "";
                 const watchPlacementConstraint = watch(
-                  `rules.${index}.placement.constraint`
-                );
+                  `rules.${String(index)}.placement.constraint`
+                ) as string;
                 const ruleTypeInfo = getRuleTypeInfo(watchRuleType);
 
                 return (
@@ -331,7 +339,7 @@ const RulesPage: React.FC = () => {
                         </Typography>
                         <Stack spacing={2}>
                           <Controller
-                            name={`rules.${index}.name`}
+                            name={`rules.${String(index)}.name`}
                             control={control}
                             rules={{
                               required: "Le nom de la règle est requis",
@@ -343,7 +351,7 @@ const RulesPage: React.FC = () => {
                                 fullWidth
                                 error={!!error}
                                 helperText={
-                                  error?.message || "Un nom court et descriptif"
+                                  error?.message ?? "Un nom court et descriptif"
                                 }
                                 placeholder="Ex: Stockage produits frais"
                               />
@@ -351,7 +359,7 @@ const RulesPage: React.FC = () => {
                           />
 
                           <Controller
-                            name={`rules.${index}.description`}
+                            name={`rules.${String(index)}.description`}
                             control={control}
                             render={({ field }) => (
                               <TextField
@@ -378,7 +386,7 @@ const RulesPage: React.FC = () => {
                           Type de règle
                         </Typography>
                         <Controller
-                          name={`rules.${index}.ruleType`}
+                          name={`rules.${String(index)}.ruleType`}
                           control={control}
                           rules={{ required: "Sélectionnez un type de règle" }}
                           render={({ field, fieldState: { error } }) => (
@@ -437,7 +445,7 @@ const RulesPage: React.FC = () => {
                             <Collapse in={watchRuleType === "zone_priority"}>
                               <Stack spacing={2}>
                                 <Controller
-                                  name={`rules.${index}.zonePriority.zones`}
+                                  name={`rules.${String(index)}.zonePriority.zones`}
                                   control={control}
                                   rules={{
                                     validate: (value) =>
@@ -455,7 +463,7 @@ const RulesPage: React.FC = () => {
                                       fullWidth
                                       error={!!error}
                                       helperText={
-                                        error?.message ||
+                                        error?.message ??
                                         "Les produits avec cette règle seront placés en priorité dans ces zones"
                                       }
                                       slotProps={{
@@ -487,9 +495,9 @@ const RulesPage: React.FC = () => {
                                         },
                                       }}
                                       value={field.value}
-                                      onChange={(e) =>
-                                        field.onChange(e.target.value)
-                                      }
+                                      onChange={(e) => {
+                                        field.onChange(e.target.value);
+                                      }}
                                     >
                                       {ZONE_OPTIONS.map((zone) => (
                                         <MenuItem
@@ -504,7 +512,7 @@ const RulesPage: React.FC = () => {
                                 />
 
                                 <Controller
-                                  name={`rules.${index}.zonePriority.priority`}
+                                  name={`rules.${String(index)}.zonePriority.priority`}
                                   control={control}
                                   render={({ field }) => (
                                     <TextField
@@ -513,9 +521,9 @@ const RulesPage: React.FC = () => {
                                       label="Niveau de priorité"
                                       fullWidth
                                       helperText="Plus le niveau est élevé, plus la règle est importante"
-                                      onChange={(e) =>
-                                        field.onChange(Number(e.target.value))
-                                      }
+                                      onChange={(e) => {
+                                        field.onChange(Number(e.target.value));
+                                      }}
                                     >
                                       {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(
                                         (level) => (
@@ -538,7 +546,7 @@ const RulesPage: React.FC = () => {
                             <Collapse in={watchRuleType === "incompatibility"}>
                               <Stack spacing={2}>
                                 <Controller
-                                  name={`rules.${index}.incompatibility.incompatibleCategories`}
+                                  name={`rules.${String(index)}.incompatibility.incompatibleCategories`}
                                   control={control}
                                   rules={{
                                     validate: (value) =>
@@ -556,7 +564,7 @@ const RulesPage: React.FC = () => {
                                       fullWidth
                                       error={!!error}
                                       helperText={
-                                        error?.message ||
+                                        error?.message ??
                                         "Les produits avec cette règle seront éloignés de ces catégories"
                                       }
                                       slotProps={{
@@ -589,9 +597,9 @@ const RulesPage: React.FC = () => {
                                         },
                                       }}
                                       value={field.value}
-                                      onChange={(e) =>
-                                        field.onChange(e.target.value)
-                                      }
+                                      onChange={(e) => {
+                                        field.onChange(e.target.value);
+                                      }}
                                     >
                                       {PRODUCT_CATEGORIES.map((category) => (
                                         <MenuItem
@@ -606,7 +614,7 @@ const RulesPage: React.FC = () => {
                                 />
 
                                 <Controller
-                                  name={`rules.${index}.incompatibility.minimumDistance`}
+                                  name={`rules.${String(index)}.incompatibility.minimumDistance`}
                                   control={control}
                                   rules={{
                                     min: {
@@ -627,14 +635,14 @@ const RulesPage: React.FC = () => {
                                       slotProps={{ htmlInput: { min: 1 } }}
                                       error={!!error}
                                       helperText={
-                                        error?.message ||
+                                        error?.message ??
                                         "Nombre d'emplacements minimum entre les produits incompatibles"
                                       }
-                                      onChange={(e) =>
+                                      onChange={(e) => {
                                         field.onChange(
                                           Number(e.target.value) || 1
-                                        )
-                                      }
+                                        );
+                                      }}
                                     />
                                   )}
                                 />
@@ -646,7 +654,7 @@ const RulesPage: React.FC = () => {
                             >
                               <Stack spacing={2}>
                                 <Controller
-                                  name={`rules.${index}.storageCondition.conditionType`}
+                                  name={`rules.${String(index)}.storageCondition.conditionType`}
                                   control={control}
                                   rules={{
                                     required:
@@ -679,7 +687,7 @@ const RulesPage: React.FC = () => {
                                 />
 
                                 <Controller
-                                  name={`rules.${index}.storageCondition.selectionMode`}
+                                  name={`rules.${String(index)}.storageCondition.selectionMode`}
                                   control={control}
                                   render={({ field }) => (
                                     <TextField
@@ -704,18 +712,18 @@ const RulesPage: React.FC = () => {
                                 <Collapse
                                   in={
                                     watch(
-                                      `rules.${index}.storageCondition.selectionMode`
+                                      `rules.${String(index)}.storageCondition.selectionMode`
                                     ) === "types"
                                   }
                                 >
                                   <Controller
-                                    name={`rules.${index}.storageCondition.palettierTypes`}
+                                    name={`rules.${String(index)}.storageCondition.palettierTypes`}
                                     control={control}
                                     rules={{
                                       validate: (value) =>
                                         watchRuleType !== "storage_condition" ||
                                         watch(
-                                          `rules.${index}.storageCondition.selectionMode`
+                                          `rules.${String(index)}.storageCondition.selectionMode`
                                         ) !== "types" ||
                                         value.length > 0 ||
                                         "Sélectionnez au moins un type de palettier",
@@ -730,7 +738,7 @@ const RulesPage: React.FC = () => {
                                         fullWidth
                                         error={!!error}
                                         helperText={
-                                          error?.message ||
+                                          error?.message ??
                                           "Tous les palettiers de ces types seront concernés"
                                         }
                                         slotProps={{
@@ -764,9 +772,9 @@ const RulesPage: React.FC = () => {
                                           },
                                         }}
                                         value={field.value}
-                                        onChange={(e) =>
-                                          field.onChange(e.target.value)
-                                        }
+                                        onChange={(e) => {
+                                          field.onChange(e.target.value);
+                                        }}
                                       >
                                         {PALETTIER_TYPE_OPTIONS.map((type) => (
                                           <MenuItem
@@ -784,18 +792,18 @@ const RulesPage: React.FC = () => {
                                 <Collapse
                                   in={
                                     watch(
-                                      `rules.${index}.storageCondition.selectionMode`
+                                      `rules.${String(index)}.storageCondition.selectionMode`
                                     ) === "palettiers"
                                   }
                                 >
                                   <Controller
-                                    name={`rules.${index}.storageCondition.palettiers`}
+                                    name={`rules.${String(index)}.storageCondition.palettiers`}
                                     control={control}
                                     rules={{
                                       validate: (value) =>
                                         watchRuleType !== "storage_condition" ||
                                         watch(
-                                          `rules.${index}.storageCondition.selectionMode`
+                                          `rules.${String(index)}.storageCondition.selectionMode`
                                         ) !== "palettiers" ||
                                         value.length > 0 ||
                                         "Sélectionnez au moins un palettier",
@@ -810,7 +818,7 @@ const RulesPage: React.FC = () => {
                                         fullWidth
                                         error={!!error}
                                         helperText={
-                                          error?.message ||
+                                          error?.message ??
                                           "Sélectionnez les palettiers individuellement"
                                         }
                                         slotProps={{
@@ -844,9 +852,9 @@ const RulesPage: React.FC = () => {
                                           },
                                         }}
                                         value={field.value}
-                                        onChange={(e) =>
-                                          field.onChange(e.target.value)
-                                        }
+                                        onChange={(e) => {
+                                          field.onChange(e.target.value);
+                                        }}
                                       >
                                         {PALETTIER_OPTIONS.map((palettier) => (
                                           <MenuItem
@@ -866,7 +874,7 @@ const RulesPage: React.FC = () => {
                             <Collapse in={watchRuleType === "placement"}>
                               <Stack spacing={2}>
                                 <Controller
-                                  name={`rules.${index}.placement.constraint`}
+                                  name={`rules.${String(index)}.placement.constraint`}
                                   control={control}
                                   rules={{
                                     required:
@@ -904,7 +912,7 @@ const RulesPage: React.FC = () => {
                                   in={watchPlacementConstraint === "max_height"}
                                 >
                                   <Controller
-                                    name={`rules.${index}.placement.maxHeight`}
+                                    name={`rules.${String(index)}.placement.maxHeight`}
                                     control={control}
                                     rules={{
                                       min: {
@@ -925,7 +933,7 @@ const RulesPage: React.FC = () => {
                                         slotProps={{ htmlInput: { min: 1 } }}
                                         error={!!error}
                                         helperText={
-                                          error?.message ||
+                                          error?.message ??
                                           "Nombre maximum de niveaux depuis le sol"
                                         }
                                         value={field.value ?? ""}

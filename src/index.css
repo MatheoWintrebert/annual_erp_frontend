@@ -1,11 +1,18 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --color-primary: #ffffff;
+  --color-secondary: #77a53c;
+  --color-accent: #dc1dbc;
+  --color-bg-default: #0a0a0a;
+  --color-bg-paper: #141414;
+  --color-bg-surface: #1a1a1a;
+
+  font-family: "Inter", "Roboto", system-ui, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #121212;
+  background-color: var(--color-bg-default);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -17,5 +24,110 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background-color: #121212;
+  background-color: var(--color-bg-default);
+  background-image:
+    linear-gradient(
+      color-mix(in srgb, var(--color-secondary) 8%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--color-secondary) 8%, transparent) 1px,
+      transparent 1px
+    );
+  background-size: 50px 50px;
+  background-position: center center;
+  position: relative;
+}
+
+/* Green accent bar at top of page */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    var(--color-secondary) 0%,
+    var(--color-accent) 50%,
+    var(--color-secondary) 100%
+  );
+  z-index: 9999;
+}
+
+/* Subtle noise texture overlay */
+body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 0.015;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+}
+
+/* Root container */
+#root {
+  position: relative;
+  min-height: 100vh;
+}
+
+/* Custom scrollbar for all scrollable elements */
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--color-bg-paper);
+  border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--color-secondary) 40%, transparent);
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--color-secondary);
+}
+
+/* Selection color */
+::selection {
+  background: color-mix(in srgb, var(--color-secondary) 30%, transparent);
+  color: var(--color-primary);
+}
+
+/* Focus visible styles for accessibility */
+*:focus-visible {
+  outline: 2px solid var(--color-secondary);
+  outline-offset: 2px;
+}
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Link hover effects */
+a {
+  transition: color 0.2s ease-in-out;
+}
+
+/* Logo styles - hover effect only, size controlled by component */
+.logo {
+  will-change: filter;
+  transition: filter 300ms;
+}
+
+.logo:hover {
+  filter: drop-shadow(
+    0 0 1em color-mix(in srgb, var(--color-secondary) 60%, transparent)
+  );
 }
