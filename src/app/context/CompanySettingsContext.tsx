@@ -39,7 +39,6 @@ const CompanySettingsContext = createContext<CompanySettingsContextValue>({
   refetch: (): Promise<void> => Promise.resolve(),
 });
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const useCompanySettings = (): CompanySettingsContextValue =>
   use(CompanySettingsContext);
 

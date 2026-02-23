@@ -1,298 +1,264 @@
 import {
   Box,
   Container,
-  Typography,
-  Stack,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogActions,
   Button,
-  Divider,
-  CircularProgress,
-  Alert,
-  Snackbar,
+  Typography,
+  IconButton,
 } from "@mui/material";
-import { useForm, useFieldArray } from "react-hook-form";
-import type { FieldPath } from "react-hook-form";
-import { useState, useEffect, useCallback } from "react";
-import type { FC, ReactNode } from "react";
+import CloseIcon from "@mui/icons-material/Close";
+import { useState, useCallback } from "react";
+import { useForm } from "react-hook-form";
+import type { FC } from "react";
 import Header from "../../components/ui/Header";
 import Footer from "../../components/ui/Footer";
-import NumberSpinner from "../../components/NumberSpinner";
-import { PalettierFormCard } from "./components";
-import type { PalettierType, FormData, CreatePalettierPayload } from "./types";
-import { createDefaultPalettier } from "./types";
-
-const API_BASE_URL = "http://localhost:3333";
+import { StepWizard } from "../../components/wizard";
+import { useSnackbar } from "../../components/ui/SnackbarProvider";
+import { useApiError } from "../../hooks/useApiError";
+import {
+  PalettierList,
+  PalettierFormStep,
+  PalettierReviewStep,
+} from "./components";
+import {
+  useGetPalettiers,
+  useGetPalettierTypes,
+  useCreatePalettier,
+  useCreatePalettierType,
+  useUpdatePalettier,
+  useDeletePalettier,
+  useGetPaletteCountByPalettier,
+  useGetActiveViolations,
+} from "./api";
+import type {
+  PalettierResponse,
+  PalettierType,
+  PalettierWizardFormData,
+} from "./types";
+import { WIZARD_DEFAULT_VALUES } from "./types";
 
 const PalettierPage: FC = () => {
-  const [palettierCount, setPalettierCount] = useState(1);
-  const [palettierTypes, setPalettierTypes] = useState<PalettierType[]>([]);
-  const [isLoadingTypes, setIsLoadingTypes] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [wizardOpen, setWizardOpen] = useState(false);
+  const [editingPalettier, setEditingPalettier] =
+    useState<PalettierResponse | null>(null);
+  const [activeStep, setActiveStep] = useState(0);
+  const [deleteTarget, setDeleteTarget] = useState<PalettierResponse | null>(
+    null
+  );
 
-  const getDefaultTypeId = useCallback((): number | "" => {
-    return palettierTypes.length > 0 ? palettierTypes[0].id : "";
-  }, [palettierTypes]);
+  const { showSnackbar } = useSnackbar();
+  const { handleError } = useApiError();
 
-  const { control, handleSubmit, setValue, reset, getValues } =
-    useForm<FormData>({
-      defaultValues: {
-        palettiers: [createDefaultPalettier("")],
-      },
-    });
+  const {
+    data: palettiers = [],
+    isLoading: isLoadingPalettiers,
+    error: palettiersError,
+  } = useGetPalettiers();
 
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "palettiers",
+  const { data: palettierTypes = [] } = useGetPalettierTypes();
+  const { data: activeViolations = [] } = useGetActiveViolations();
+
+  const createMutation = useCreatePalettier();
+  const createTypeMutation = useCreatePalettierType();
+  const updateMutation = useUpdatePalettier();
+  const deleteMutation = useDeletePalettier();
+
+  const { data: paletteCountData } = useGetPaletteCountByPalettier(
+    editingPalettier?.id ?? 0
+  );
+
+  const { data: deleteTargetCountData } = useGetPaletteCountByPalettier(
+    deleteTarget?.id ?? 0
+  );
+
+  const methods = useForm<PalettierWizardFormData>({
+    defaultValues: WIZARD_DEFAULT_VALUES,
   });
 
-  const fetchPalettierTypes = useCallback(async (): Promise<void> => {
-    try {
-      setIsLoadingTypes(true);
-      setError(null);
-      const response = await fetch(`${API_BASE_URL}/palettier-types`);
+  const openCreateWizard = useCallback((): void => {
+    setEditingPalettier(null);
+    methods.reset(WIZARD_DEFAULT_VALUES);
+    setActiveStep(0);
+    setWizardOpen(true);
+  }, [methods]);
 
-      if (!response.ok) {
-        throw new Error("Échec du chargement des types de palettiers");
-      }
+  const openEditWizard = useCallback(
+    (palettier: PalettierResponse): void => {
+      setEditingPalettier(palettier);
+      methods.reset({
+        name: palettier.name,
+        typeId: palettier.palettierTypeId ?? "",
+        isNewType: false,
+        newTypeName: "",
+        width: palettier.width,
+        depth: palettier.depth,
+        height: palettier.height,
+      });
+      setActiveStep(0);
+      setWizardOpen(true);
+    },
+    [methods]
+  );
 
-      const types = (await response.json()) as PalettierType[];
-      setPalettierTypes(types);
-    } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Une erreur est survenue";
-      setError(message);
-    } finally {
-      setIsLoadingTypes(false);
-    }
+  const closeWizard = useCallback((): void => {
+    setWizardOpen(false);
+    setEditingPalettier(null);
+    setActiveStep(0);
   }, []);
 
-  useEffect(() => {
-    void fetchPalettierTypes();
-  }, [fetchPalettierTypes]);
-
-  useEffect(() => {
-    if (palettierTypes.length > 0) {
-      reset({
-        palettiers: [createDefaultPalettier(palettierTypes[0].id)],
-      });
-    }
-  }, [palettierTypes, reset]);
-
-  const handleCountChange = (newCount: number): void => {
-    setPalettierCount(newCount);
-    const currentCount = fields.length;
-    const defaultTypeId = getDefaultTypeId();
-
-    if (newCount > currentCount) {
-      const pallettiersToAdd = Array.from(
-        { length: newCount - currentCount },
-        () => createDefaultPalettier(defaultTypeId)
-      );
-      pallettiersToAdd.forEach((p) => {
-        append(p);
-      });
-    } else if (newCount < currentCount) {
-      for (let i = currentCount - 1; i >= newCount; i--) {
-        remove(i);
+  const handleNext = useCallback((): void => {
+    void methods.trigger().then((isValid) => {
+      if (isValid) {
+        setActiveStep(1);
       }
-    }
-  };
+    });
+  }, [methods]);
 
-  const createPalettierType = async (
-    name: string
-  ): Promise<PalettierType | null> => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/palettier-types`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, description: "" }),
-      });
+  const handleBack = useCallback((): void => {
+    setActiveStep(0);
+  }, []);
 
-      if (!response.ok) {
-        throw new Error("Échec de la création du type");
-      }
+  const handleAddNewType = useCallback(
+    async (name: string): Promise<void> => {
+      const trimmed = name.trim();
+      if (!trimmed) return;
 
-      const newType = (await response.json()) as PalettierType;
-      setPalettierTypes((prev) => [...prev, newType]);
-      return newType;
-    } catch (err) {
-      const message =
-        err instanceof Error
-          ? err.message
-          : "Erreur lors de la création du type";
-      setError(message);
-      return null;
-    }
-  };
-
-  const handleAddNewType = async (index: number): Promise<void> => {
-    const formValues = getValues();
-    const newTypeName = formValues.palettiers[index]?.newTypeName ?? "";
-
-    if (!newTypeName.trim()) {
-      return;
-    }
-
-    const trimmedName = newTypeName.trim();
-    const existingType = palettierTypes.find(
-      (t) => t.name.toLowerCase() === trimmedName.toLowerCase()
-    );
-
-    const idx = String(index);
-    const typeIdPath = `palettiers.${idx}.typeId` as FieldPath<FormData>;
-    const isNewTypePath = `palettiers.${idx}.isNewType` as FieldPath<FormData>;
-    const newTypeNamePath =
-      `palettiers.${idx}.newTypeName` as FieldPath<FormData>;
-
-    if (existingType) {
-      setValue(typeIdPath, existingType.id as never);
-      setValue(isNewTypePath, false as never);
-      setValue(newTypeNamePath, "" as never);
-      return;
-    }
-
-    const newType = await createPalettierType(trimmedName);
-
-    if (newType) {
-      setValue(typeIdPath, newType.id as never);
-      setValue(isNewTypePath, false as never);
-      setValue(newTypeNamePath, "" as never);
-    }
-  };
-
-  const onSubmit = async (data: FormData): Promise<void> => {
-    try {
-      setIsSubmitting(true);
-      setError(null);
-
-      const pallettiersPayload: CreatePalettierPayload[] = data.palettiers.map(
-        (palettier) => ({
-          name: palettier.name,
-          typeId: palettier.typeId as number,
-          width: palettier.width,
-          depth: palettier.depth,
-          height: palettier.height,
-        })
+      const existing = palettierTypes.find(
+        (t: PalettierType) => t.name.toLowerCase() === trimmed.toLowerCase()
       );
 
-      const response = await fetch(`${API_BASE_URL}/palettiers`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ palettiers: pallettiersPayload }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Échec de l'enregistrement des palettiers");
+      if (existing) {
+        methods.setValue("typeId", existing.id);
+        methods.setValue("isNewType", false);
+        methods.setValue("newTypeName", "");
+        return;
       }
 
-      setSuccessMessage("Palettiers enregistrés avec succès");
-      setPalettierCount(1);
-      reset({
-        palettiers: [createDefaultPalettier(getDefaultTypeId())],
-      });
+      try {
+        const newType = await createTypeMutation.mutateAsync({
+          name: trimmed,
+          description: "",
+        });
+        methods.setValue("typeId", newType.id);
+        methods.setValue("isNewType", false);
+        methods.setValue("newTypeName", "");
+        showSnackbar(`Type "${newType.name}" created`, "success");
+      } catch (err) {
+        void handleError(err);
+      }
+    },
+    [palettierTypes, methods, createTypeMutation, showSnackbar, handleError]
+  );
+
+  const handleConfirm = useCallback((): void => {
+    void methods.handleSubmit(async (data: PalettierWizardFormData) => {
+      try {
+        if (editingPalettier) {
+          await updateMutation.mutateAsync({
+            id: editingPalettier.id,
+            name: data.name,
+            palettierTypeId: data.typeId === "" ? null : data.typeId,
+            width: data.width,
+            depth: data.depth,
+            height: data.height,
+          });
+          showSnackbar("Palettier updated successfully", "success");
+        } else {
+          const payload = data.isNewType
+            ? {
+                name: data.name,
+                newTypeName: data.newTypeName,
+                width: data.width,
+                depth: data.depth,
+                height: data.height,
+              }
+            : {
+                name: data.name,
+                typeId: data.typeId as number,
+                width: data.width,
+                depth: data.depth,
+                height: data.height,
+              };
+
+          await createMutation.mutateAsync(payload);
+          showSnackbar("Palettier created successfully", "success");
+        }
+        closeWizard();
+      } catch (err) {
+        void handleError(err);
+      }
+    })();
+  }, [
+    methods,
+    editingPalettier,
+    createMutation,
+    updateMutation,
+    closeWizard,
+    showSnackbar,
+    handleError,
+  ]);
+
+  const openDeleteDialog = useCallback((palettier: PalettierResponse): void => {
+    setDeleteTarget(palettier);
+  }, []);
+
+  const closeDeleteDialog = useCallback((): void => {
+    setDeleteTarget(null);
+  }, []);
+
+  const handleDelete = useCallback(async (): Promise<void> => {
+    if (!deleteTarget) return;
+
+    try {
+      await deleteMutation.mutateAsync(deleteTarget.id);
+      showSnackbar("Palettier deleted successfully", "success");
+      closeDeleteDialog();
     } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Une erreur est survenue";
-      setError(message);
-    } finally {
-      setIsSubmitting(false);
+      void handleError(err);
     }
-  };
+  }, [
+    deleteTarget,
+    deleteMutation,
+    showSnackbar,
+    closeDeleteDialog,
+    handleError,
+  ]);
 
-  const handleCloseSnackbar = (): void => {
-    setSuccessMessage(null);
-  };
+  const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
-  const handleCloseError = (): void => {
-    setError(null);
-  };
+  const paletteWarning =
+    editingPalettier && paletteCountData && paletteCountData.paletteCount > 0
+      ? `This palettier contains ${String(paletteCountData.paletteCount)} palette${paletteCountData.paletteCount !== 1 ? "s" : ""} in ${String(paletteCountData.occupiedPositions)} position${paletteCountData.occupiedPositions !== 1 ? "s" : ""}`
+      : undefined;
 
-  const renderLoadingState = (): ReactNode => (
-    <Box display="flex" justifyContent="center" py={4}>
-      <CircularProgress color="secondary" />
-    </Box>
-  );
+  const deleteHasPalettes =
+    deleteTargetCountData && deleteTargetCountData.paletteCount > 0;
 
-  const renderErrorState = (): ReactNode => (
-    <Alert
-      severity="error"
-      action={
-        <Button
-          color="inherit"
-          size="small"
-          onClick={() => void fetchPalettierTypes()}
-        >
-          Réessayer
-        </Button>
-      }
-    >
-      {error}
-    </Alert>
-  );
-
-  const renderForm = (): ReactNode => (
-    <Box
-      component="form"
-      onSubmit={(e) => {
-        void handleSubmit(onSubmit)(e);
-      }}
-    >
-      <Stack spacing={3} sx={{ marginBottom: 4, marginTop: 3 }}>
-        <Box display="flex" flexDirection="column" alignItems="center">
-          <Typography variant="h6" color="text.secondary" mb={2}>
-            Nombre de palettiers
-          </Typography>
-          <NumberSpinner
-            value={palettierCount}
-            onChange={handleCountChange}
-            min={1}
-            label="Nombre de palettiers"
-          />
-        </Box>
-
-        <Divider />
-
-        {palettierTypes.length === 0 && (
-          <Alert severity="info">
-            Aucun type de palettier n'existe encore. Utilisez l'option "Nouveau"
-            ci-dessous pour créer votre premier type.
-          </Alert>
-        )}
-
-        {fields.map((field, index) => (
-          <PalettierFormCard
-            key={field.id}
-            index={index}
-            control={control}
-            setValue={setValue}
-            palettierTypes={palettierTypes}
-            onAddNewType={handleAddNewType}
-          />
-        ))}
-
-        <Box display="flex" justifyContent="flex-end" mt={2}>
-          <Button
-            type="submit"
-            variant="contained"
-            color="secondary"
-            size="large"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? (
-              <CircularProgress size={24} color="inherit" />
-            ) : (
-              "Valider la configuration"
-            )}
-          </Button>
-        </Box>
-      </Stack>
-    </Box>
-  );
-
-  const hasLoadedWithoutError = !isLoadingTypes && !error;
-  const hasErrorWithNoTypes =
-    !isLoadingTypes && error && palettierTypes.length === 0;
+  const wizardSteps = [
+    {
+      label: "Details",
+      content: (
+        <PalettierFormStep
+          methods={methods}
+          palettierTypes={palettierTypes}
+          onAddNewType={handleAddNewType}
+          paletteWarning={paletteWarning}
+        />
+      ),
+    },
+    {
+      label: "Review",
+      content: (
+        <PalettierReviewStep
+          values={methods.getValues()}
+          palettierTypes={palettierTypes}
+        />
+      ),
+    },
+  ];
 
   return (
     <Box minHeight="100vh" display="flex" flexDirection="column">
@@ -306,45 +272,77 @@ const PalettierPage: FC = () => {
             fontWeight={600}
             mt={4}
           >
-            Configuration des palettiers
+            Palettier Configuration
           </Typography>
 
-          {isLoadingTypes && renderLoadingState()}
-          {hasErrorWithNoTypes && renderErrorState()}
-          {hasLoadedWithoutError && renderForm()}
+          <PalettierList
+            palettiers={palettiers}
+            palettierTypes={palettierTypes}
+            isLoading={isLoadingPalettiers}
+            error={palettiersError}
+            violations={activeViolations}
+            onCreateNew={openCreateWizard}
+            onEdit={openEditWizard}
+            onDelete={openDeleteDialog}
+          />
         </Container>
       </Box>
       <Footer />
 
-      <Snackbar
-        open={!!successMessage}
-        autoHideDuration={4000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity="success"
-          sx={{ width: "100%" }}
-        >
-          {successMessage}
-        </Alert>
-      </Snackbar>
+      {/* Create/Edit Wizard Dialog */}
+      <Dialog open={wizardOpen} onClose={closeWizard} maxWidth="sm" fullWidth>
+        <DialogTitle>
+          {editingPalettier ? "Edit Palettier" : "Create New Palettier"}
+          <IconButton
+            aria-label="close"
+            onClick={closeWizard}
+            sx={{ position: "absolute", right: 8, top: 8 }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          <Box sx={{ pt: 1 }}>
+            <StepWizard
+              steps={wizardSteps}
+              activeStep={activeStep}
+              onNext={handleNext}
+              onBack={handleBack}
+              onConfirm={handleConfirm}
+              isSubmitting={isSubmitting}
+              confirmLabel={editingPalettier ? "Save Changes" : "Confirm"}
+              submittingLabel={editingPalettier ? "Updating..." : "Creating..."}
+            />
+          </Box>
+        </DialogContent>
+      </Dialog>
 
-      <Snackbar
-        open={!!error && palettierTypes.length > 0}
-        autoHideDuration={6000}
-        onClose={handleCloseError}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert
-          onClose={handleCloseError}
-          severity="error"
-          sx={{ width: "100%" }}
-        >
-          {error}
-        </Alert>
-      </Snackbar>
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={!!deleteTarget} onClose={closeDeleteDialog}>
+        <DialogTitle>Delete Palettier</DialogTitle>
+        <DialogContent>
+          {deleteTarget && (
+            <Typography>
+              {deleteHasPalettes
+                ? `This palettier contains ${String(deleteTargetCountData.paletteCount)} palette${deleteTargetCountData.paletteCount !== 1 ? "s" : ""} in ${String(deleteTargetCountData.occupiedPositions)} position${deleteTargetCountData.occupiedPositions !== 1 ? "s" : ""}. You must remove all palettes before deleting this palettier.`
+                : `Are you sure you want to delete "${deleteTarget.name}"? This action cannot be undone.`}
+            </Typography>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeDeleteDialog} color="secondary">
+            Cancel
+          </Button>
+          <Button
+            onClick={() => void handleDelete()}
+            color="error"
+            variant="contained"
+            disabled={!!deleteHasPalettes || deleteMutation.isPending}
+          >
+            {deleteMutation.isPending ? "Deleting..." : "Delete"}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

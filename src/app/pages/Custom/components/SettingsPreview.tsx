@@ -19,9 +19,9 @@ const SettingsPreview: FC<SettingsPreviewProps> = ({ values }) => (
         }}
       >
         <Box display="flex" alignItems="center" gap={2}>
-          {values.logoUrl ? (
+          {values.brandingLogoUrl ? (
             <Avatar
-              src={values.logoUrl}
+              src={values.brandingLogoUrl}
               variant="rounded"
               sx={{ width: 40, height: 40, bgcolor: "white" }}
             />
@@ -31,7 +31,7 @@ const SettingsPreview: FC<SettingsPreviewProps> = ({ values }) => (
             </Avatar>
           )}
           <Typography variant="h6" fontWeight={700}>
-            {values.companyName || "Your Company"}
+            {values.name || "Your Company"}
           </Typography>
         </Box>
       </Box>

@@ -15,7 +15,7 @@ import { Link as RouterLink, useLocation } from "react-router-dom";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { useCompanySettings } from "../../context/CompanySettingsContext";
 
-const setupRoutes = ["/custom", "/palettier", "/rules", "/product", "/palette"];
+const setupRoutes = ["/custom", "/palettier", "/rules", "/product", "/stock"];
 
 const Header: React.FC = () => {
   const location = useLocation();
@@ -24,7 +24,6 @@ const Header: React.FC = () => {
   const { settings } = useCompanySettings();
 
   const isSetupActive = setupRoutes.includes(location.pathname);
-  const isSellingActive = location.pathname === "/selling";
 
   const handleSetupMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
     setSetupAnchorEl(event.currentTarget);
@@ -34,7 +33,40 @@ const Header: React.FC = () => {
     setSetupAnchorEl(null);
   };
 
-  const navButtonStyles = (isActive: boolean) => ({
+  const primaryNavStyles = (isActive: boolean) => ({
+    ml: 1,
+    px: 2,
+    fontWeight: 600,
+    position: "relative",
+    color: isActive ? "secondary.main" : "text.primary",
+    bgcolor: isActive
+      ? (theme: { palette: { secondary: { main: string } } }) =>
+          alpha(theme.palette.secondary.main, 0.1)
+      : "transparent",
+    borderRadius: 2,
+    "&::after": {
+      content: '""',
+      position: "absolute",
+      bottom: 4,
+      left: "50%",
+      transform: "translateX(-50%)",
+      width: isActive ? "80%" : "0%",
+      height: 2,
+      bgcolor: "secondary.main",
+      borderRadius: 1,
+      transition: "width 0.2s ease-in-out",
+    },
+    "&:hover": {
+      color: "secondary.main",
+      bgcolor: (theme: { palette: { secondary: { main: string } } }) =>
+        alpha(theme.palette.secondary.main, 0.08),
+      "&::after": {
+        width: "80%",
+      },
+    },
+  });
+
+  const setupButtonStyles = (isActive: boolean) => ({
     ml: 2,
     fontWeight: 600,
     position: "relative",
@@ -102,16 +134,36 @@ const Header: React.FC = () => {
 
         <Button
           component={RouterLink}
-          to="/selling"
+          to="/"
           color="secondary"
-          sx={navButtonStyles(isSellingActive)}
+          sx={primaryNavStyles(
+            location.pathname === "/" || location.pathname === "/home"
+          )}
         >
-          Sell
+          Dashboard
+        </Button>
+
+        <Button
+          component={RouterLink}
+          to="/intake"
+          color="secondary"
+          sx={primaryNavStyles(location.pathname === "/intake")}
+        >
+          Intake
+        </Button>
+
+        <Button
+          component={RouterLink}
+          to="/pick"
+          color="secondary"
+          sx={primaryNavStyles(location.pathname === "/pick")}
+        >
+          Pick
         </Button>
 
         <Button
           color="secondary"
-          sx={navButtonStyles(isSetupActive)}
+          sx={setupButtonStyles(isSetupActive)}
           onClick={handleSetupMenuOpen}
           endIcon={
             <KeyboardArrowDownIcon
@@ -236,9 +288,9 @@ const Header: React.FC = () => {
 
           <MenuItem
             component={RouterLink}
-            to="/palette"
+            to="/stock"
             onClick={handleSetupMenuClose}
-            selected={location.pathname === "/palette"}
+            selected={location.pathname === "/stock"}
           >
             <Box
               component="span"
@@ -247,13 +299,13 @@ const Header: React.FC = () => {
                 height: 6,
                 borderRadius: "50%",
                 bgcolor:
-                  location.pathname === "/palette"
+                  location.pathname === "/stock"
                     ? "secondary.main"
                     : "transparent",
                 mr: 1.5,
               }}
             />
-            Palettes
+            Stock
           </MenuItem>
         </Menu>
 
