@@ -2,10 +2,12 @@ import { useState } from "react";
 import icon from "/icon.png";
 import Button from "@mui/material/Button";
 import "./App.css";
+import { ROUTES, router } from './router';
+import { RouterProvider } from 'react-router-dom';
 
 function App() {
   const [count, setCount] = useState(0);
-
+  return <RouterProvider router={router} />;
   return (
     <>
       <div>

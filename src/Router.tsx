@@ -4,11 +4,13 @@ import App from "./App";
 import SellingPage from "./app/pages/SellingPage";
 import HomePage from "./app/pages/HomePage";
 import SetupPage from "./app/pages/SetupPage";
+import { SignIn } from "./pages/SignIn";
 
 const Router: React.FC = () => (
   <BrowserRouter>
     <Routes>
       <Route path="/" element={<HomePage />} />
+      <Route path="/signin" element={<SignIn />} />
       <Route path="/app" element={<App />} />
       <Route path="/home" element={<HomePage />} />
       <Route path="/selling" element={<SellingPage />} />
