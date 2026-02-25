@@ -15,7 +15,6 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { CompanySettingsProvider } from "./app/context/CompanySettingsContext";
 import { queryClient } from "./queryClient";
-import { AuthProvider } from "./app/context/AuthContext";
 import ErrorBoundary from "./app/components/ui/ErrorBoundary";
 import SnackbarProvider from "./app/components/ui/SnackbarProvider";
 import "@fontsource/roboto/300.css";
@@ -38,13 +37,11 @@ createRoot(rootElement).render(
         <CssBaseline />
         <CompanySettingsProvider>
           <QueryClientProvider client={queryClient}>
-            <AuthProvider>
-              <SnackbarProvider>
-                <ErrorBoundary>
-                  <Router />
-                </ErrorBoundary>
-              </SnackbarProvider>
-            </AuthProvider>
+            <SnackbarProvider>
+              <ErrorBoundary>
+                <Router />
+              </ErrorBoundary>
+            </SnackbarProvider>
             <ReactQueryDevtools initialIsOpen={false} />
           </QueryClientProvider>
         </CompanySettingsProvider>
