@@ -1,30 +1,30 @@
 export type RegisterResponse = {
-    token: string;
-    qrCode: string;
-}
+  token: string;
+  qrCode: string;
+};
 
 export type RegistrerRequestParams = {
-    email: string;
-    password: string;
-    code: string;
-}
+  email: string;
+  password: string;
+  code: string;
+};
 
 export type LoginRequestParams = {
-    email: string;
-    password: string;
-    code: string;
-}
+  email: string;
+  password: string;
+  code: string;
+};
 
 export type LoginResponse = {
-    user: any;
-    token: string;
-}
+  user: any;
+  token: string;
+};
 
 export type TwoFactorAuthRequestParams = {
-    code: string;
-}
+  code: string;
+};
 
 export type TwoFactorAuthResponse = {
-    token: string;
-    user: any;
-}
+  token: string;
+  user: any;
+};

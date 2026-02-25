@@ -45,7 +45,10 @@ const OnboardingReviewStep: FC<OnboardingReviewStepProps> = ({ products }) => {
                     : "\u2014"}
                 </TableCell>
                 <TableCell align="right">
-                  {product.quantity}{product.unitOfMeasureName ? ` ${product.unitOfMeasureName}` : ""}
+                  {product.quantity}
+                  {product.unitOfMeasureName
+                    ? ` ${product.unitOfMeasureName}`
+                    : ""}
                 </TableCell>
               </TableRow>
             ))}

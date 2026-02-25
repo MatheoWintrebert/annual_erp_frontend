@@ -292,13 +292,17 @@ describe("StockPage", () => {
 
     const rowsAfterAsc = screen.getAllByRole("row");
     // First data row (index 1) should be Cold Storage A (alphabetically first)
-    expect(within(rowsAfterAsc[1]).getByText("Cold Storage A")).toBeInTheDocument();
+    expect(
+      within(rowsAfterAsc[1]).getByText("Cold Storage A")
+    ).toBeInTheDocument();
 
     // Click again for descending
     await user.click(palettierSortButton);
 
     const rowsAfterDesc = screen.getAllByRole("row");
-    expect(within(rowsAfterDesc[1]).getByText("Dry Storage B")).toBeInTheDocument();
+    expect(
+      within(rowsAfterDesc[1]).getByText("Dry Storage B")
+    ).toBeInTheDocument();
   });
 
   it("sort by product name works", async () => {
@@ -310,7 +314,9 @@ describe("StockPage", () => {
 
     const rowsAfterAsc = screen.getAllByRole("row");
     // Organic Flour comes before Whole Milk alphabetically
-    expect(within(rowsAfterAsc[1]).getByText("Organic Flour")).toBeInTheDocument();
+    expect(
+      within(rowsAfterAsc[1]).getByText("Organic Flour")
+    ).toBeInTheDocument();
     expect(within(rowsAfterAsc[2]).getByText("Whole Milk")).toBeInTheDocument();
   });
 
@@ -332,7 +338,9 @@ describe("StockPage", () => {
 
     // Default is receivedAt DESC, so Cold Storage A (Feb 10) should be first
     const defaultRows = screen.getAllByRole("row");
-    expect(within(defaultRows[1]).getByText("Cold Storage A")).toBeInTheDocument();
+    expect(
+      within(defaultRows[1]).getByText("Cold Storage A")
+    ).toBeInTheDocument();
 
     // Click "Received" to toggle to ascending (already active field, so toggles direction)
     await user.click(screen.getByText("Received"));
@@ -737,9 +745,7 @@ describe("StockPage", () => {
     await user.type(quantityInput, "40");
 
     // Click "Add to palette"
-    await user.click(
-      screen.getByRole("button", { name: /add to palette/i })
-    );
+    await user.click(screen.getByRole("button", { name: /add to palette/i }));
 
     // Product should appear in the list
     expect(screen.getByText(/WM-001 — Whole Milk/)).toBeInTheDocument();
@@ -763,9 +769,7 @@ describe("StockPage", () => {
     await user.click(option);
     const quantityInput = screen.getByLabelText("Quantity");
     await user.type(quantityInput, "25");
-    await user.click(
-      screen.getByRole("button", { name: /add to palette/i })
-    );
+    await user.click(screen.getByRole("button", { name: /add to palette/i }));
 
     // Go to review step
     await user.click(screen.getByRole("button", { name: /next/i }));
@@ -794,18 +798,14 @@ describe("StockPage", () => {
     await user.click(option);
     const quantityInput = screen.getByLabelText("Quantity");
     await user.type(quantityInput, "10");
-    await user.click(
-      screen.getByRole("button", { name: /add to palette/i })
-    );
+    await user.click(screen.getByRole("button", { name: /add to palette/i }));
 
     // Step 1 → Step 2
     await user.click(screen.getByRole("button", { name: /next/i }));
     // Step 2 → Step 3
     await user.click(screen.getByRole("button", { name: /next/i }));
 
-    expect(
-      screen.getByText("Specify current placement")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Specify current placement")).toBeInTheDocument();
     expect(screen.getByLabelText("Palettier")).toBeInTheDocument();
     expect(screen.getByLabelText("Position X")).toBeInTheDocument();
     expect(screen.getByLabelText("Position Y")).toBeInTheDocument();
@@ -832,9 +832,7 @@ describe("StockPage", () => {
     await user.click(option);
     const quantityInput = screen.getByLabelText("Quantity");
     await user.type(quantityInput, "20");
-    await user.click(
-      screen.getByRole("button", { name: /add to palette/i })
-    );
+    await user.click(screen.getByRole("button", { name: /add to palette/i }));
 
     // Navigate to placement step
     await user.click(screen.getByRole("button", { name: /next/i }));
@@ -849,9 +847,7 @@ describe("StockPage", () => {
     await user.click(palettierOption);
 
     // Confirm
-    await user.click(
-      screen.getByRole("button", { name: /register palette/i })
-    );
+    await user.click(screen.getByRole("button", { name: /register palette/i }));
 
     await waitFor(() => {
       expect(
@@ -883,9 +879,7 @@ describe("StockPage", () => {
     await user.click(option);
     const quantityInput = screen.getByLabelText("Quantity");
     await user.type(quantityInput, "20");
-    await user.click(
-      screen.getByRole("button", { name: /add to palette/i })
-    );
+    await user.click(screen.getByRole("button", { name: /add to palette/i }));
     await user.click(screen.getByRole("button", { name: /next/i }));
     await user.click(screen.getByRole("button", { name: /next/i }));
 
@@ -896,9 +890,7 @@ describe("StockPage", () => {
     });
     await user.click(palettierOption);
 
-    await user.click(
-      screen.getByRole("button", { name: /register palette/i })
-    );
+    await user.click(screen.getByRole("button", { name: /register palette/i }));
 
     await waitFor(() => {
       expect(
@@ -907,9 +899,7 @@ describe("StockPage", () => {
     });
 
     // Click "Add Another"
-    await user.click(
-      screen.getByRole("button", { name: /add another/i })
-    );
+    await user.click(screen.getByRole("button", { name: /add another/i }));
 
     // Should be back on Step 1
     expect(
@@ -935,9 +925,7 @@ describe("StockPage", () => {
     await user.click(option);
     const quantityInput = screen.getByLabelText("Quantity");
     await user.type(quantityInput, "20");
-    await user.click(
-      screen.getByRole("button", { name: /add to palette/i })
-    );
+    await user.click(screen.getByRole("button", { name: /add to palette/i }));
     await user.click(screen.getByRole("button", { name: /next/i }));
     await user.click(screen.getByRole("button", { name: /next/i }));
 
@@ -948,9 +936,7 @@ describe("StockPage", () => {
     });
     await user.click(palettierOption);
 
-    await user.click(
-      screen.getByRole("button", { name: /register palette/i })
-    );
+    await user.click(screen.getByRole("button", { name: /register palette/i }));
 
     await waitFor(() => {
       expect(
@@ -959,9 +945,7 @@ describe("StockPage", () => {
     });
 
     // Click "Back to Stock"
-    await user.click(
-      screen.getByRole("button", { name: /back to stock/i })
-    );
+    await user.click(screen.getByRole("button", { name: /back to stock/i }));
 
     // Should be back on stock list
     expect(screen.getByText("Stock Overview")).toBeInTheDocument();
@@ -977,7 +961,12 @@ describe("StockPage", () => {
   });
 
   it("violation summary shows count when violations exist", () => {
-    violationsOverride = { data: mockViolations, isPending: false, isError: false, error: null };
+    violationsOverride = {
+      data: mockViolations,
+      isPending: false,
+      isError: false,
+      error: null,
+    };
     renderPage();
     expect(
       screen.getByText("1 palette(s) with 1 rule violation(s)")
@@ -985,21 +974,29 @@ describe("StockPage", () => {
   });
 
   it("violation chip shown on violated palette row", () => {
-    violationsOverride = { data: mockViolations, isPending: false, isError: false, error: null };
+    violationsOverride = {
+      data: mockViolations,
+      isPending: false,
+      isError: false,
+      error: null,
+    };
     renderPage();
     expect(screen.getByText("1 violation(s)")).toBeInTheDocument();
   });
 
   it("clicking violation chip opens ViolationAlertDialog with details", async () => {
     const user = userEvent.setup();
-    violationsOverride = { data: mockViolations, isPending: false, isError: false, error: null };
+    violationsOverride = {
+      data: mockViolations,
+      isPending: false,
+      isError: false,
+      error: null,
+    };
     renderPage();
 
     await user.click(screen.getByText("1 violation(s)"));
 
-    expect(
-      screen.getByText("Rule Violations Detected")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Rule Violations Detected")).toBeInTheDocument();
     expect(screen.getByText("Ground Only")).toBeInTheDocument();
     expect(
       screen.getByText("Palette must be on ground level")
@@ -1008,13 +1005,20 @@ describe("StockPage", () => {
 
   it("ViolationAlertDialog shows calm info alert and corrective action message", async () => {
     const user = userEvent.setup();
-    violationsOverride = { data: mockViolations, isPending: false, isError: false, error: null };
+    violationsOverride = {
+      data: mockViolations,
+      isPending: false,
+      isError: false,
+      error: null,
+    };
     renderPage();
 
     await user.click(screen.getByText("1 violation(s)"));
 
     expect(
-      screen.getByText(/Consider re-intaking these palettes for compliant placement/)
+      screen.getByText(
+        /Consider re-intaking these palettes for compliant placement/
+      )
     ).toBeInTheDocument();
   });
 
@@ -1025,7 +1029,12 @@ describe("StockPage", () => {
 
   it('"Violations only" filter shows only violated palettes', async () => {
     const user = userEvent.setup();
-    violationsOverride = { data: mockViolations, isPending: false, isError: false, error: null };
+    violationsOverride = {
+      data: mockViolations,
+      isPending: false,
+      isError: false,
+      error: null,
+    };
     renderPage();
 
     // Both palettes visible initially
@@ -1042,7 +1051,12 @@ describe("StockPage", () => {
 
   it('"Clear filters" also clears violations filter', async () => {
     const user = userEvent.setup();
-    violationsOverride = { data: mockViolations, isPending: false, isError: false, error: null };
+    violationsOverride = {
+      data: mockViolations,
+      isPending: false,
+      isError: false,
+      error: null,
+    };
     renderPage();
 
     // Enable violations filter
@@ -1052,9 +1066,7 @@ describe("StockPage", () => {
     expect(screen.queryByText("Organic Flour")).not.toBeInTheDocument();
 
     // Click Clear filters
-    await user.click(
-      screen.getByRole("button", { name: /clear filters/i })
-    );
+    await user.click(screen.getByRole("button", { name: /clear filters/i }));
 
     // Both palettes visible again
     await waitFor(() => {
@@ -1077,7 +1089,12 @@ describe("StockPage", () => {
   });
 
   it("violation indicator not shown on non-violated palette rows", () => {
-    violationsOverride = { data: mockViolations, isPending: false, isError: false, error: null };
+    violationsOverride = {
+      data: mockViolations,
+      isPending: false,
+      isError: false,
+      error: null,
+    };
     renderPage();
 
     // Only palette 1 has violations — only 1 chip in the table
@@ -1113,9 +1130,7 @@ describe("StockPage", () => {
     await user.click(option);
     const quantityInput = screen.getByLabelText("Quantity");
     await user.type(quantityInput, "10");
-    await user.click(
-      screen.getByRole("button", { name: /add to palette/i })
-    );
+    await user.click(screen.getByRole("button", { name: /add to palette/i }));
 
     // Navigate to placement step
     await user.click(screen.getByRole("button", { name: /next/i }));
@@ -1131,9 +1146,7 @@ describe("StockPage", () => {
 
     // Violation warning should appear
     await waitFor(() => {
-      expect(
-        screen.getByText("Placement rule warnings")
-      ).toBeInTheDocument();
+      expect(screen.getByText("Placement rule warnings")).toBeInTheDocument();
     });
     expect(screen.getByText("Cold Storage Required:")).toBeInTheDocument();
     expect(
@@ -1141,8 +1154,6 @@ describe("StockPage", () => {
         "Product requires cold storage but palettier is dry storage"
       )
     ).toBeInTheDocument();
-    expect(
-      screen.getByText(/advisory only/)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/advisory only/)).toBeInTheDocument();
   });
 });

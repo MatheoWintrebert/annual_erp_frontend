@@ -1,9 +1,6 @@
 import { Box, CircularProgress, Container, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid";
-import {
-  Inventory2Outlined,
-  LocalShipping,
-} from "@mui/icons-material";
+import { Inventory2Outlined, LocalShipping } from "@mui/icons-material";
 import { type FC, useEffect } from "react";
 import Header from "../../components/ui/Header";
 import Footer from "../../components/ui/Footer";

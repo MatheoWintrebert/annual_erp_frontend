@@ -28,7 +28,12 @@ const StockPage: FC = () => {
   const [isOnboarding, setIsOnboarding] = useState(false);
   const [showViolationsOnly, setShowViolationsOnly] = useState(false);
 
-  const { data: palettes = [], isPending, isError, error } = useGetPalettes(filterParams);
+  const {
+    data: palettes = [],
+    isPending,
+    isError,
+    error,
+  } = useGetPalettes(filterParams);
   const {
     data: violations = [],
     isError: isViolationsError,
@@ -56,7 +61,10 @@ const StockPage: FC = () => {
   );
 
   const rows = flattenPalettes(palettes);
-  const violationsMap = useMemo(() => buildViolationsMap(violations), [violations]);
+  const violationsMap = useMemo(
+    () => buildViolationsMap(violations),
+    [violations]
+  );
   const violatedPaletteCount = violationsMap.size;
   const totalViolationCount = violations.length;
 
@@ -65,11 +73,13 @@ const StockPage: FC = () => {
       showViolationsOnly
         ? rows.filter((row) => violationsMap.has(row.paletteId))
         : rows,
-    [rows, showViolationsOnly, violationsMap],
+    [rows, showViolationsOnly, violationsMap]
   );
 
   const hasActiveFilters =
-    filterParams.palettierId != null || (filterParams.search != null && filterParams.search !== "") || showViolationsOnly;
+    filterParams.palettierId != null ||
+    (filterParams.search != null && filterParams.search !== "") ||
+    showViolationsOnly;
 
   if (isOnboarding) {
     return (
@@ -110,11 +120,7 @@ const StockPage: FC = () => {
             mt={4}
             mb={1}
           >
-            <Typography
-              variant="h3"
-              color="text.primary"
-              fontWeight={600}
-            >
+            <Typography variant="h3" color="text.primary" fontWeight={600}>
               Stock Overview
             </Typography>
             {(palettes.length > 0 || hasActiveFilters) && (
@@ -131,7 +137,10 @@ const StockPage: FC = () => {
           </Box>
 
           <Box mb={3}>
-            <StockFilters onFilterChange={handleFilterChange} onViolationsFilterChange={setShowViolationsOnly} />
+            <StockFilters
+              onFilterChange={handleFilterChange}
+              onViolationsFilterChange={setShowViolationsOnly}
+            />
           </Box>
 
           {violatedPaletteCount > 0 && (

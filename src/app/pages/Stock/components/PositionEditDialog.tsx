@@ -190,7 +190,9 @@ const PositionEditDialog: FC<PositionEditDialogProps> = ({
           variant="contained"
           disabled={updatePosition.isPending}
           startIcon={
-            updatePosition.isPending ? <CircularProgress size={20} /> : undefined
+            updatePosition.isPending ? (
+              <CircularProgress size={20} />
+            ) : undefined
           }
           onClick={() => void handleSubmit(onSubmit)()}
         >

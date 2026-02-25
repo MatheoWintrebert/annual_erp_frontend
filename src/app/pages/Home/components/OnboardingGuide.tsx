@@ -8,10 +8,7 @@ import {
   ListItemText,
   Typography,
 } from "@mui/material";
-import {
-  CheckCircleOutline,
-  RadioButtonUnchecked,
-} from "@mui/icons-material";
+import { CheckCircleOutline, RadioButtonUnchecked } from "@mui/icons-material";
 import { Link as RouterLink } from "react-router-dom";
 import type { FC } from "react";
 import type { SetupProgress } from "../types";
@@ -21,7 +18,11 @@ interface OnboardingGuideProps {
 }
 
 const setupItems = [
-  { label: "Create Palettiers", path: "/palettiers", key: "hasPalettiers" as const },
+  {
+    label: "Create Palettiers",
+    path: "/palettiers",
+    key: "hasPalettiers" as const,
+  },
   { label: "Add Products", path: "/products", key: "hasProducts" as const },
   { label: "Define Rules", path: "/rules", key: "hasRules" as const },
   { label: "Register Stock", path: "/intake", key: "hasStock" as const },

@@ -8,7 +8,10 @@ import {
   Typography,
 } from "@mui/material";
 import type { FC } from "react";
-import type { OnboardingProductEntry, PlacementViolationWarning } from "../types";
+import type {
+  OnboardingProductEntry,
+  PlacementViolationWarning,
+} from "../types";
 import { useCheckPlacementViolations, useGetPalettiers } from "../api";
 import type { PalettierOption } from "../api";
 

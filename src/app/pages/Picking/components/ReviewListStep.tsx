@@ -59,9 +59,7 @@ const ReviewListStep: FC<ReviewListStepProps> = ({ items, stockMap }) => {
                     )}
                   </TableCell>
                   <TableCell>{item.product?.reference}</TableCell>
-                  <TableCell align="right">
-                    {item.requestedQuantity}
-                  </TableCell>
+                  <TableCell align="right">{item.requestedQuantity}</TableCell>
                   <TableCell align="right">
                     {stock != null ? stock.availableQuantity : "—"}
                   </TableCell>
@@ -86,7 +84,7 @@ const ReviewListStep: FC<ReviewListStepProps> = ({ items, stockMap }) => {
           item.product &&
           stockMap.get(item.product.id) != null &&
           item.requestedQuantity >
-            (stockMap.get(item.product.id)?.availableQuantity ?? 0),
+            (stockMap.get(item.product.id)?.availableQuantity ?? 0)
       ) && (
         <Alert severity="warning" sx={{ mt: 2 }}>
           Some products have insufficient stock. The picking list will be

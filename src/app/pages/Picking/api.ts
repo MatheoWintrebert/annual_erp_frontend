@@ -1,4 +1,9 @@
-import { useQuery, useQueries, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useQuery,
+  useQueries,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { ApiError } from "../../hooks/useApiError";
 import { API_BASE } from "../../api-config";
 import type {
@@ -39,13 +44,13 @@ export const useSearchProducts = (search: string) =>
   });
 
 const fetchAvailableStock = async (
-  productIds: number[],
+  productIds: number[]
 ): Promise<AvailableStockItem[]> => {
   if (productIds.length === 0) return [];
   const params = new URLSearchParams();
   params.set("productIds", productIds.join(","));
   const response = await fetch(
-    `${API_BASE}/picking-lists/available-stock?${params.toString()}`,
+    `${API_BASE}/picking-lists/available-stock?${params.toString()}`
   );
   if (!response.ok) {
     throw new ApiError(response);
@@ -75,7 +80,7 @@ export const useGetAvailableStock = (productIds: number[]) => {
 };
 
 const createPickingList = async (
-  payload: CreatePickingListPayload,
+  payload: CreatePickingListPayload
 ): Promise<PickingListResponse> => {
   const response = await fetch(`${API_BASE}/picking-lists`, {
     method: "POST",
@@ -100,11 +105,11 @@ export const useCreatePickingList = () => {
 };
 
 const generatePickRoute = async (
-  pickingListId: number,
+  pickingListId: number
 ): Promise<PickRouteItem[]> => {
   const response = await fetch(
     `${API_BASE}/picking-lists/${String(pickingListId)}/generate-route`,
-    { method: "POST" },
+    { method: "POST" }
   );
   if (!response.ok) {
     throw new ApiError(response);
@@ -125,7 +130,7 @@ export const useGeneratePickRoute = () => {
 // Complete picking list (deduct stock)
 const completePickingList = async (
   pickingListId: number,
-  payload: CompletePickingListPayload,
+  payload: CompletePickingListPayload
 ): Promise<PickingCompletionResponse> => {
   const response = await fetch(
     `${API_BASE}/picking-lists/${String(pickingListId)}/complete`,
@@ -133,7 +138,7 @@ const completePickingList = async (
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
-    },
+    }
   );
   if (!response.ok) {
     throw new ApiError(response);
@@ -160,11 +165,11 @@ export const useCompletePickingList = () => {
 
 // Cancel picking list (no stock deduction)
 const cancelPickingList = async (
-  pickingListId: number,
+  pickingListId: number
 ): Promise<CancelPickingListResponse> => {
   const response = await fetch(
     `${API_BASE}/picking-lists/${String(pickingListId)}/cancel`,
-    { method: "POST" },
+    { method: "POST" }
   );
   if (!response.ok) {
     throw new ApiError(response);

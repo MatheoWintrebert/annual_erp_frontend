@@ -13,14 +13,14 @@ import type { PalettierOption } from "../api";
 import { useGetPalettiers } from "../api";
 
 interface StockFiltersProps {
-  onFilterChange: (params: {
-    palettierId?: number;
-    search?: string;
-  }) => void;
+  onFilterChange: (params: { palettierId?: number; search?: string }) => void;
   onViolationsFilterChange: (showViolationsOnly: boolean) => void;
 }
 
-const StockFilters: FC<StockFiltersProps> = ({ onFilterChange, onViolationsFilterChange }) => {
+const StockFilters: FC<StockFiltersProps> = ({
+  onFilterChange,
+  onViolationsFilterChange,
+}) => {
   const { data: palettiers = [] } = useGetPalettiers();
 
   const [selectedPalettier, setSelectedPalettier] =
@@ -51,7 +51,8 @@ const StockFilters: FC<StockFiltersProps> = ({ onFilterChange, onViolationsFilte
     });
   }, [selectedPalettier, debouncedSearch, onFilterChange]);
 
-  const hasActiveFilters = selectedPalettier !== null || searchText !== "" || showViolationsOnly;
+  const hasActiveFilters =
+    selectedPalettier !== null || searchText !== "" || showViolationsOnly;
 
   const handleClearFilters = useCallback(() => {
     setSelectedPalettier(null);

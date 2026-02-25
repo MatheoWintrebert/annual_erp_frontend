@@ -425,90 +425,107 @@ describe("ProductPage", () => {
     });
   });
 
-  it("opens inline category creation dialog and creates a category", { timeout: 15000 }, async () => {
-    const user = userEvent.setup();
-    renderPage();
+  it(
+    "opens inline category creation dialog and creates a category",
+    { timeout: 15000 },
+    async () => {
+      const user = userEvent.setup();
+      renderPage();
 
-    await user.click(
-      screen.getByRole("button", { name: /create new product/i })
-    );
+      await user.click(
+        screen.getByRole("button", { name: /create new product/i })
+      );
 
-    await user.click(screen.getByRole("button", { name: /add new category/i }));
+      await user.click(
+        screen.getByRole("button", { name: /add new category/i })
+      );
 
-    expect(screen.getByText("Add New Category")).toBeInTheDocument();
+      expect(screen.getByText("Add New Category")).toBeInTheDocument();
 
-    await user.type(screen.getByLabelText("Category Name"), "Frozen Goods");
-    await user.click(screen.getByRole("button", { name: "Create" }));
+      await user.type(screen.getByLabelText("Category Name"), "Frozen Goods");
+      await user.click(screen.getByRole("button", { name: "Create" }));
 
-    expect(mockCreateCategoryMutateAsync).toHaveBeenCalledWith({
-      name: "Frozen Goods",
-    });
-  });
+      expect(mockCreateCategoryMutateAsync).toHaveBeenCalledWith({
+        name: "Frozen Goods",
+      });
+    }
+  );
 
-  it("opens inline unit creation dialog and creates a unit", { timeout: 15000 }, async () => {
-    const user = userEvent.setup();
-    renderPage();
+  it(
+    "opens inline unit creation dialog and creates a unit",
+    { timeout: 15000 },
+    async () => {
+      const user = userEvent.setup();
+      renderPage();
 
-    await user.click(
-      screen.getByRole("button", { name: /create new product/i })
-    );
+      await user.click(
+        screen.getByRole("button", { name: /create new product/i })
+      );
 
-    await user.click(
-      screen.getByRole("button", { name: /add new unit of measure/i })
-    );
+      await user.click(
+        screen.getByRole("button", { name: /add new unit of measure/i })
+      );
 
-    expect(screen.getByText("Add New Unit of Measure")).toBeInTheDocument();
+      expect(screen.getByText("Add New Unit of Measure")).toBeInTheDocument();
 
-    await user.type(screen.getByLabelText("Unit Name"), "Gram");
-    await user.type(screen.getByLabelText("Abbreviation"), "g");
-    await user.click(screen.getByRole("button", { name: "Create" }));
+      await user.type(screen.getByLabelText("Unit Name"), "Gram");
+      await user.type(screen.getByLabelText("Abbreviation"), "g");
+      await user.click(screen.getByRole("button", { name: "Create" }));
 
-    expect(mockCreateUnitMutateAsync).toHaveBeenCalledWith({
-      name: "Gram",
-      abbreviation: "g",
-    });
-  });
+      expect(mockCreateUnitMutateAsync).toHaveBeenCalledWith({
+        name: "Gram",
+        abbreviation: "g",
+      });
+    }
+  );
 
-  it("calls create mutation with correct payload when wizard is completed", { timeout: 15000 }, async () => {
-    const user = userEvent.setup();
-    renderPage();
+  it(
+    "calls create mutation with correct payload when wizard is completed",
+    { timeout: 15000 },
+    async () => {
+      const user = userEvent.setup();
+      renderPage();
 
-    await user.click(
-      screen.getByRole("button", { name: /create new product/i })
-    );
+      await user.click(
+        screen.getByRole("button", { name: /create new product/i })
+      );
 
-    const dialog = screen.getByRole("dialog");
+      const dialog = screen.getByRole("dialog");
 
-    await user.type(within(dialog).getByLabelText("Reference Code"), "REF-NEW");
-    await user.type(
-      within(dialog).getByLabelText("Product Name"),
-      "Test Product"
-    );
+      await user.type(
+        within(dialog).getByLabelText("Reference Code"),
+        "REF-NEW"
+      );
+      await user.type(
+        within(dialog).getByLabelText("Product Name"),
+        "Test Product"
+      );
 
-    const unitSelect = within(dialog).getByLabelText("Unit of Measure");
-    await user.click(unitSelect);
-    const unitOption = await screen.findByRole("option", {
-      name: "Kilogram (kg)",
-    });
-    await user.click(unitOption);
+      const unitSelect = within(dialog).getByLabelText("Unit of Measure");
+      await user.click(unitSelect);
+      const unitOption = await screen.findByRole("option", {
+        name: "Kilogram (kg)",
+      });
+      await user.click(unitOption);
 
-    await user.click(within(dialog).getByRole("button", { name: /next/i }));
+      await user.click(within(dialog).getByRole("button", { name: /next/i }));
 
-    const confirmButton = await within(dialog).findByRole("button", {
-      name: "Confirm",
-    });
-    await user.click(confirmButton);
+      const confirmButton = await within(dialog).findByRole("button", {
+        name: "Confirm",
+      });
+      await user.click(confirmButton);
 
-    expect(mockCreateMutateAsync).toHaveBeenCalledWith({
-      reference: "REF-NEW",
-      name: "Test Product",
-      unitOfMeasureId: 1,
-      categoryId: null,
-      minimumStock: null,
-      expiryAlertThreshold: null,
-      ruleIds: [],
-    });
-  });
+      expect(mockCreateMutateAsync).toHaveBeenCalledWith({
+        reference: "REF-NEW",
+        name: "Test Product",
+        unitOfMeasureId: 1,
+        categoryId: null,
+        minimumStock: null,
+        expiryAlertThreshold: null,
+        ruleIds: [],
+      });
+    }
+  );
 
   it("shows violation dialog when update returns violations", async () => {
     mockUpdateMutateAsync.mockResolvedValueOnce({

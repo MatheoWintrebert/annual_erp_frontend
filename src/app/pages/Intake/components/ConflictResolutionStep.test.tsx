@@ -205,7 +205,9 @@ describe("ConflictResolutionStep", () => {
     renderComponent(mockConflictResultWithNull);
 
     expect(
-      screen.getByText(/No palettier satisfies the rules for White Sugar.*enter position manually below/i)
+      screen.getByText(
+        /No palettier satisfies the rules for White Sugar.*enter position manually below/i
+      )
     ).toBeInTheDocument();
   });
 
@@ -216,18 +218,10 @@ describe("ConflictResolutionStep", () => {
     const toggles = screen.getAllByRole("checkbox");
     await user.click(toggles[0]);
 
-    expect(
-      screen.getByLabelText("Palettier for Group 1")
-    ).toBeInTheDocument();
-    expect(
-      screen.getByLabelText("Position X (Group 1)")
-    ).toBeInTheDocument();
-    expect(
-      screen.getByLabelText("Position Y (Group 1)")
-    ).toBeInTheDocument();
-    expect(
-      screen.getByLabelText("Position Z (Group 1)")
-    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Palettier for Group 1")).toBeInTheDocument();
+    expect(screen.getByLabelText("Position X (Group 1)")).toBeInTheDocument();
+    expect(screen.getByLabelText("Position Y (Group 1)")).toBeInTheDocument();
+    expect(screen.getByLabelText("Position Z (Group 1)")).toBeInTheDocument();
   });
 
   it("should have Confirm All Placements enabled when all groups use system recommendation", () => {

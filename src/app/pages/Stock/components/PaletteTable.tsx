@@ -74,7 +74,9 @@ const PaletteTable: FC<PaletteTableProps> = ({ rows, violationsMap }) => {
   const [sortField, setSortField] = useState<SortField>("receivedAt");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
   const [editPalette, setEditPalette] = useState<EditPaletteData | null>(null);
-  const [viewViolationsPaletteId, setViewViolationsPaletteId] = useState<number | null>(null);
+  const [viewViolationsPaletteId, setViewViolationsPaletteId] = useState<
+    number | null
+  >(null);
 
   const handleSort = (field: SortField) => {
     if (field === sortField) {
@@ -154,7 +156,11 @@ const PaletteTable: FC<PaletteTableProps> = ({ rows, violationsMap }) => {
                 >
                   <TableCell>{row.palettierName}</TableCell>
                   <TableCell>
-                    {formatPosition(row.positionX, row.positionY, row.positionZ)}
+                    {formatPosition(
+                      row.positionX,
+                      row.positionY,
+                      row.positionZ
+                    )}
                   </TableCell>
                   <TableCell>{row.productName || "\u2014"}</TableCell>
                   <TableCell>{row.productReference || "\u2014"}</TableCell>
@@ -192,7 +198,9 @@ const PaletteTable: FC<PaletteTableProps> = ({ rows, violationsMap }) => {
                           <EditIcon fontSize="small" />
                         </IconButton>
                         {(() => {
-                          const paletteViolations = violationsMap?.get(row.paletteId);
+                          const paletteViolations = violationsMap?.get(
+                            row.paletteId
+                          );
                           if (!paletteViolations) return null;
                           return (
                             <Chip

@@ -29,23 +29,23 @@ const OnboardingProductStep: FC<OnboardingProductStepProps> = ({
   showEmptyError = false,
 }) => {
   const [search, setSearch] = useState("");
-  const [selectedProduct, setSelectedProduct] =
-    useState<ProductOption | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<ProductOption | null>(
+    null
+  );
   const [lotReference, setLotReference] = useState("");
   const [manualLot, setManualLot] = useState(false);
   const [expiryDate, setExpiryDate] = useState("");
   const [quantity, setQuantity] = useState<number | "">("");
 
-  const { data: productsData, isLoading } =
-    useGetProductsForOnboarding(search);
+  const { data: productsData, isLoading } = useGetProductsForOnboarding(search);
   const { data: unitsData } = useGetUnitsOfMeasure();
   const productOptions = useMemo(
     () => productsData?.products ?? [],
-    [productsData?.products],
+    [productsData?.products]
   );
   const unitsOfMeasure = useMemo(
     () => unitsData?.unitsOfMeasure ?? [],
-    [unitsData?.unitsOfMeasure],
+    [unitsData?.unitsOfMeasure]
   );
 
   const resolvedUnitName = useMemo(() => {
@@ -103,7 +103,8 @@ const OnboardingProductStep: FC<OnboardingProductStepProps> = ({
     }
   };
 
-  const productError = addAttempted && !selectedProduct ? "Product is required" : "";
+  const productError =
+    addAttempted && !selectedProduct ? "Product is required" : "";
   const quantityError =
     addAttempted && (quantity === "" || quantity <= 0)
       ? "Quantity is required and must be greater than 0"
@@ -202,9 +203,7 @@ const OnboardingProductStep: FC<OnboardingProductStepProps> = ({
             label="Quantity"
             value={quantity}
             onChange={(e) => {
-              setQuantity(
-                e.target.value === "" ? "" : Number(e.target.value),
-              );
+              setQuantity(e.target.value === "" ? "" : Number(e.target.value));
             }}
             fullWidth
             error={!!quantityError}
@@ -250,7 +249,10 @@ const OnboardingProductStep: FC<OnboardingProductStepProps> = ({
                     {product.productReference} — {product.productName}
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
-                    {product.quantity}{product.unitOfMeasureName ? ` ${product.unitOfMeasureName}` : ""}
+                    {product.quantity}
+                    {product.unitOfMeasureName
+                      ? ` ${product.unitOfMeasureName}`
+                      : ""}
                   </Typography>
                 </Box>
                 <IconButton

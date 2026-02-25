@@ -153,7 +153,11 @@ const OnboardingWizard: FC<OnboardingWizardProps> = ({ onClose }) => {
       confirmLabel="Register Palette"
       submittingLabel="Registering..."
       {...(!canConfirm
-        ? { disableConfirm: true, disableConfirmReason: "Please select a palettier before registering" }
+        ? {
+            disableConfirm: true,
+            disableConfirmReason:
+              "Please select a palettier before registering",
+          }
         : {})}
     />
   );

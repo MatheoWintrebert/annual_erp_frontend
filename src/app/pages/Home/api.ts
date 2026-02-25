@@ -1,7 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { ApiError } from "../../hooks/useApiError";
 import { API_BASE } from "../../api-config";
-import type { DashboardAlertsResponse, DashboardSummaryResponse } from "./types";
+import type {
+  DashboardAlertsResponse,
+  DashboardSummaryResponse,
+} from "./types";
 
 const fetchDashboardAlerts = async (): Promise<DashboardAlertsResponse> => {
   const response = await fetch(`${API_BASE}/dashboard/alerts`);

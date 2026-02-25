@@ -20,10 +20,7 @@ const LowStockPanel: FC<LowStockPanelProps> = ({ alerts }) => {
       </Box>
 
       {alerts.length === 0 ? (
-        <Alert
-          severity="success"
-          icon={<CheckCircleOutlineIcon />}
-        >
+        <Alert severity="success" icon={<CheckCircleOutlineIcon />}>
           All stock levels healthy
         </Alert>
       ) : (

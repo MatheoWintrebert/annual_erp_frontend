@@ -121,7 +121,9 @@ const mockMultiRouteItems: PickRouteItem[] = [
 const mockCreateMutateAsync = vi.fn().mockResolvedValue({
   id: 1,
   status: "created",
-  items: [{ id: 1, productId: 1, productName: "Whole Milk", requestedQuantity: 20 }],
+  items: [
+    { id: 1, productId: 1, productName: "Whole Milk", requestedQuantity: 20 },
+  ],
   createdAt: "2026-02-14T10:00:00.000Z",
 });
 
@@ -186,8 +188,10 @@ const mockCancelPickingList = vi.fn().mockReturnValue({
 });
 
 vi.mock("./api", () => ({
-  useSearchProducts: (...args: unknown[]) => mockSearchProducts(...args) as unknown,
-  useGetAvailableStock: (...args: unknown[]) => mockGetAvailableStock(...args) as unknown,
+  useSearchProducts: (...args: unknown[]) =>
+    mockSearchProducts(...args) as unknown,
+  useGetAvailableStock: (...args: unknown[]) =>
+    mockGetAvailableStock(...args) as unknown,
   useCreatePickingList: () => mockCreatePickingList() as unknown,
   useGeneratePickRoute: () => mockGeneratePickRoute() as unknown,
   useCompletePickingList: () => mockCompletePickingList() as unknown,
@@ -208,7 +212,7 @@ const renderPage = () =>
           <Route path="/" element={<div>Home</div>} />
         </Routes>
       </MemoryRouter>
-    </QueryClientProvider>,
+    </QueryClientProvider>
   );
 
 async function navigateToReviewStep(user: ReturnType<typeof userEvent.setup>) {
@@ -223,7 +227,9 @@ async function navigateToReviewStep(user: ReturnType<typeof userEvent.setup>) {
   await user.click(screen.getByText("Next"));
 }
 
-async function navigateToPickRouteStep(user: ReturnType<typeof userEvent.setup>) {
+async function navigateToPickRouteStep(
+  user: ReturnType<typeof userEvent.setup>
+) {
   await navigateToReviewStep(user);
   // On review step, click "Next" to trigger create + generate route
   await user.click(screen.getByText("Next"));
@@ -263,7 +269,14 @@ describe("PickingPage", () => {
     mockCreateMutateAsync.mockResolvedValue({
       id: 1,
       status: "created",
-      items: [{ id: 1, productId: 1, productName: "Whole Milk", requestedQuantity: 20 }],
+      items: [
+        {
+          id: 1,
+          productId: 1,
+          productName: "Whole Milk",
+          requestedQuantity: 20,
+        },
+      ],
       createdAt: "2026-02-14T10:00:00.000Z",
     });
     mockGenerateRouteMutateAsync.mockResolvedValue(mockRouteItems);
@@ -320,17 +333,16 @@ describe("PickingPage", () => {
     const productInput = screen.getByLabelText("Product");
     await user.click(productInput);
 
-    expect(
-      screen.getByText("Whole Milk (WM-001)"),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText("Cable Ties (CT-100)"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Whole Milk (WM-001)")).toBeInTheDocument();
+    expect(screen.getByText("Cable Ties (CT-100)")).toBeInTheDocument();
   });
 
   it('shows "Product not in catalog?" message when no match (AC: #2)', async () => {
     mockSearchProducts.mockReturnValue({
-      data: { products: [], meta: { total: 0, page: 1, limit: 20, totalPages: 0 } },
+      data: {
+        products: [],
+        meta: { total: 0, page: 1, limit: 20, totalPages: 0 },
+      },
       isLoading: false,
       error: null,
       isPending: false,
@@ -344,9 +356,7 @@ describe("PickingPage", () => {
     await user.type(productInput, "nonexistent");
 
     expect(
-      screen.getByText(
-        "Product not in catalog? Ask your manager to add it.",
-      ),
+      screen.getByText("Product not in catalog? Ask your manager to add it.")
     ).toBeInTheDocument();
   });
 
@@ -500,7 +510,7 @@ describe("PickingPage", () => {
     expect(mockGenerateRouteMutateAsync).toHaveBeenCalled();
     expect(mockShowSnackbar).not.toHaveBeenCalledWith(
       expect.stringContaining("Picking completed"),
-      "success",
+      "success"
     );
   });
 
@@ -510,9 +520,7 @@ describe("PickingPage", () => {
 
     await user.click(screen.getByText("Next"));
 
-    expect(
-      screen.queryByText("Review Picking List"),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Review Picking List")).not.toBeInTheDocument();
     expect(screen.getByText("Product is required")).toBeInTheDocument();
   });
 
@@ -529,7 +537,7 @@ describe("PickingPage", () => {
     expect(mockCreateMutateAsync).toHaveBeenCalled();
     expect(mockShowSnackbar).not.toHaveBeenCalledWith(
       expect.stringContaining("Picking completed"),
-      "success",
+      "success"
     );
   });
 
@@ -614,7 +622,7 @@ describe("PickingPage", () => {
 
     expect(screen.getByText("Cancel Picking List?")).toBeInTheDocument();
     expect(
-      screen.getByText("Cancel this picking list? No stock will be deducted."),
+      screen.getByText("Cancel this picking list? No stock will be deducted.")
     ).toBeInTheDocument();
   });
 
@@ -629,13 +637,15 @@ describe("PickingPage", () => {
 
     // Confirm in dialog — there are two "Cancel List" buttons now (one in page, one in dialog)
     const dialog = screen.getByRole("dialog");
-    const confirmCancelButton = within(dialog).getByRole("button", { name: "Cancel List" });
+    const confirmCancelButton = within(dialog).getByRole("button", {
+      name: "Cancel List",
+    });
     await user.click(confirmCancelButton);
 
     expect(mockCancelMutateAsync).toHaveBeenCalledWith(1);
     expect(mockShowSnackbar).toHaveBeenCalledWith(
       "Picking list cancelled — no stock deducted",
-      "success",
+      "success"
     );
   });
 
@@ -652,7 +662,9 @@ describe("PickingPage", () => {
 
     // Dialog should close, picking should continue
     await waitFor(() => {
-      expect(screen.queryByText("Cancel Picking List?")).not.toBeInTheDocument();
+      expect(
+        screen.queryByText("Cancel Picking List?")
+      ).not.toBeInTheDocument();
     });
     expect(screen.getByText("Cold Storage A (1, 2, 1)")).toBeInTheDocument();
     expect(mockCancelMutateAsync).not.toHaveBeenCalled();
@@ -665,7 +677,9 @@ describe("PickingPage", () => {
     await navigateToPickRouteStep(user);
 
     // "Validate Complete" should be the confirm button on the last step
-    const validateButton = screen.getByRole("button", { name: "Validate Complete" });
+    const validateButton = screen.getByRole("button", {
+      name: "Validate Complete",
+    });
     expect(validateButton).toBeDisabled();
   });
 
@@ -680,7 +694,9 @@ describe("PickingPage", () => {
     await user.click(checkbox);
 
     // Now Validate Complete should be enabled
-    const validateButton = screen.getByRole("button", { name: "Validate Complete" });
+    const validateButton = screen.getByRole("button", {
+      name: "Validate Complete",
+    });
     expect(validateButton).not.toBeDisabled();
 
     await user.click(validateButton);
@@ -713,7 +729,7 @@ describe("PickingPage", () => {
 
     expect(mockShowSnackbar).toHaveBeenCalledWith(
       "Picking completed! 1 items deducted from stock.",
-      "success",
+      "success"
     );
   });
 
@@ -749,7 +765,7 @@ describe("PickingPage", () => {
 
     expect(mockShowSnackbar).toHaveBeenCalledWith(
       "Picking completed with 1 discrepancies. 0 items deducted.",
-      "success",
+      "success"
     );
   });
 
@@ -829,7 +845,9 @@ describe("PickingPage", () => {
     await user.click(screen.getByRole("button", { name: "Cancel List" }));
 
     const dialog = screen.getByRole("dialog");
-    const confirmCancelButton = within(dialog).getByRole("button", { name: "Cancel List" });
+    const confirmCancelButton = within(dialog).getByRole("button", {
+      name: "Cancel List",
+    });
     await user.click(confirmCancelButton);
 
     expect(mockHandleError).toHaveBeenCalledWith(mockError);

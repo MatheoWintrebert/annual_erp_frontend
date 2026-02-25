@@ -48,7 +48,7 @@ const ProductItem: FC<ProductItemProps> = ({
     useSearchProducts(search);
   const products = useMemo(
     () => productsData?.products ?? [],
-    [productsData?.products],
+    [productsData?.products]
   );
 
   const selectedProduct = useWatch({
@@ -157,7 +157,7 @@ const ProductItem: FC<ProductItemProps> = ({
                 slotProps={{ htmlInput: { min: 1 } }}
                 onChange={(e) => {
                   ctrlField.onChange(
-                    e.target.value === "" ? 1 : Number(e.target.value),
+                    e.target.value === "" ? 1 : Number(e.target.value)
                   );
                 }}
               />

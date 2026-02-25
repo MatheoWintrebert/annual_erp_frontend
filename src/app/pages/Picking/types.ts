@@ -64,7 +64,7 @@ export function getDefaultPickingFormData(): PickingFormData {
 }
 
 export function buildCreatePickingListPayload(
-  data: PickingFormData,
+  data: PickingFormData
 ): CreatePickingListPayload {
   return {
     items: data.items
@@ -81,7 +81,7 @@ export function hasInsufficientStock(items: PickingProductEntry[]): boolean {
     (item) =>
       item.product !== null &&
       item.availableStock !== null &&
-      item.requestedQuantity > item.availableStock,
+      item.requestedQuantity > item.availableStock
   );
 }
 
@@ -147,13 +147,14 @@ export function toExecutionItems(route: PickRouteItem[]): PickExecutionItem[] {
 
 // Helper: build completion payload from execution items
 export function buildCompletionPayload(
-  items: PickExecutionItem[],
+  items: PickExecutionItem[]
 ): CompletePickingListPayload {
   return {
     items: items.map((item) => ({
       pickingListItemId: item.pickingListItemId,
       paletteLotId: item.paletteLotId,
-      status: item.status === "skipped" ? ("skipped" as const) : ("picked" as const),
+      status:
+        item.status === "skipped" ? ("skipped" as const) : ("picked" as const),
       pickedQuantity: item.status === "skipped" ? 0 : item.actualQuantity,
     })),
   };

@@ -4,7 +4,10 @@ import "@testing-library/jest-dom/vitest";
 import { MemoryRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import HomePage from "./HomePage";
-import type { DashboardAlertsResponse, DashboardSummaryResponse } from "./types";
+import type {
+  DashboardAlertsResponse,
+  DashboardSummaryResponse,
+} from "./types";
 
 vi.mock("../../components/ui/SnackbarProvider", () => ({
   useSnackbar: () => ({
@@ -462,8 +465,12 @@ describe("HomePage", () => {
     expect(screen.getByText("Intake Activity")).toBeInTheDocument();
     const gridContainer = container.querySelector(".MuiGrid-container");
     expect(gridContainer).toBeInTheDocument();
-    expect(container.querySelector("[data-testid='Inventory2OutlinedIcon']")).toBeInTheDocument();
-    expect(container.querySelector("[data-testid='LocalShippingIcon']")).toBeInTheDocument();
+    expect(
+      container.querySelector("[data-testid='Inventory2OutlinedIcon']")
+    ).toBeInTheDocument();
+    expect(
+      container.querySelector("[data-testid='LocalShippingIcon']")
+    ).toBeInTheDocument();
   });
 
   it("shows zero values gracefully when no data exists", () => {

@@ -79,13 +79,16 @@ export interface UpdatePalettePositionInput {
 
 const updatePalettePosition = async (
   paletteId: number,
-  data: UpdatePalettePositionInput,
+  data: UpdatePalettePositionInput
 ): Promise<void> => {
-  const response = await fetch(`${API_BASE}/palettes/${String(paletteId)}/position`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
+  const response = await fetch(
+    `${API_BASE}/palettes/${String(paletteId)}/position`,
+    {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    }
+  );
   if (!response.ok) {
     throw new ApiError(response);
   }
@@ -149,7 +152,7 @@ const checkPlacementViolations = async (data: {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
-    },
+    }
   );
   if (!response.ok) {
     throw new ApiError(response);
@@ -194,7 +197,7 @@ export interface RegisterOnboardingResponse {
 }
 
 const registerOnboardingPalette = async (
-  data: RegisterOnboardingPayload,
+  data: RegisterOnboardingPayload
 ): Promise<RegisterOnboardingResponse> => {
   const response = await fetch(`${API_BASE}/palettes/intake/register`, {
     method: "POST",

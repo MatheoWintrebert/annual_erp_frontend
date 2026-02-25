@@ -173,12 +173,7 @@ describe("StepWizard", () => {
   });
 
   it("does not show tooltip when disableConfirm is false", () => {
-    render(
-      <StepWizard
-        {...defaultProps}
-        activeStep={1}
-      />
-    );
+    render(<StepWizard {...defaultProps} activeStep={1} />);
 
     expect(screen.getByRole("button", { name: /confirm/i })).toBeEnabled();
     expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();

@@ -3,7 +3,7 @@ import type { RuleViolation } from "../../types/rule-violation";
 export type { RuleViolation };
 
 export function buildViolationsMap(
-  violations: RuleViolation[],
+  violations: RuleViolation[]
 ): Map<number, RuleViolation[]> {
   const map = new Map<number, RuleViolation[]>();
   for (const v of violations) {
@@ -59,7 +59,9 @@ export type SortField =
 
 export type SortDirection = "asc" | "desc";
 
-export function flattenPalettes(palettes: PaletteListItem[]): PaletteTableRow[] {
+export function flattenPalettes(
+  palettes: PaletteListItem[]
+): PaletteTableRow[] {
   return palettes.flatMap((palette) => {
     if (palette.items.length === 0) {
       return [

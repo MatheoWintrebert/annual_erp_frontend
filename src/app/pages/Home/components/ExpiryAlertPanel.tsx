@@ -10,7 +10,10 @@ interface ExpiryAlertPanelProps {
   alerts: ExpiryAlert[];
 }
 
-const severityMap: Record<ExpiryAlert["severity"], "error" | "warning" | "info"> = {
+const severityMap: Record<
+  ExpiryAlert["severity"],
+  "error" | "warning" | "info"
+> = {
   expired: "error",
   critical: "warning",
   warning: "info",
@@ -35,10 +38,7 @@ const ExpiryAlertPanel: FC<ExpiryAlertPanelProps> = ({ alerts }) => {
       </Box>
 
       {alerts.length === 0 ? (
-        <Alert
-          severity="success"
-          icon={<CheckCircleOutlineIcon />}
-        >
+        <Alert severity="success" icon={<CheckCircleOutlineIcon />}>
           No expiry alerts — all stock within safe thresholds
         </Alert>
       ) : (

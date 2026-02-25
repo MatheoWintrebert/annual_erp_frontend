@@ -38,8 +38,7 @@ const PickRouteStep: FC<PickRouteStepProps> = ({
     <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
       {executionItems.map((item, index) => {
         const showDivider =
-          index > 0 &&
-          executionItems[index - 1].productId !== item.productId;
+          index > 0 && executionItems[index - 1].productId !== item.productId;
 
         const isSkipped = item.status === "skipped";
         const isPicked = item.status === "picked";
@@ -65,7 +64,9 @@ const PickRouteStep: FC<PickRouteStepProps> = ({
               <Checkbox
                 checked={isPicked}
                 disabled={isSkipped}
-                onChange={() => { onTogglePicked(index); }}
+                onChange={() => {
+                  onTogglePicked(index);
+                }}
                 sx={{ mt: -0.5 }}
               />
               <Box sx={{ flex: 1 }}>
@@ -96,7 +97,7 @@ const PickRouteStep: FC<PickRouteStepProps> = ({
                       if (!isNaN(val)) {
                         onQuantityChange(
                           index,
-                          Math.max(1, Math.min(val, item.quantityToPick)),
+                          Math.max(1, Math.min(val, item.quantityToPick))
                         );
                       }
                     }}
@@ -125,7 +126,9 @@ const PickRouteStep: FC<PickRouteStepProps> = ({
                 <Tooltip title="Skip — item not found">
                   <IconButton
                     size="small"
-                    onClick={() => { onSkip(index); }}
+                    onClick={() => {
+                      onSkip(index);
+                    }}
                     color="default"
                   >
                     <SkipNextIcon />
