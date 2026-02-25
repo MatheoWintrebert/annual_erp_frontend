@@ -8,11 +8,15 @@ import RulesPage from "./app/pages/Rules/RulesPage";
 import IntakePage from "./app/pages/Intake/IntakePage";
 import PickingPage from "./app/pages/Picking/PickingPage";
 import StockPage from "./app/pages/Stock/StockPage";
+import App from "./App";
+import { SignIn } from "./pages/SignIn";
 
 const Router: React.FC = () => (
   <BrowserRouter>
     <Routes>
       <Route path="/" element={<HomePage />} />
+      <Route path="/signin" element={<SignIn />} />
+      <Route path="/app" element={<App />} />
       <Route path="/home" element={<HomePage />} />
       <Route path="/intake" element={<IntakePage />} />
       <Route path="/pick" element={<PickingPage />} />

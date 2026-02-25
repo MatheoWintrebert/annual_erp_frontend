@@ -1,5 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { Provider } from "react-redux";
 import "./index.css";
 import Router from "./Router";
 import "@fontsource/space-grotesk/400.css";
@@ -10,7 +11,6 @@ import "@fontsource/inter/400.css";
 import "@fontsource/inter/500.css";
 import "@fontsource/inter/600.css";
 import "@fontsource/inter/700.css";
-import { CssBaseline } from "@mui/material";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { CompanySettingsProvider } from "./app/context/CompanySettingsContext";
@@ -18,6 +18,13 @@ import { queryClient } from "./queryClient";
 import { AuthProvider } from "./app/context/AuthContext";
 import ErrorBoundary from "./app/components/ui/ErrorBoundary";
 import SnackbarProvider from "./app/components/ui/SnackbarProvider";
+import "@fontsource/roboto/300.css";
+import "@fontsource/roboto/400.css";
+import "@fontsource/roboto/500.css";
+import "@fontsource/roboto/700.css";
+import { store } from "./store/store";
+import { ThemeProvider, CssBaseline } from "@mui/material";
+import theme from "./theme";
 
 const rootElement = document.getElementById("root");
 if (!rootElement) {
@@ -39,5 +46,11 @@ createRoot(rootElement).render(
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </CompanySettingsProvider>
+    <Provider store={store}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Router />
+      </ThemeProvider>
+    </Provider>
   </StrictMode>
 );
