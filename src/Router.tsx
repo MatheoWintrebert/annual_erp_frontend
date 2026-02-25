@@ -25,6 +25,7 @@ const Router: React.FC = () => (
       <Route path="/product" element={<ProductPage />} />
       <Route path="/rules" element={<RulesPage />} />
       <Route path="/stock" element={<StockPage />} />
+      <Route path="*" element={<SignIn />} />
     </Routes>
   </BrowserRouter>
 );

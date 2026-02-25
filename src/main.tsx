@@ -33,23 +33,21 @@ if (!rootElement) {
 
 createRoot(rootElement).render(
   <StrictMode>
-    <CompanySettingsProvider>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <SnackbarProvider>
-            <ErrorBoundary>
-              <CssBaseline />
-              <Router />
-            </ErrorBoundary>
-          </SnackbarProvider>
-        </AuthProvider>
-        <ReactQueryDevtools initialIsOpen={false} />
-      </QueryClientProvider>
-    </CompanySettingsProvider>
     <Provider store={store}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <Router />
+        <CompanySettingsProvider>
+          <QueryClientProvider client={queryClient}>
+            <AuthProvider>
+              <SnackbarProvider>
+                <ErrorBoundary>
+                  <Router />
+                </ErrorBoundary>
+              </SnackbarProvider>
+            </AuthProvider>
+            <ReactQueryDevtools initialIsOpen={false} />
+          </QueryClientProvider>
+        </CompanySettingsProvider>
       </ThemeProvider>
     </Provider>
   </StrictMode>
