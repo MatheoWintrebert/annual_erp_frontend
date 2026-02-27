@@ -1,9 +1,16 @@
-import { FieldEmail } from "@/components/Fields/FieldEmail";
-import { FieldCode } from "@/components/Fields/FieldCode";
-import { FieldPassword } from "@/components/Fields/FieldPassword";
 import { useLoginMutation } from "@/services";
-import { Stack } from "@mui/material";
-import { useRef, useState, useEffect } from "react";
+import {
+  Box,
+  Container,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
+  Alert,
+  InputAdornment,
+} from "@mui/material";
+import { Email, Lock, Tag } from "@mui/icons-material";
+import { useRef, useState } from "react";
 import { storage } from "@/utils";
 import { useForm } from "react-hook-form";
 import { CustomLoadingButton } from "@/components/CustomLoadingButton/CustomLoadingButton";
@@ -16,73 +23,152 @@ interface SignInFormInputs {
 
 export const SignIn = () => {
   const [login, { isLoading }] = useLoginMutation();
-  const [loading, setLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const methods = useForm<SignInFormInputs>({
+    defaultValues: {
+      code: storage.getItem("email") || "",
+    },
+  });
+  const { handleSubmit, trigger } = methods;
 
-  const methods = useForm<SignInFormInputs>();
-  const { handleSubmit, setValue, trigger, watch } = methods;
-
-  const buttonRef = useRef(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   const onSubmit = handleSubmit(
     async ({ email, password, code }: SignInFormInputs) => {
       try {
-        console.log("onSubmit called with:", { email, password, code });
+        setErrorMessage("");
         await login({ email, password, code }).unwrap();
       } catch (error) {
-        console.error("Login failed:", error);
+        setErrorMessage("Login failed. Please check your credentials.");
       }
     }
   );
 
   return (
-    <>
-      <div>
-        <Stack mb={2}>
-          <input
-            type="email"
-            placeholder="Email"
-            {...methods.register("email", { required: "Email is required" })}
-          />
-        </Stack>
-
-        <Stack>
-          <input
-            type="password"
-            placeholder="Password"
-            {...methods.register("password", {
-              required: "Password is required",
-            })}
-            onChange={() => setErrorMessage("")}
-            onKeyDown={async (e) => {
-              if (e.key === "Enter") {
-                const isValid = await trigger();
-                if (isValid) {
-                  buttonRef.current?.click();
-                }
-              }
-            }}
-          />
-        </Stack>
-        <Stack mb={2}>
-          <input
-            type="text"
-            placeholder="Code"
-            {...methods.register("code", { required: "Code is required" })}
-            onChange={() => setErrorMessage("")}
-            defaultValue={storage.getItem("email") || ""}
-          />
-        </Stack>
-        <CustomLoadingButton
-          fullWidth
-          onClick={onSubmit}
-          loading={loading}
-          title={"Login"}
-          ref={buttonRef}
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <Container maxWidth="xs">
+        <Paper
+          elevation={3}
+          sx={{
+            p: 4,
+            borderRadius: 2,
+            border: 1,
+            borderColor: "rgba(255, 255, 255, 0.06)",
+          }}
         >
-          Login
-        </CustomLoadingButton>
-      </div>
-    </>
+          <Stack spacing={3}>
+            <Typography
+              variant="h4"
+              textAlign="center"
+              fontWeight={700}
+              sx={{ mb: 1 }}
+            >
+              Sign In
+            </Typography>
+
+            {errorMessage && (
+              <Alert severity="error" onClose={() => setErrorMessage("")}>
+                {errorMessage}
+              </Alert>
+            )}
+
+            <TextField
+              type="email"
+              label="Email"
+              fullWidth
+              error={!!methods.formState.errors.email}
+              helperText={methods.formState.errors.email?.message}
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Email fontSize="small" />
+                    </InputAdornment>
+                  ),
+                },
+              }}
+              {...methods.register("email", {
+                required: "Email is required",
+              })}
+            />
+
+            <TextField
+              type="password"
+              label="Password"
+              fullWidth
+              error={!!methods.formState.errors.password}
+              helperText={methods.formState.errors.password?.message}
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Lock fontSize="small" />
+                    </InputAdornment>
+                  ),
+                },
+              }}
+              {...methods.register("password", {
+                required: "Password is required",
+              })}
+              onChange={(e) => {
+                methods.register("password").onChange(e);
+                setErrorMessage("");
+              }}
+              onKeyDown={async (e) => {
+                if (e.key === "Enter") {
+                  const isValid = await trigger();
+                  if (isValid) {
+                    buttonRef.current?.click();
+                  }
+                }
+              }}
+            />
+
+            <TextField
+              type="text"
+              label="Code"
+              fullWidth
+              error={!!methods.formState.errors.code}
+              helperText={methods.formState.errors.code?.message}
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Tag fontSize="small" />
+                    </InputAdornment>
+                  ),
+                },
+              }}
+              {...methods.register("code", {
+                required: "Code is required",
+              })}
+              onChange={(e) => {
+                methods.register("code").onChange(e);
+                setErrorMessage("");
+              }}
+            />
+
+            <CustomLoadingButton
+              fullWidth
+              variant="contained"
+              color="secondary"
+              onClick={onSubmit}
+              loading={isLoading}
+              ref={buttonRef}
+              sx={{ py: 1.5, mt: 1 }}
+            >
+              Login
+            </CustomLoadingButton>
+          </Stack>
+        </Paper>
+      </Container>
+    </Box>
   );
 };
