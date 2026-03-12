@@ -53,12 +53,12 @@ const ProductItem: FC<ProductItemProps> = ({
 
   const selectedProduct = useWatch({
     control,
-    name: `items.${index}.product` as const,
-  });
+    name: `items.${String(index)}.product` as const,
+  }) as unknown as ProductOption | null;
   const requestedQuantity = useWatch({
     control,
-    name: `items.${index}.requestedQuantity` as const,
-  });
+    name: `items.${String(index)}.requestedQuantity` as const,
+  }) as unknown as number;
 
   const stock = selectedProduct ? stockMap.get(selectedProduct.id) : undefined;
   const isInsufficient =
@@ -94,7 +94,7 @@ const ProductItem: FC<ProductItemProps> = ({
 
       <Stack spacing={2}>
         <Controller
-          name={`items.${index}.product` as const}
+          name={`items.${String(index)}.product` as const}
           control={control}
           rules={{
             validate: (value) => value !== null || "Product is required",
@@ -132,7 +132,7 @@ const ProductItem: FC<ProductItemProps> = ({
         />
 
         <Controller
-          name={`items.${index}.requestedQuantity` as const}
+          name={`items.${String(index)}.requestedQuantity` as const}
           control={control}
           rules={{
             required: "Quantity is required",

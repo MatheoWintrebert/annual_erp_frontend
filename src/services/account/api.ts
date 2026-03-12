@@ -32,6 +32,7 @@ export const accountApi = createApi({
     // 	},
     // }),
 
+    // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
     deleteAccount: builder.mutation<void, void>({
       query: () => ({
         url: "/users/me",

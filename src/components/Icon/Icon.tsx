@@ -4,7 +4,7 @@ import type { IconProps } from "./types";
 export const Icon = ({ name, ...props }: IconProps) => {
   return (
     <SvgIcon {...props} inheritViewBox>
-      <use href={`/sprite.svg#${name}`} />
+      <use href={`/sprite.svg#${String(name)}`} />
     </SvgIcon>
   );
 };

@@ -11,7 +11,9 @@ import {
   Avatar,
   Tooltip,
 } from "@mui/material";
-import { Link as RouterLink, useLocation } from "react-router-dom";
+import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { setAuthenticated, setToken, getAuth } from "@/store/auth/slice";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { useCompanySettings } from "../../context/CompanySettingsContext";
 
@@ -19,9 +21,18 @@ const setupRoutes = ["/custom", "/palettier", "/rules", "/product", "/stock"];
 
 const Header: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { isAuthenticated } = useSelector(getAuth);
   const [setupAnchorEl, setSetupAnchorEl] = useState<null | HTMLElement>(null);
   const setupMenuOpen = Boolean(setupAnchorEl);
   const { settings } = useCompanySettings();
+
+  const handleLogout = () => {
+    dispatch(setAuthenticated(false));
+    dispatch(setToken(null));
+    navigate("/signin");
+  };
 
   const isSetupActive = setupRoutes.includes(location.pathname);
 
@@ -134,7 +145,7 @@ const Header: React.FC = () => {
 
         <Button
           component={RouterLink}
-          to="/"
+          to="/home"
           color="secondary"
           sx={primaryNavStyles(
             location.pathname === "/" || location.pathname === "/home"
@@ -327,25 +338,43 @@ const Header: React.FC = () => {
           </Tooltip>
         )}
 
-        <Button
-          color="primary"
-          variant="outlined"
-          sx={{
-            ml: 2,
-            fontWeight: 600,
-            borderColor: (theme) => alpha(theme.palette.primary.main, 0.2),
-            "&:hover": {
-              borderColor: "secondary.main",
-              color: "secondary.main",
-              bgcolor: (theme) => alpha(theme.palette.secondary.main, 0.08),
-            },
-          }}
-          onClick={() => {
-            //handleLogin();
-          }}
-        >
-          Login
-        </Button>
+        {!isAuthenticated ? (
+          <Button
+            color="primary"
+            variant="outlined"
+            onClick={() => navigate("/signin")}
+            sx={{
+              ml: 2,
+              fontWeight: 600,
+              borderColor: (theme) => alpha(theme.palette.primary.main, 0.2),
+              "&:hover": {
+                borderColor: "secondary.main",
+                color: "secondary.main",
+                bgcolor: (theme) => alpha(theme.palette.secondary.main, 0.08),
+              },
+            }}
+          >
+            Login
+          </Button>
+        ) : (
+          <Button
+            color="primary"
+            variant="outlined"
+            onClick={handleLogout}
+            sx={{
+              ml: 2,
+              fontWeight: 600,
+              borderColor: (theme) => alpha(theme.palette.primary.main, 0.2),
+              "&:hover": {
+                borderColor: "secondary.main",
+                color: "secondary.main",
+                bgcolor: (theme) => alpha(theme.palette.secondary.main, 0.08),
+              },
+            }}
+          >
+            Logout
+          </Button>
+        )}
       </Toolbar>
     </AppBar>
   );

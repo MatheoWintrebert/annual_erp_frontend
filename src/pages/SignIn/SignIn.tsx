@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import { Email, Lock, Tag } from "@mui/icons-material";
 import { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { storage } from "@/utils";
 import { useForm } from "react-hook-form";
 import { CustomLoadingButton } from "@/components/CustomLoadingButton/CustomLoadingButton";
@@ -23,10 +24,11 @@ interface SignInFormInputs {
 
 export const SignIn = () => {
   const [login, { isLoading }] = useLoginMutation();
+  const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState<string>("");
   const methods = useForm<SignInFormInputs>({
     defaultValues: {
-      code: storage.getItem("email") || "",
+      code: storage.getItem("email") ?? "",
     },
   });
   const { handleSubmit, trigger } = methods;
@@ -38,7 +40,8 @@ export const SignIn = () => {
       try {
         setErrorMessage("");
         await login({ email, password, code }).unwrap();
-      } catch (error) {
+        navigate("/home");
+      } catch {
         setErrorMessage("Login failed. Please check your credentials.");
       }
     }
@@ -74,7 +77,12 @@ export const SignIn = () => {
             </Typography>
 
             {errorMessage && (
-              <Alert severity="error" onClose={() => setErrorMessage("")}>
+              <Alert
+                severity="error"
+                onClose={() => {
+                  setErrorMessage("");
+                }}
+              >
                 {errorMessage}
               </Alert>
             )}
@@ -118,16 +126,18 @@ export const SignIn = () => {
                 required: "Password is required",
               })}
               onChange={(e) => {
-                methods.register("password").onChange(e);
+                void methods.register("password").onChange(e);
                 setErrorMessage("");
               }}
-              onKeyDown={async (e) => {
-                if (e.key === "Enter") {
-                  const isValid = await trigger();
-                  if (isValid) {
-                    buttonRef.current?.click();
+              onKeyDown={(e) => {
+                void (async () => {
+                  if (e.key === "Enter") {
+                    const isValid = await trigger();
+                    if (isValid) {
+                      buttonRef.current?.click();
+                    }
                   }
-                }
+                })();
               }}
             />
 
@@ -150,7 +160,7 @@ export const SignIn = () => {
                 required: "Code is required",
               })}
               onChange={(e) => {
-                methods.register("code").onChange(e);
+                void methods.register("code").onChange(e);
                 setErrorMessage("");
               }}
             />
@@ -159,7 +169,7 @@ export const SignIn = () => {
               fullWidth
               variant="contained"
               color="secondary"
-              onClick={onSubmit}
+              onClick={(e) => { void onSubmit(e); }}
               loading={isLoading}
               ref={buttonRef}
               sx={{ py: 1.5, mt: 1 }}

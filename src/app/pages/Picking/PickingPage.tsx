@@ -53,7 +53,9 @@ const PickingPage = () => {
 
   const productIds = useMemo(
     () =>
-      watchedItems.filter((i) => i.product !== null).map((i) => i.product!.id),
+      watchedItems
+        .filter((i): i is (typeof i) & { product: NonNullable<typeof i.product> } => i.product !== null)
+        .map((i) => i.product.id),
     [watchedItems]
   );
 
@@ -107,7 +109,7 @@ const PickingPage = () => {
     } else if (activeStep === 1) {
       await handleStartPicking();
     }
-  }, [activeStep, methods, handleStartPicking]);
+  }, [activeStep, methods, handleStartPicking, showSnackbar]);
 
   const handleBack = useCallback((): void => {
     setActiveStep((prev) => prev - 1);

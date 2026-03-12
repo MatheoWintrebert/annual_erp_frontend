@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
 export interface AccountState {
-  user: any;
+  user: unknown;
 }
 
 const initialState: AccountState = {
@@ -13,7 +13,7 @@ export const accountSlice = createSlice({
   name: "account",
   initialState,
   reducers: {
-    setUser: (state, { payload }: PayloadAction<any>) => {
+    setUser: (state, { payload }: PayloadAction<unknown>) => {
       state.user = payload;
     },
     clearAccount: (state) => {

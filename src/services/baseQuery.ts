@@ -1,4 +1,8 @@
-import { fetchBaseQuery, type BaseQueryApi } from "@reduxjs/toolkit/query";
+import {
+  fetchBaseQuery,
+  type BaseQueryApi,
+  type FetchArgs,
+} from "@reduxjs/toolkit/query";
 
 import { setAuthenticated, setToken } from "@/store/auth";
 import { isTokenRefreshTimeValid } from "@/utils";
@@ -11,8 +15,8 @@ const rawBaseQuery = () =>
     // with "VITE_" in order to be statically injected at build time.
     baseUrl: import.meta.env.VITE_API_URL as string,
     prepareHeaders: (
-      headers: { set: (arg0: string, arg1: string) => void },
-      { getState }: any
+      headers: Headers,
+      { getState }: { getState: () => unknown }
     ) => {
       const token = (getState() as RootState).auth.token;
       const identityToken = (getState() as RootState).auth.identityToken;
@@ -30,12 +34,12 @@ const rawBaseQuery = () =>
 
       return headers;
     },
-  } as any);
+  });
 
 export const baseQuery = async (
-  args: any,
+  args: string | FetchArgs,
   api: BaseQueryApi,
-  extraOptions: Record<string, any>
+  extraOptions: Record<string, unknown>
 ) => {
   const result = await rawBaseQuery()(args, api, extraOptions);
 
@@ -45,7 +49,7 @@ export const baseQuery = async (
     api.dispatch(clearAccount());
   };
 
-  if (result.error && result.error.status === 401) {
+  if (result.error?.status === 401) {
     if (isTokenRefreshTimeValid()) {
       window.location.reload();
     } else {
@@ -53,7 +57,7 @@ export const baseQuery = async (
     }
   }
 
-  if (result.error && result.error.status === 500) {
+  if (result.error?.status === 500) {
     // todo
   }
 

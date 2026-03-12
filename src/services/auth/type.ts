@@ -1,30 +1,30 @@
-export type RegisterResponse = {
+export interface RegisterResponse {
   token: string;
   qrCode: string;
-};
+}
 
-export type RegistrerRequestParams = {
+export interface RegistrerRequestParams {
   email: string;
   password: string;
   code: string;
-};
+}
 
-export type LoginRequestParams = {
+export interface LoginRequestParams {
   email: string;
   password: string;
   code: string;
-};
+}
 
-export type LoginResponse = {
-  user: any;
+export interface LoginResponse {
+  user: unknown;
   token: string;
-};
+}
 
-export type TwoFactorAuthRequestParams = {
+export interface TwoFactorAuthRequestParams {
   code: string;
-};
+}
 
-export type TwoFactorAuthResponse = {
+export interface TwoFactorAuthResponse {
   token: string;
-  user: any;
-};
+  user: unknown;
+}

@@ -68,9 +68,12 @@ export function buildCreatePickingListPayload(
 ): CreatePickingListPayload {
   return {
     items: data.items
-      .filter((item) => item.product !== null)
+      .filter(
+        (item): item is PickingProductEntry & { product: ProductOption } =>
+          item.product !== null
+      )
       .map((item) => ({
-        productId: item.product!.id,
+        productId: item.product.id,
         requestedQuantity: item.requestedQuantity,
       })),
   };

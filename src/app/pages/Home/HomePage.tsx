@@ -76,7 +76,7 @@ const HomePage: FC = () => {
                   <MetricCard
                     title="Stock Summary"
                     value={summaryQuery.data.stock.totalPalettes}
-                    subtitle={`${summaryQuery.data.stock.totalProducts} products \u00B7 ${Math.round(summaryQuery.data.stock.capacityUtilization * 100)}% capacity`}
+                    subtitle={`${String(summaryQuery.data.stock.totalProducts)} products \u00B7 ${String(Math.round(summaryQuery.data.stock.capacityUtilization * 100))}% capacity`}
                     icon={<Inventory2Outlined color="action" />}
                   />
                 </Grid>
@@ -84,7 +84,7 @@ const HomePage: FC = () => {
                   <MetricCard
                     title="Intake Activity"
                     value={summaryQuery.data.intake.palettesReceivedYesterday}
-                    subtitle={`yesterday \u00B7 ${trendArrow[summaryQuery.data.intake.trend] ?? "\u2192"} today: ${summaryQuery.data.intake.palettesReceivedToday}`}
+                    subtitle={`yesterday \u00B7 ${trendArrow[summaryQuery.data.intake.trend] ?? "\u2192"} today: ${String(summaryQuery.data.intake.palettesReceivedToday)}`}
                     icon={<LocalShipping color="action" />}
                   />
                 </Grid>

@@ -7,7 +7,6 @@ import {
 } from "@mui/material";
 
 import { emailRex } from "@/constants/regex";
-
 import { emailIsNotCorrect, fieldCannotBeEmpty } from "@/constants/messages";
 import type { FieldProps } from "./types";
 
@@ -31,7 +30,7 @@ export const FieldEmail = ({
   return (
     <FormControl
       error={!!errors[name]}
-      sx={sxForm ? sxForm : { width: "100%" }}
+      sx={sxForm ?? { width: "100%" }}
     >
       {label &&
         (labelAccount ? (
@@ -58,7 +57,7 @@ export const FieldEmail = ({
         hiddenLabel
         variant={"filled"}
         sx={sx}
-        InputProps={InputProps}
+        slotProps={{ input: InputProps }}
         className={errors[name] && "error"}
         disabled={disabled}
         {...register(name, {
@@ -70,7 +69,7 @@ export const FieldEmail = ({
         })}
       />
       {errors[name] && (
-        <FormHelperText>{errors[name]?.message as string}</FormHelperText>
+        <FormHelperText>{errors[name].message as string}</FormHelperText>
       )}
 
       {helperText && <FormHelperText>{helperText}</FormHelperText>}

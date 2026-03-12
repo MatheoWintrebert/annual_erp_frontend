@@ -19,7 +19,6 @@ interface FieldPasswordProps extends FieldProps {
 }
 
 export const FieldPassword = ({
-  InputProps,
   autoComplete = "new-password",
   formState: { errors },
   helperText,
@@ -30,7 +29,6 @@ export const FieldPassword = ({
   validation = null,
 }: FieldPasswordProps) => {
   const [showPassword, setShowPassword] = useState(false);
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
 
   return (
     <FormControl error={!!errors[name]} sx={{ width: "100%" }}>
@@ -55,9 +53,12 @@ export const FieldPassword = ({
         variant="filled"
         data-testid="password"
         className={errors[name] && "error"}
+        onClick={() => {
+          setShowPassword(false);
+        }}
         {...register(
           name,
-          validation || {
+          validation ?? {
             required: fieldCannotBeEmpty,
             maxLength: {
               value: 32,
@@ -71,7 +72,7 @@ export const FieldPassword = ({
         )}
       />
       {errors[name] && (
-        <FormHelperText>{errors[name]?.message as string}</FormHelperText>
+        <FormHelperText>{errors[name].message as string}</FormHelperText>
       )}
 
       {helperText && <FormHelperText>{helperText}</FormHelperText>}

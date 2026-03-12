@@ -3,6 +3,7 @@ import {
   createRoutesFromElements,
   Route,
 } from "react-router-dom";
+import type { ComponentType } from "react";
 
 import { ROUTES } from "./routes";
 import { ProtectedRoute } from "./ProtectedRoute";
@@ -30,9 +31,9 @@ export const routesConfig = createRoutesFromElements(
       {/* <Route path={ROUTES.AUTH} lazy={() => import('@/pages/Auth')} /> */}
       <Route
         path={ROUTES.SIGN_IN}
-        lazy={async () => {
-          const { default: Component } = await import("@/pages/SignIn");
-          return { Component };
+        lazy={async (): Promise<{ Component: ComponentType }> => {
+          const module = await import("@/pages/SignIn");
+          return { Component: module.default as ComponentType };
         }}
       />
       {/* <Route path={ROUTES.SIGN_UP} lazy={() => import('@/pages/SignUp')} /> */}

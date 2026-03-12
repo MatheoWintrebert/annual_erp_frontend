@@ -65,9 +65,9 @@ const ProductEntryItem: FC<ProductEntryItemProps> = ({
     [productsData?.products]
   );
 
-  const selectedProductId = watch(`items.${index}.productId`);
-  const isManualLot = watch(`items.${index}.isManualLot`);
-  const quantity = watch(`items.${index}.quantity`);
+  const selectedProductId = watch(`items.${String(index)}.productId`);
+  const isManualLot = watch(`items.${String(index)}.isManualLot`) as unknown as boolean;
+  const quantity = watch(`items.${String(index)}.quantity`);
   const unitName = getUnitName(selectedProductId, products, unitsOfMeasure);
 
   // Derive display product: prefer live list, fall back to manually cached selection
@@ -166,7 +166,7 @@ const ProductEntryItem: FC<ProductEntryItemProps> = ({
 
         <Stack spacing={3}>
           <Controller
-            name={`items.${index}.productId`}
+            name={`items.${String(index)}.productId`}
             control={control}
             rules={{ required: "Product is required" }}
             render={({ field: ctrlField, fieldState: { error } }) => (
@@ -206,7 +206,7 @@ const ProductEntryItem: FC<ProductEntryItemProps> = ({
           <FormControlLabel
             control={
               <Controller
-                name={`items.${index}.isManualLot`}
+                name={`items.${String(index)}.isManualLot`}
                 control={control}
                 render={({ field: ctrlField }) => (
                   <Switch
@@ -223,7 +223,7 @@ const ProductEntryItem: FC<ProductEntryItemProps> = ({
 
           {isManualLot ? (
             <Controller
-              name={`items.${index}.lotReference`}
+              name={`items.${String(index)}.lotReference`}
               control={control}
               rules={{
                 required: "Lot number is required",
@@ -248,7 +248,7 @@ const ProductEntryItem: FC<ProductEntryItemProps> = ({
           )}
 
           <Controller
-            name={`items.${index}.expiryDate`}
+            name={`items.${String(index)}.expiryDate`}
             control={control}
             render={({ field: ctrlField }) => (
               <TextField
@@ -265,7 +265,7 @@ const ProductEntryItem: FC<ProductEntryItemProps> = ({
           />
 
           <Controller
-            name={`items.${index}.quantity`}
+            name={`items.${String(index)}.quantity`}
             control={control}
             rules={{
               required: "Quantity is required",

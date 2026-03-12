@@ -166,7 +166,7 @@ describe("StepWizard", () => {
 
     const button = screen.getByRole("button", { name: /confirm/i });
     // Hover on the span wrapper (parent) since the disabled button has pointer-events: none
-    await user.hover(button.parentElement!);
+    await user.hover(button.parentElement ?? button);
     expect(await screen.findByRole("tooltip")).toHaveTextContent(
       "Select something first"
     );

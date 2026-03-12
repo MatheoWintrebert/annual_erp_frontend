@@ -1,5 +1,5 @@
 export const storage = {
-  getItem(key: string, defaultValue?: string) {
+  getItem(key: string, defaultValue?: string): string | undefined {
     try {
       const storageValue = localStorage.getItem(key);
 
@@ -27,17 +27,17 @@ export const storage = {
   },
 };
 
-function serialize<T>(value: T) {
+function serialize(value: unknown): string {
   try {
     return JSON.stringify(value);
-  } catch (error) {
+  } catch {
     throw new Error(`Failed to serialize the value`);
   }
 }
 
-function deserialize(value: string) {
+function deserialize(value: string): string {
   try {
-    return JSON.parse(value);
+    return JSON.parse(value) as unknown as string;
   } catch {
     return value;
   }
