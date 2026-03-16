@@ -12,9 +12,11 @@ import {
 import { Email, Lock, Tag } from "@mui/icons-material";
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { storage } from "@/utils";
 import { useForm } from "react-hook-form";
 import { CustomLoadingButton } from "@/components/CustomLoadingButton/CustomLoadingButton";
+import { setAuthenticatedUser } from "@/store/auth/slice";
 
 interface SignInFormInputs {
   email: string;
@@ -24,6 +26,7 @@ interface SignInFormInputs {
 
 export const SignIn = () => {
   const [login, { isLoading }] = useLoginMutation();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState<string>("");
   const methods = useForm<SignInFormInputs>({
@@ -39,7 +42,8 @@ export const SignIn = () => {
     async ({ email, password, code }: SignInFormInputs) => {
       try {
         setErrorMessage("");
-        await login({ email, password, code }).unwrap();
+        const result = await login({ email, password, code }).unwrap();
+        dispatch(setAuthenticatedUser(result));
         navigate("/home");
       } catch {
         setErrorMessage("Login failed. Please check your credentials.");

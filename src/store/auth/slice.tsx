@@ -1,7 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { setUser } from "../account/slice";
-
 export interface AuthState {
   token: string | null;
   qrCode: string | null;
@@ -47,7 +45,6 @@ export const authSlice = createSlice({
     ) => {
       state.isAuthenticated = true;
       state.token = payload.token;
-      setUser(payload.user);
     },
   },
   selectors: {

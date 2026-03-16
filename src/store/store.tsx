@@ -9,7 +9,9 @@ import { accountApi, authApi } from "@/services";
 // their `reducerPath`s, therefore we no longer need to call `combineReducers`.
 export const rootReducer = combineSlices(
   authSlice,
-  accountSlice /* add here others reducers */
+  accountSlice,
+  authApi,
+  accountApi
 );
 
 // The store setup is wrapped in `makeStore` to allow reuse

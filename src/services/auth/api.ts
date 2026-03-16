@@ -2,6 +2,7 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 
 import { baseQuery } from "@/services/baseQuery";
 import { setRegister, setAuthenticatedUser } from "@/store/auth/slice";
+import { setUser } from "@/store/account/slice";
 import type {
   LoginRequestParams,
   LoginResponse,
@@ -37,6 +38,7 @@ export const authApi = createApi({
       onQueryStarted: (_arg, { dispatch, queryFulfilled }) => {
         void queryFulfilled.then((result) => {
           dispatch(setAuthenticatedUser(result.data));
+          dispatch(setUser(result.data.user));
         });
       },
     }),
@@ -53,6 +55,7 @@ export const authApi = createApi({
       onQueryStarted: (_arg, { dispatch, queryFulfilled }) => {
         void queryFulfilled.then((result) => {
           dispatch(setAuthenticatedUser(result.data));
+          dispatch(setUser(result.data.user));
         });
       },
     }),
