@@ -140,7 +140,7 @@ const IntakePage = () => {
           if (registerAnother) {
             resetForm();
           } else {
-            void navigate("/");
+            void navigate("/home");
           }
         } catch (err) {
           void handleError(err);
@@ -159,7 +159,7 @@ const IntakePage = () => {
   );
 
   const handleConflictConfirm = useCallback((): void => {
-    void navigate("/");
+    void navigate("/home");
   }, [navigate]);
 
   const handleConflictRegisterAnother = useCallback((): void => {
