@@ -66,7 +66,9 @@ const ProductEntryItem: FC<ProductEntryItemProps> = ({
   );
 
   const selectedProductId = watch(`items.${String(index)}.productId`);
-  const isManualLot = watch(`items.${String(index)}.isManualLot`) as unknown as boolean;
+  const isManualLot = watch(
+    `items.${String(index)}.isManualLot`
+  ) as unknown as boolean;
   const quantity = watch(`items.${String(index)}.quantity`);
   const unitName = getUnitName(selectedProductId, products, unitsOfMeasure);
 

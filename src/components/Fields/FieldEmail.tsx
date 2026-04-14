@@ -28,10 +28,7 @@ export const FieldEmail = ({
   const { grey } = palette;
 
   return (
-    <FormControl
-      error={!!errors[name]}
-      sx={sxForm ?? { width: "100%" }}
-    >
+    <FormControl error={!!errors[name]} sx={sxForm ?? { width: "100%" }}>
       {label &&
         (labelAccount ? (
           <Typography variant={"body3"} color={grey[500]} width={"30%"}>

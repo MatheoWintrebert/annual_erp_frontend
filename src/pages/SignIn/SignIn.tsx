@@ -44,7 +44,7 @@ export const SignIn = () => {
         setErrorMessage("");
         const result = await login({ email, password, code }).unwrap();
         dispatch(setAuthenticatedUser(result));
-        navigate("/home");
+        void navigate("/home");
       } catch {
         setErrorMessage("Login failed. Please check your credentials.");
       }
@@ -173,7 +173,9 @@ export const SignIn = () => {
               fullWidth
               variant="contained"
               color="secondary"
-              onClick={(e) => { void onSubmit(e); }}
+              onClick={(e) => {
+                void onSubmit(e);
+              }}
               loading={isLoading}
               ref={buttonRef}
               sx={{ py: 1.5, mt: 1 }}
