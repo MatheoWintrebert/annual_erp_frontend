@@ -11,10 +11,10 @@ import type {
 } from "./types";
 import type { RuleResponse } from "./types";
 
-const API_BASE = "http://localhost:3333";
+import { API_BASE, apiFetch } from "../../api-config";
 
 const fetchRules = async (): Promise<RulesListResponse> => {
-  const response = await fetch(
+  const response = await apiFetch(
     `${API_BASE}/rules?limit=100&includeProducts=true`
   );
   if (!response.ok) {
@@ -24,7 +24,7 @@ const fetchRules = async (): Promise<RulesListResponse> => {
 };
 
 const fetchRuleById = async (id: number): Promise<RuleResponse> => {
-  const response = await fetch(
+  const response = await apiFetch(
     `${API_BASE}/rules/${String(id)}?includeProducts=true`
   );
   if (!response.ok) {
@@ -36,7 +36,7 @@ const fetchRuleById = async (id: number): Promise<RuleResponse> => {
 const createRule = async (
   data: CreateRulePayload
 ): Promise<RuleBatchResponse> => {
-  const response = await fetch(`${API_BASE}/rules/batch`, {
+  const response = await apiFetch(`${API_BASE}/rules/batch`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ rules: [data] }),
@@ -51,7 +51,7 @@ const updateRule = async ({
   id,
   ...data
 }: UpdateRulePayload & { id: number }): Promise<UpdateRuleResponse> => {
-  const response = await fetch(`${API_BASE}/rules/${String(id)}`, {
+  const response = await apiFetch(`${API_BASE}/rules/${String(id)}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -63,7 +63,7 @@ const updateRule = async ({
 };
 
 const fetchActiveViolations = async (): Promise<RuleViolation[]> => {
-  const response = await fetch(`${API_BASE}/rules/violations`);
+  const response = await apiFetch(`${API_BASE}/rules/violations`);
   if (!response.ok) {
     throw new ApiError(response);
   }
@@ -71,7 +71,7 @@ const fetchActiveViolations = async (): Promise<RuleViolation[]> => {
 };
 
 const deleteRule = async (id: number): Promise<void> => {
-  const response = await fetch(`${API_BASE}/rules/${String(id)}`, {
+  const response = await apiFetch(`${API_BASE}/rules/${String(id)}`, {
     method: "DELETE",
   });
   if (!response.ok) {
@@ -80,7 +80,7 @@ const deleteRule = async (id: number): Promise<void> => {
 };
 
 const fetchCategories = async (): Promise<CategoriesListResponse> => {
-  const response = await fetch(`${API_BASE}/categories?limit=100`);
+  const response = await apiFetch(`${API_BASE}/categories?limit=100`);
   if (!response.ok) {
     throw new ApiError(response);
   }

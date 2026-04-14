@@ -1,4 +1,5 @@
 import { createContext, use, useState, useEffect, useMemo } from "react";
+import { API_BASE, apiFetch } from "../api-config";
 import type { ReactNode } from "react";
 import { ThemeProvider } from "@mui/material";
 import { createAppTheme } from "../../theme";
@@ -31,8 +32,6 @@ const DEFAULT_SETTINGS: CompanySettings = {
   contactPhone: "",
 };
 
-const API_BASE = "http://localhost:3333";
-
 const CompanySettingsContext = createContext<CompanySettingsContextValue>({
   settings: null,
   isLoading: true,
@@ -56,7 +55,7 @@ export const CompanySettingsProvider = ({
   const fetchSettings = async (): Promise<void> => {
     try {
       setIsLoading(true);
-      const response = await fetch(`${API_BASE}/company-settings`);
+      const response = await apiFetch(`${API_BASE}/company-settings`);
       if (response.status === 404) {
         setSettings(DEFAULT_SETTINGS);
         return;

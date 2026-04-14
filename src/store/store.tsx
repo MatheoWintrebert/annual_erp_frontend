@@ -5,6 +5,36 @@ import { accountSlice } from "./account";
 import type { RootState } from "@/store";
 import { accountApi, authApi } from "@/services";
 
+const AUTH_STORAGE_KEY = "pms_auth";
+
+function loadAuthFromStorage(): Partial<RootState> {
+  try {
+    const raw = localStorage.getItem(AUTH_STORAGE_KEY);
+    if (!raw) return {};
+    const { token, isAuthenticated } = JSON.parse(raw) as {
+      token: string;
+      isAuthenticated: boolean;
+    };
+    if (!token || !isAuthenticated) return {};
+    return { auth: { token, isAuthenticated, qrCode: null, identityToken: null, showStillHere: false } };
+  } catch {
+    return {};
+  }
+}
+
+function saveAuthToStorage(state: RootState): void {
+  try {
+    const { token, isAuthenticated } = state.auth;
+    if (token && isAuthenticated) {
+      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token, isAuthenticated }));
+    } else {
+      localStorage.removeItem(AUTH_STORAGE_KEY);
+    }
+  } catch {
+    // storage unavailable — silently skip
+  }
+}
+
 // `combineSlices` automatically combines the reducers using
 // their `reducerPath`s, therefore we no longer need to call `combineReducers`.
 export const rootReducer = combineSlices(
@@ -38,4 +68,8 @@ export const makeStore = (preloadedState?: Partial<RootState>) => {
   return store;
 };
 
-export const store = makeStore();
+export const store = makeStore(loadAuthFromStorage());
+
+store.subscribe(() => {
+  saveAuthToStorage(store.getState());
+});

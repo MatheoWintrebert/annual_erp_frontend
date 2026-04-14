@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ApiError } from "../../hooks/useApiError";
-import { API_BASE } from "../../api-config";
+import { API_BASE, apiFetch } from "../../api-config";
 import type {
   PalettierOption,
   PlacementResult,
@@ -17,7 +17,7 @@ const fetchProducts = async (search: string): Promise<ProductsListResponse> => {
   if (search.length > 0) {
     params.set("search", search);
   }
-  const response = await fetch(`${API_BASE}/products?${params.toString()}`);
+  const response = await apiFetch(`${API_BASE}/products?${params.toString()}`);
   if (!response.ok) {
     throw new ApiError(response);
   }
@@ -25,7 +25,7 @@ const fetchProducts = async (search: string): Promise<ProductsListResponse> => {
 };
 
 const fetchUnitsOfMeasure = async (): Promise<UnitsOfMeasureListResponse> => {
-  const response = await fetch(`${API_BASE}/units-of-measure?limit=100`);
+  const response = await apiFetch(`${API_BASE}/units-of-measure?limit=100`);
   if (!response.ok) {
     throw new ApiError(response);
   }
@@ -35,7 +35,7 @@ const fetchUnitsOfMeasure = async (): Promise<UnitsOfMeasureListResponse> => {
 const recommendPlacement = async (data: {
   productIds: number[];
 }): Promise<PlacementResult> => {
-  const response = await fetch(
+  const response = await apiFetch(
     `${API_BASE}/palettes/intake/recommend-placement`,
     {
       method: "POST",
@@ -52,7 +52,7 @@ const recommendPlacement = async (data: {
 const registerPalette = async (
   data: RegisterPalettePayload
 ): Promise<RegisterPaletteResponse> => {
-  const response = await fetch(`${API_BASE}/palettes/intake/register`, {
+  const response = await apiFetch(`${API_BASE}/palettes/intake/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -66,7 +66,7 @@ const registerPalette = async (
 const registerConflictResolution = async (
   data: RegisterConflictResolutionPayload
 ): Promise<RegisterConflictResolutionResponse> => {
-  const response = await fetch(
+  const response = await apiFetch(
     `${API_BASE}/palettes/intake/register-conflict-resolution`,
     {
       method: "POST",
@@ -81,7 +81,7 @@ const registerConflictResolution = async (
 };
 
 const fetchPalettiers = async (): Promise<PalettierOption[]> => {
-  const response = await fetch(`${API_BASE}/palettiers`);
+  const response = await apiFetch(`${API_BASE}/palettiers`);
   if (!response.ok) {
     throw new ApiError(response);
   }
