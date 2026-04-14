@@ -16,7 +16,15 @@ function loadAuthFromStorage(): Partial<RootState> {
       isAuthenticated: boolean;
     };
     if (!token || !isAuthenticated) return {};
-    return { auth: { token, isAuthenticated, qrCode: null, identityToken: null, showStillHere: false } };
+    return {
+      auth: {
+        token,
+        isAuthenticated,
+        qrCode: null,
+        identityToken: null,
+        showStillHere: false,
+      },
+    };
   } catch {
     return {};
   }
@@ -26,7 +34,10 @@ function saveAuthToStorage(state: RootState): void {
   try {
     const { token, isAuthenticated } = state.auth;
     if (token && isAuthenticated) {
-      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token, isAuthenticated }));
+      localStorage.setItem(
+        AUTH_STORAGE_KEY,
+        JSON.stringify({ token, isAuthenticated })
+      );
     } else {
       localStorage.removeItem(AUTH_STORAGE_KEY);
     }
