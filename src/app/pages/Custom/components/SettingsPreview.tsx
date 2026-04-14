@@ -12,7 +12,7 @@ const SettingsPreview: FC<SettingsPreviewProps> = ({ values }) => (
       <Box
         sx={{
           p: 2,
-          bgcolor: values.primaryColor,
+          bgcolor: values.primaryColor ?? "grey.500",
           color: "white",
           borderRadius: 1,
           mb: 2,
@@ -39,14 +39,14 @@ const SettingsPreview: FC<SettingsPreviewProps> = ({ values }) => (
         <Chip
           label="Primary Color"
           sx={{
-            bgcolor: values.primaryColor,
+            bgcolor: values.primaryColor ?? "grey.500",
             color: "white",
           }}
         />
         <Chip
           label="Secondary Color"
           sx={{
-            bgcolor: values.secondaryColor,
+            bgcolor: values.secondaryColor ?? "grey.500",
             color: "white",
           }}
         />
