@@ -64,7 +64,7 @@ const ResolveViolationPage: FC = () => {
           positionZ,
         });
         showSnackbar("Palette relocated successfully", "success");
-        navigate("/home");
+        await navigate("/home");
       } catch (err) {
         void handleError(err);
       }
@@ -84,7 +84,9 @@ const ResolveViolationPage: FC = () => {
         <Container maxWidth="md" sx={{ py: 4 }}>
           <Button
             startIcon={<ArrowBackIcon />}
-            onClick={() => navigate("/home")}
+            onClick={() => {
+              void navigate("/home");
+            }}
             sx={{ mb: 3 }}
             color="secondary"
           >

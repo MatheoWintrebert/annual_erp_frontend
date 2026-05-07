@@ -143,7 +143,7 @@ const PaletteTable: FC<PaletteTableProps> = ({ rows, violationsMap }) => {
       await deleteMutation.mutateAsync(confirmDeleteId);
       showSnackbar("Palette removed", "success");
     } catch (err) {
-      handleError(err);
+      void handleError(err);
     } finally {
       setConfirmDeleteId(null);
     }

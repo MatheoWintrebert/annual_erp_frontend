@@ -58,7 +58,7 @@ const RuleViolationPanel: FC<RuleViolationPanelProps> = ({
                   variant="outlined"
                   color="error"
                   onClick={() => {
-                    navigate(
+                    void navigate(
                       `/resolve-violation/${String(violation.paletteId)}`,
                       { state: { violation } }
                     );

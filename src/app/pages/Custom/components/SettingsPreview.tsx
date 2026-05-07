@@ -34,7 +34,7 @@ const SettingsPreview: FC<SettingsPreviewProps> = ({ control }) => {
               </Avatar>
             )}
             <Typography variant="h6" fontWeight={700}>
-              {values.name || "Your Company"}
+              {values.name ?? "Your Company"}
             </Typography>
           </Box>
         </Box>
