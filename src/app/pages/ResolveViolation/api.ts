@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { ApiError } from "../../hooks/useApiError";
 import { API_BASE, apiFetch } from "../../api-config";
 import type { PlacementResult } from "../Intake/types";
@@ -20,9 +20,7 @@ const fetchRecommendedPlacement = async (
   return response.json() as Promise<PlacementResult>;
 };
 
-export const useGetRecommendedPlacement = (productIds: number[]) =>
-  useQuery({
-    queryKey: ["placement-recommendation", productIds],
-    queryFn: () => fetchRecommendedPlacement(productIds),
-    enabled: productIds.length > 0,
+export const useGetRecommendedPlacement = () =>
+  useMutation({
+    mutationFn: fetchRecommendedPlacement,
   });

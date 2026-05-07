@@ -60,7 +60,7 @@ const StockPage: FC = () => {
     []
   );
 
-  const rows = flattenPalettes(palettes);
+  const rows = useMemo(() => flattenPalettes(palettes), [palettes]);
   const violationsMap = useMemo(
     () => buildViolationsMap(violations),
     [violations]

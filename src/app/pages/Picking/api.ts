@@ -1,6 +1,5 @@
 import {
   useQuery,
-  useQueries,
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
@@ -58,26 +57,13 @@ const fetchAvailableStock = async (
   return response.json() as Promise<AvailableStockItem[]>;
 };
 
-export const useGetAvailableStock = (productIds: number[]) => {
-  const results = useQueries({
-    queries: productIds.map((id) => ({
-      queryKey: ["picking-lists", "available-stock", id],
-      queryFn: () => fetchAvailableStock([id]),
-      staleTime: 15_000,
-    })),
+export const useGetAvailableStock = (productIds: number[]) =>
+  useQuery({
+    queryKey: ["picking-lists", "available-stock", productIds],
+    queryFn: () => fetchAvailableStock(productIds),
+    enabled: productIds.length > 0,
+    staleTime: 15_000,
   });
-
-  const data: AvailableStockItem[] = [];
-  for (const result of results) {
-    if (result.data) {
-      for (const item of result.data) {
-        data.push(item);
-      }
-    }
-  }
-
-  return { data: data.length > 0 ? data : undefined };
-};
 
 const createPickingList = async (
   payload: CreatePickingListPayload

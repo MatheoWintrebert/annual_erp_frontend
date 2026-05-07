@@ -11,6 +11,8 @@ import type { FC } from "react";
 import type { TabPanelProps } from "../types";
 import { URL_PATTERN } from "../types";
 
+const isSafeImageUrl = (url: string): boolean => URL_PATTERN.test(url);
+
 const BrandingTab: FC<TabPanelProps> = ({ control, errors }) => (
   <Stack spacing={3}>
     <Typography variant="h6" fontWeight={600}>
@@ -41,15 +43,16 @@ const BrandingTab: FC<TabPanelProps> = ({ control, errors }) => (
           }
           slotProps={{
             input: {
-              startAdornment: field.value ? (
-                <InputAdornment position="start">
-                  <Avatar
-                    src={field.value}
-                    variant="rounded"
-                    sx={{ width: 32, height: 32 }}
-                  />
-                </InputAdornment>
-              ) : undefined,
+              startAdornment:
+                field.value && isSafeImageUrl(field.value) ? (
+                  <InputAdornment position="start">
+                    <Avatar
+                      src={field.value}
+                      variant="rounded"
+                      sx={{ width: 32, height: 32 }}
+                    />
+                  </InputAdornment>
+                ) : undefined,
             },
           }}
         />

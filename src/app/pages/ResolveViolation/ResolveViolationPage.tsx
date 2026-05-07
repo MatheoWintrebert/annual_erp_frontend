@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { useMemo, type FC } from "react";
+import { useEffect, useMemo, type FC } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Header from "../../components/ui/Header";
 import Footer from "../../components/ui/Footer";
@@ -41,13 +41,22 @@ const ResolveViolationPage: FC = () => {
     [palette]
   );
 
-  const recommendQuery = useGetRecommendedPlacement(productIds);
+  const {
+    mutate: fetchPlacement,
+    ...recommendMutation
+  } = useGetRecommendedPlacement();
   const updatePositionMutation = useUpdatePalettePosition();
 
+  useEffect(() => {
+    if (productIds.length > 0) {
+      fetchPlacement(productIds);
+    }
+  }, [productIds, fetchPlacement]);
+
   const handleConfirm = (): void => {
-    if (recommendQuery.data?.status !== "resolved") return;
+    if (recommendMutation.data?.status !== "resolved") return;
     const { palettierId, positionX, positionY, positionZ } =
-      recommendQuery.data.recommendation;
+      recommendMutation.data.recommendation;
 
     void (async () => {
       try {
@@ -68,7 +77,7 @@ const ResolveViolationPage: FC = () => {
 
   const isLoading =
     palettesQuery.isPending ||
-    (productIds.length > 0 && recommendQuery.isPending);
+    (productIds.length > 0 && recommendMutation.isPending);
 
   const paletteNotFound =
     !palettesQuery.isPending && palette === undefined;
@@ -129,16 +138,16 @@ const ResolveViolationPage: FC = () => {
 
               <Typography variant="h5">Suggested New Placement</Typography>
 
-              {recommendQuery.data?.status === "resolved" && (
+              {recommendMutation.data?.status === "resolved" && (
                 <>
                   <DirectiveCard
                     palettierName={
-                      recommendQuery.data.recommendation.palettierName
+                      recommendMutation.data.recommendation.palettierName
                     }
-                    positionX={recommendQuery.data.recommendation.positionX}
-                    positionY={recommendQuery.data.recommendation.positionY}
-                    positionZ={recommendQuery.data.recommendation.positionZ}
-                    reasoning={recommendQuery.data.recommendation.reasoning}
+                    positionX={recommendMutation.data.recommendation.positionX}
+                    positionY={recommendMutation.data.recommendation.positionY}
+                    positionZ={recommendMutation.data.recommendation.positionZ}
+                    reasoning={recommendMutation.data.recommendation.reasoning}
                   />
                   <Box display="flex" justifyContent="flex-end">
                     <Button
@@ -164,15 +173,15 @@ const ResolveViolationPage: FC = () => {
                 </>
               )}
 
-              {recommendQuery.data?.status === "conflict" && (
+              {recommendMutation.data?.status === "conflict" && (
                 <Alert severity="warning">
-                  {recommendQuery.data.conflictExplanation} — No fully
+                  {recommendMutation.data.conflictExplanation} — No fully
                   compliant position available. Resolve rule conflicts before
                   relocating this palette.
                 </Alert>
               )}
 
-              {recommendQuery.isError && (
+              {recommendMutation.isError && (
                 <Alert severity="error">
                   Failed to get placement recommendation. Please try again.
                 </Alert>

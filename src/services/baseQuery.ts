@@ -11,9 +11,7 @@ import { clearAccount } from "@/store/account";
 
 const rawBaseQuery = () =>
   fetchBaseQuery({
-    // Vite exposes env vars through import.meta.env. Variables must begin
-    // with "VITE_" in order to be statically injected at build time.
-    baseUrl: import.meta.env.VITE_API_URL as string,
+    baseUrl: (import.meta.env.VITE_API_URL as string | undefined) ?? "",
     prepareHeaders: (
       headers: Headers,
       { getState }: { getState: () => unknown }
