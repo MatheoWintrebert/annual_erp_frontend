@@ -128,7 +128,9 @@ export const SignIn = () => {
               }}
               {...(() => {
                 const { onChange: onPasswordChange, ...passwordReg } =
-                  methods.register("password", { required: "Password is required" });
+                  methods.register("password", {
+                    required: "Password is required",
+                  });
                 return {
                   ...passwordReg,
                   onChange: (e) => {

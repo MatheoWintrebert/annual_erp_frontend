@@ -28,23 +28,19 @@ const ResolveViolationPage: FC = () => {
   const { showSnackbar } = useSnackbar();
   const { handleError } = useApiError();
 
-  const violation = (
-    location.state as { violation?: RuleViolation } | null
-  )?.violation;
+  const violation = (location.state as { violation?: RuleViolation } | null)
+    ?.violation;
 
   const palettesQuery = useGetPalettes();
   const palette = palettesQuery.data?.find((p) => p.id === paletteId);
 
   const productIds = useMemo(
-    () =>
-      palette ? [...new Set(palette.items.map((i) => i.productId))] : [],
+    () => (palette ? [...new Set(palette.items.map((i) => i.productId))] : []),
     [palette]
   );
 
-  const {
-    mutate: fetchPlacement,
-    ...recommendMutation
-  } = useGetRecommendedPlacement();
+  const { mutate: fetchPlacement, ...recommendMutation } =
+    useGetRecommendedPlacement();
   const updatePositionMutation = useUpdatePalettePosition();
 
   useEffect(() => {
@@ -79,8 +75,7 @@ const ResolveViolationPage: FC = () => {
     palettesQuery.isPending ||
     (productIds.length > 0 && recommendMutation.isPending);
 
-  const paletteNotFound =
-    !palettesQuery.isPending && palette === undefined;
+  const paletteNotFound = !palettesQuery.isPending && palette === undefined;
 
   return (
     <Box minHeight="100vh" display="flex" flexDirection="column">
@@ -116,7 +111,9 @@ const ResolveViolationPage: FC = () => {
             <Stack spacing={3}>
               {violation ? (
                 <Alert severity="error">
-                  <Typography fontWeight={600}>{violation.productName}</Typography>
+                  <Typography fontWeight={600}>
+                    {violation.productName}
+                  </Typography>
                   <Typography variant="body2">
                     Currently at <strong>{violation.palettierName}</strong> —
                     Position ({violation.positionX}, {violation.positionY},{" "}
@@ -129,8 +126,8 @@ const ResolveViolationPage: FC = () => {
                 </Alert>
               ) : (
                 <Alert severity="warning">
-                  Palette #{paletteId} — violation details unavailable.
-                  Showing placement recommendation only.
+                  Palette #{paletteId} — violation details unavailable. Showing
+                  placement recommendation only.
                 </Alert>
               )}
 

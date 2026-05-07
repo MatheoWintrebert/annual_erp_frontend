@@ -221,10 +221,9 @@ export const useRegisterOnboardingPalette = () => {
 };
 
 const deletePalette = async (paletteId: number): Promise<void> => {
-  const response = await apiFetch(
-    `${API_BASE}/palettes/${String(paletteId)}`,
-    { method: "DELETE" }
-  );
+  const response = await apiFetch(`${API_BASE}/palettes/${String(paletteId)}`, {
+    method: "DELETE",
+  });
   if (!response.ok) {
     throw new ApiError(response);
   }

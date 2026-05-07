@@ -6,7 +6,11 @@ import Header from "../../components/ui/Header";
 import Footer from "../../components/ui/Footer";
 import { MetricCard } from "../../components/cards";
 import { useApiError } from "../../hooks/useApiError";
-import { useGetDashboardAlerts, useGetDashboardSummary, useGetRuleViolations } from "./api";
+import {
+  useGetDashboardAlerts,
+  useGetDashboardSummary,
+  useGetRuleViolations,
+} from "./api";
 import ExpiryAlertPanel from "./components/ExpiryAlertPanel";
 import LowStockPanel from "./components/LowStockPanel";
 import OnboardingGuide from "./components/OnboardingGuide";

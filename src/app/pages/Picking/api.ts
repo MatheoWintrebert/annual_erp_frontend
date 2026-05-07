@@ -1,8 +1,4 @@
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ApiError } from "../../hooks/useApiError";
 import { API_BASE, apiFetch } from "../../api-config";
 import type {

@@ -1,4 +1,4 @@
-import React from "react";
+import type React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import HomePage from "./app/pages/Home/HomePage";
 import CustomPage from "./app/pages/Custom/CustomPage";

@@ -568,13 +568,16 @@ describe("HomePage", () => {
   it("shows no violations message when violations list is empty", () => {
     alertsOverride = loadedAlerts(mockNoAlerts);
     summaryOverride = loadedSummary(mockSummaryFull);
-    violationsOverride = { data: [], isPending: false, isError: false, error: null };
+    violationsOverride = {
+      data: [],
+      isPending: false,
+      isError: false,
+      error: null,
+    };
 
     renderPage();
 
-    expect(
-      screen.getByText(/No rule violations/)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/No rule violations/)).toBeInTheDocument();
   });
 
   it("renders violation cards with product name, palettier, rule and resolve button", () => {
