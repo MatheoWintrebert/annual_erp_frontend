@@ -3,7 +3,9 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom/vitest";
 import { MemoryRouter } from "react-router-dom";
+import { Provider } from "react-redux";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { makeStore } from "@/store/store";
 import PalettierPage from "./PalettierPage";
 
 const mockShowSnackbar = vi.fn();
@@ -112,11 +114,13 @@ const createQueryClient = () =>
 
 const renderPage = () =>
   render(
-    <QueryClientProvider client={createQueryClient()}>
-      <MemoryRouter initialEntries={["/palettier"]}>
-        <PalettierPage />
-      </MemoryRouter>
-    </QueryClientProvider>
+    <Provider store={makeStore()}>
+      <QueryClientProvider client={createQueryClient()}>
+        <MemoryRouter initialEntries={["/palettier"]}>
+          <PalettierPage />
+        </MemoryRouter>
+      </QueryClientProvider>
+    </Provider>
   );
 
 describe("PalettierPage", () => {

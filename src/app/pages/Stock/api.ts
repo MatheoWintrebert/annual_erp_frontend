@@ -219,3 +219,23 @@ export const useRegisterOnboardingPalette = () => {
     },
   });
 };
+
+const deletePalette = async (paletteId: number): Promise<void> => {
+  const response = await apiFetch(
+    `${API_BASE}/palettes/${String(paletteId)}`,
+    { method: "DELETE" }
+  );
+  if (!response.ok) {
+    throw new ApiError(response);
+  }
+};
+
+export const useDeletePalette = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (paletteId: number) => deletePalette(paletteId),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["palettes"] });
+    },
+  });
+};

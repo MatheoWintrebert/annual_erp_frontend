@@ -1,7 +1,16 @@
 import { useMemo, useState } from "react";
 import {
+  Button,
   Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   IconButton,
+  ListItemIcon,
+  Menu,
+  MenuItem,
   Paper,
   Table,
   TableBody,
@@ -11,8 +20,7 @@ import {
   TableRow,
   TableSortLabel,
 } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import { WarningAmber } from "@mui/icons-material";
+import { Delete, Edit, MoreVert, WarningAmber } from "@mui/icons-material";
 import type { FC } from "react";
 import type {
   EditPaletteData,
@@ -24,6 +32,9 @@ import type {
 import { formatPosition } from "../types";
 import PositionEditDialog from "./PositionEditDialog";
 import ViolationAlertDialog from "../../../components/ViolationAlertDialog";
+import { useDeletePalette } from "../api";
+import { useSnackbar } from "../../../components/ui/SnackbarProvider";
+import { useApiError } from "../../../hooks/useApiError";
 
 interface PaletteTableProps {
   rows: PaletteTableRow[];
@@ -77,6 +88,13 @@ const PaletteTable: FC<PaletteTableProps> = ({ rows, violationsMap }) => {
   const [viewViolationsPaletteId, setViewViolationsPaletteId] = useState<
     number | null
   >(null);
+  const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
+  const [menuRow, setMenuRow] = useState<PaletteTableRow | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
+
+  const { showSnackbar } = useSnackbar();
+  const { handleError } = useApiError();
+  const deleteMutation = useDeletePalette();
 
   const handleSort = (field: SortField) => {
     if (field === sortField) {
@@ -84,6 +102,50 @@ const PaletteTable: FC<PaletteTableProps> = ({ rows, violationsMap }) => {
     } else {
       setSortField(field);
       setSortDirection("asc");
+    }
+  };
+
+  const handleMenuOpen = (
+    event: React.MouseEvent<HTMLElement>,
+    row: PaletteTableRow
+  ) => {
+    setMenuAnchor(event.currentTarget);
+    setMenuRow(row);
+  };
+
+  const handleMenuClose = () => {
+    setMenuAnchor(null);
+    setMenuRow(null);
+  };
+
+  const handleModify = () => {
+    if (!menuRow) return;
+    setEditPalette({
+      paletteId: menuRow.paletteId,
+      palettierName: menuRow.palettierName,
+      palettierId: menuRow.palettierId,
+      positionX: menuRow.positionX,
+      positionY: menuRow.positionY,
+      positionZ: menuRow.positionZ,
+    });
+    handleMenuClose();
+  };
+
+  const handleRemoveClick = () => {
+    if (!menuRow) return;
+    setConfirmDeleteId(menuRow.paletteId);
+    handleMenuClose();
+  };
+
+  const handleConfirmDelete = async () => {
+    if (confirmDeleteId === null) return;
+    try {
+      await deleteMutation.mutateAsync(confirmDeleteId);
+      showSnackbar("Palette removed", "success");
+    } catch (err) {
+      handleError(err);
+    } finally {
+      setConfirmDeleteId(null);
     }
   };
 
@@ -162,18 +224,18 @@ const PaletteTable: FC<PaletteTableProps> = ({ rows, violationsMap }) => {
                       row.positionZ
                     )}
                   </TableCell>
-                  <TableCell>{row.productName || "\u2014"}</TableCell>
-                  <TableCell>{row.productReference || "\u2014"}</TableCell>
+                  <TableCell>{row.productName || "—"}</TableCell>
+                  <TableCell>{row.productReference || "—"}</TableCell>
                   <TableCell>
                     {row.unitOfMeasureName
                       ? `${String(row.quantity)} ${row.unitOfMeasureName}`
-                      : "\u2014"}
+                      : "—"}
                   </TableCell>
-                  <TableCell>{row.lotReference || "\u2014"}</TableCell>
+                  <TableCell>{row.lotReference || "—"}</TableCell>
                   <TableCell>
                     {row.expiryDate
                       ? new Date(row.expiryDate).toLocaleDateString()
-                      : "\u2014"}
+                      : "—"}
                   </TableCell>
                   <TableCell>
                     {new Date(row.receivedAt).toLocaleDateString()}
@@ -183,19 +245,12 @@ const PaletteTable: FC<PaletteTableProps> = ({ rows, violationsMap }) => {
                       <>
                         <IconButton
                           size="small"
-                          aria-label="edit position"
-                          onClick={() => {
-                            setEditPalette({
-                              paletteId: row.paletteId,
-                              palettierName: row.palettierName,
-                              palettierId: row.palettierId,
-                              positionX: row.positionX,
-                              positionY: row.positionY,
-                              positionZ: row.positionZ,
-                            });
+                          aria-label="palette actions"
+                          onClick={(e) => {
+                            handleMenuOpen(e, row);
                           }}
                         >
-                          <EditIcon fontSize="small" />
+                          <MoreVert fontSize="small" />
                         </IconButton>
                         {(() => {
                           const paletteViolations = violationsMap?.get(
@@ -225,6 +280,59 @@ const PaletteTable: FC<PaletteTableProps> = ({ rows, violationsMap }) => {
           </TableBody>
         </Table>
       </TableContainer>
+
+      <Menu
+        anchorEl={menuAnchor}
+        open={Boolean(menuAnchor)}
+        onClose={handleMenuClose}
+      >
+        <MenuItem onClick={handleModify}>
+          <ListItemIcon>
+            <Edit fontSize="small" />
+          </ListItemIcon>
+          Modify
+        </MenuItem>
+        <MenuItem onClick={handleRemoveClick} sx={{ color: "error.main" }}>
+          <ListItemIcon sx={{ color: "error.main" }}>
+            <Delete fontSize="small" />
+          </ListItemIcon>
+          Remove
+        </MenuItem>
+      </Menu>
+
+      <Dialog
+        open={confirmDeleteId !== null}
+        onClose={() => {
+          setConfirmDeleteId(null);
+        }}
+      >
+        <DialogTitle>Remove Palette</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            This palette will be permanently removed. This action cannot be
+            undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setConfirmDeleteId(null);
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            color="error"
+            disabled={deleteMutation.isPending}
+            onClick={() => {
+              void handleConfirmDelete();
+            }}
+          >
+            Remove
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       <PositionEditDialog
         open={editPalette !== null}
         onClose={() => {

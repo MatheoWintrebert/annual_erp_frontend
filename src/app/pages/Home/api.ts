@@ -5,6 +5,7 @@ import type {
   DashboardAlertsResponse,
   DashboardSummaryResponse,
 } from "./types";
+import type { RuleViolation } from "../../types/rule-violation";
 
 const fetchDashboardAlerts = async (): Promise<DashboardAlertsResponse> => {
   const response = await apiFetch(`${API_BASE}/dashboard/alerts`);
@@ -35,3 +36,18 @@ export const useGetDashboardSummary = () => {
     queryFn: fetchDashboardSummary,
   });
 };
+
+const fetchRuleViolations = async (): Promise<RuleViolation[]> => {
+  const response = await apiFetch(`${API_BASE}/rules/violations`);
+  if (!response.ok) {
+    throw new ApiError(response);
+  }
+  return response.json() as Promise<RuleViolation[]>;
+};
+
+export const useGetRuleViolations = () =>
+  useQuery({
+    queryKey: ["rules", "violations"],
+    queryFn: fetchRuleViolations,
+    staleTime: 30_000,
+  });

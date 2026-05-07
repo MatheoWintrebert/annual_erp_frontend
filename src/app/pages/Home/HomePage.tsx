@@ -6,10 +6,11 @@ import Header from "../../components/ui/Header";
 import Footer from "../../components/ui/Footer";
 import { MetricCard } from "../../components/cards";
 import { useApiError } from "../../hooks/useApiError";
-import { useGetDashboardAlerts, useGetDashboardSummary } from "./api";
+import { useGetDashboardAlerts, useGetDashboardSummary, useGetRuleViolations } from "./api";
 import ExpiryAlertPanel from "./components/ExpiryAlertPanel";
 import LowStockPanel from "./components/LowStockPanel";
 import OnboardingGuide from "./components/OnboardingGuide";
+import RuleViolationPanel from "./components/RuleViolationPanel";
 
 const trendArrow: Record<string, string> = {
   increasing: "\u2191",
@@ -20,6 +21,7 @@ const trendArrow: Record<string, string> = {
 const HomePage: FC = () => {
   const alertsQuery = useGetDashboardAlerts();
   const summaryQuery = useGetDashboardSummary();
+  const violationsQuery = useGetRuleViolations();
   const { handleError } = useApiError();
 
   useEffect(() => {
@@ -33,6 +35,12 @@ const HomePage: FC = () => {
       void handleError(summaryQuery.error);
     }
   }, [summaryQuery.isError, summaryQuery.error, handleError]);
+
+  useEffect(() => {
+    if (violationsQuery.isError) {
+      void handleError(violationsQuery.error);
+    }
+  }, [violationsQuery.isError, violationsQuery.error, handleError]);
 
   const isLoading = alertsQuery.isPending || summaryQuery.isPending;
 
@@ -91,6 +99,13 @@ const HomePage: FC = () => {
               </Box>
             </>
           )}
+
+          <Box sx={{ mb: 4 }}>
+            <RuleViolationPanel
+              violations={violationsQuery.data ?? []}
+              loading={violationsQuery.isPending}
+            />
+          </Box>
         </Container>
       </Box>
       <Footer />
