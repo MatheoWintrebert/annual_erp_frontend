@@ -19,7 +19,7 @@ export const ProtectedRoute = (props: ProtectedRouteProps) => {
   if (!isAuthenticated) {
     const fromPath = location.pathname;
     const searchParams = new URLSearchParams(location.search);
-    searchParams.set("from", encodeURIComponent(fromPath));
+    searchParams.set("from", fromPath);
     const redirectTo = `${redirectPath}?${searchParams.toString()}`;
     return <Navigate to={redirectTo as To} replace />;
   }

@@ -17,7 +17,7 @@ export interface TabPanelProps {
 }
 
 export interface SettingsPreviewProps {
-  values: CompanySettings;
+  control: Control<CompanySettings>;
 }
 
 export const LANGUAGES = [

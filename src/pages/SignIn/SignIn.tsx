@@ -126,13 +126,17 @@ export const SignIn = () => {
                   ),
                 },
               }}
-              {...methods.register("password", {
-                required: "Password is required",
-              })}
-              onChange={(e) => {
-                void methods.register("password").onChange(e);
-                setErrorMessage("");
-              }}
+              {...(() => {
+                const { onChange: onPasswordChange, ...passwordReg } =
+                  methods.register("password", { required: "Password is required" });
+                return {
+                  ...passwordReg,
+                  onChange: (e) => {
+                    void onPasswordChange(e);
+                    setErrorMessage("");
+                  },
+                };
+              })()}
               onKeyDown={(e) => {
                 void (async () => {
                   if (e.key === "Enter") {

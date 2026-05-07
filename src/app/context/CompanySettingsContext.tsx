@@ -1,4 +1,4 @@
-import { createContext, use, useState, useEffect, useMemo } from "react";
+import { createContext, use, useState, useEffect, useMemo, useCallback } from "react";
 import { API_BASE, apiFetch } from "../api-config";
 import type { ReactNode } from "react";
 import { ThemeProvider } from "@mui/material";
@@ -52,7 +52,7 @@ export const CompanySettingsProvider = ({
   const [settings, setSettings] = useState<CompanySettings | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchSettings = async (): Promise<void> => {
+  const fetchSettings = useCallback(async (): Promise<void> => {
     try {
       setIsLoading(true);
       const response = await apiFetch(`${API_BASE}/company-settings`);
@@ -71,11 +71,11 @@ export const CompanySettingsProvider = ({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     void fetchSettings();
-  }, []);
+  }, [fetchSettings]);
 
   const theme = useMemo(() => {
     const colors = settings ?? DEFAULT_SETTINGS;
@@ -98,7 +98,7 @@ export const CompanySettingsProvider = ({
       isLoading,
       refetch: fetchSettings,
     }),
-    [settings, isLoading]
+    [settings, isLoading, fetchSettings]
   );
 
   return (

@@ -1,9 +1,12 @@
 import { Box, Typography, Card, Stack, Avatar, Chip } from "@mui/material";
 import { Business } from "@mui/icons-material";
 import type { FC } from "react";
+import { useWatch } from "react-hook-form";
 import type { SettingsPreviewProps } from "../types";
 
-const SettingsPreview: FC<SettingsPreviewProps> = ({ values }) => (
+const SettingsPreview: FC<SettingsPreviewProps> = ({ control }) => {
+  const values = useWatch({ control });
+  return (
   <Stack spacing={3}>
     <Card sx={{ p: 3 }}>
       <Typography variant="h6" fontWeight={600} gutterBottom>
@@ -66,6 +69,7 @@ const SettingsPreview: FC<SettingsPreviewProps> = ({ values }) => (
       </Typography>
     </Card>
   </Stack>
-);
+  );
+};
 
 export default SettingsPreview;

@@ -44,14 +44,11 @@ const CustomPage: FC = () => {
   const {
     control,
     handleSubmit,
-    watch,
     reset,
     formState: { errors, isDirty },
   } = useForm<CompanySettings>({
     defaultValues: DEFAULT_SETTINGS,
   });
-
-  const watchedValues = watch();
 
   useEffect(() => {
     const loadSettings = async (): Promise<void> => {
@@ -241,7 +238,7 @@ const CustomPage: FC = () => {
               </Box>
 
               <Box sx={{ flex: { xs: "1 1 100%", lg: "1 1 33%" } }}>
-                <SettingsPreview values={watchedValues} />
+                <SettingsPreview control={control} />
               </Box>
             </Box>
           )}
