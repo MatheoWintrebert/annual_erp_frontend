@@ -4,8 +4,11 @@ import {
   Button,
   CircularProgress,
   Container,
+  Stack,
   Typography,
 } from "@mui/material";
+import ViewInArIcon from "@mui/icons-material/ViewInAr";
+import { useNavigate } from "react-router-dom";
 import type { FC } from "react";
 import Header from "../../components/ui/Header";
 import Footer from "../../components/ui/Footer";
@@ -21,6 +24,7 @@ import {
 } from "./components";
 
 const StockPage: FC = () => {
+  const navigate = useNavigate();
   const [filterParams, setFilterParams] = useState<{
     palettierId?: number;
     search?: string;
@@ -123,17 +127,33 @@ const StockPage: FC = () => {
             <Typography variant="h3" color="text.primary" fontWeight={600}>
               Stock Overview
             </Typography>
-            {(palettes.length > 0 || hasActiveFilters) && (
+            <Stack direction="row" spacing={1}>
               <Button
                 variant="outlined"
                 color="secondary"
+                startIcon={<ViewInArIcon />}
+                disabled={filterParams.palettierId == null}
                 onClick={() => {
-                  setIsOnboarding(true);
+                  if (filterParams.palettierId == null) return;
+                  void navigate(
+                    `/palettier/3d?palettierId=${String(filterParams.palettierId)}`
+                  );
                 }}
               >
-                Add Existing Stock
+                3D View
               </Button>
-            )}
+              {(palettes.length > 0 || hasActiveFilters) && (
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  onClick={() => {
+                    setIsOnboarding(true);
+                  }}
+                >
+                  Add Existing Stock
+                </Button>
+              )}
+            </Stack>
           </Box>
 
           <Box mb={3}>
