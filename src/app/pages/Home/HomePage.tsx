@@ -10,6 +10,7 @@ import { useGetDashboardAlerts, useGetDashboardSummary } from "./api";
 import ExpiryAlertPanel from "./components/ExpiryAlertPanel";
 import LowStockPanel from "./components/LowStockPanel";
 import OnboardingGuide from "./components/OnboardingGuide";
+import Palettier3DPreview from "./components/Palettier3DPreview";
 
 const trendArrow: Record<string, string> = {
   increasing: "\u2191",
@@ -61,6 +62,10 @@ const HomePage: FC = () => {
               </Box>
             </>
           )}
+
+          <Box sx={{ mb: 4 }}>
+            <Palettier3DPreview />
+          </Box>
 
           {summaryQuery.data && (
             <>

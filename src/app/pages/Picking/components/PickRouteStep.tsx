@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Box,
   Card,
@@ -9,8 +10,10 @@ import {
   Typography,
 } from "@mui/material";
 import SkipNextIcon from "@mui/icons-material/SkipNext";
+import PlaceIcon from "@mui/icons-material/Place";
 import type { FC } from "react";
 import type { PickExecutionItem } from "../types";
+import PaletteLocatorDialog from "./PaletteLocatorDialog";
 
 interface PickRouteStepProps {
   executionItems: PickExecutionItem[];
@@ -34,6 +37,10 @@ const PickRouteStep: FC<PickRouteStepProps> = ({
   onSkip,
   onQuantityChange,
 }) => {
+  const [locatorItem, setLocatorItem] = useState<PickExecutionItem | null>(
+    null,
+  );
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
       {executionItems.map((item, index) => {
@@ -122,23 +129,50 @@ const PickRouteStep: FC<PickRouteStepProps> = ({
                   {item.lotReference}
                 </Typography>
               </Box>
-              {!isPicked && !isSkipped && (
-                <Tooltip title="Skip — item not found">
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
+                <Tooltip title="Localiser dans le palettier">
                   <IconButton
                     size="small"
                     onClick={() => {
-                      onSkip(index);
+                      setLocatorItem(item);
                     }}
-                    color="default"
+                    color="warning"
                   >
-                    <SkipNextIcon />
+                    <PlaceIcon />
                   </IconButton>
                 </Tooltip>
-              )}
+                {!isPicked && !isSkipped && (
+                  <Tooltip title="Skip — item not found">
+                    <IconButton
+                      size="small"
+                      onClick={() => {
+                        onSkip(index);
+                      }}
+                      color="default"
+                    >
+                      <SkipNextIcon />
+                    </IconButton>
+                  </Tooltip>
+                )}
+              </Box>
             </Card>
           </Box>
         );
       })}
+
+      {locatorItem && (
+        <PaletteLocatorDialog
+          open
+          onClose={() => {
+            setLocatorItem(null);
+          }}
+          palettierName={locatorItem.palettierName}
+          positionX={locatorItem.positionX}
+          positionY={locatorItem.positionY}
+          positionZ={locatorItem.positionZ}
+          productName={locatorItem.productName}
+        />
+      )}
     </Box>
   );
 };

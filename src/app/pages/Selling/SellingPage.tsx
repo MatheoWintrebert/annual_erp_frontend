@@ -69,7 +69,7 @@ const SellingPage: React.FC = () => {
 						<Grid sx={{ textAlign: { xs: "center", md: "left" } }}>
 							<Stack spacing={2} alignItems="center" textAlign="center">
 								<Chip
-									label="✨ Solution ERP intelligente"
+									label="✨ Solution WMS intelligente"
 									color="secondary"
 									sx={{ fontWeight: 600, fontSize: "1rem", mb: 2 }}
 								/>
@@ -86,7 +86,7 @@ const SellingPage: React.FC = () => {
 									</Typography>
 								</Typography>
 								<Typography variant="h5" sx={{ opacity: 0.9 }} gutterBottom>
-									Un ERP moderne pour piloter votre activité, vos équipes et vos
+									Un WMS moderne pour piloter votre activité, vos équipes et vos
 									finances en toute sérénité.
 								</Typography>
 								<Stack

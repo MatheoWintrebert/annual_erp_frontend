@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import HomePage from "./app/pages/Home/HomePage";
 import CustomPage from "./app/pages/Custom/CustomPage";
 import PalettierPage from "./app/pages/Palettier/PalettierPage";
+import Palettier3DPage from "./app/pages/Palettier/Palettier3DPage";
 import ProductPage from "./app/pages/Product/ProductPage";
 import RulesPage from "./app/pages/Rules/RulesPage";
 import IntakePage from "./app/pages/Intake/IntakePage";
@@ -24,6 +25,7 @@ const Router: React.FC = () => (
         <Route path="/pick" element={<PickingPage />} />
         <Route path="/custom" element={<CustomPage />} />
         <Route path="/palettier" element={<PalettierPage />} />
+        <Route path="/palettier/3d" element={<Palettier3DPage />} />
         <Route path="/product" element={<ProductPage />} />
         <Route path="/rules" element={<RulesPage />} />
         <Route path="/stock" element={<StockPage />} />

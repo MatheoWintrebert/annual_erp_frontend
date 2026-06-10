@@ -10,8 +10,10 @@ import {
   TableHead,
   TableRow,
   TableSortLabel,
+  Tooltip,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
+import PlaceIcon from "@mui/icons-material/Place";
 import { WarningAmber } from "@mui/icons-material";
 import type { FC } from "react";
 import type {
@@ -23,7 +25,16 @@ import type {
 } from "../types";
 import { formatPosition } from "../types";
 import PositionEditDialog from "./PositionEditDialog";
+import PaletteLocatorDialog from "../../Picking/components/PaletteLocatorDialog";
 import ViolationAlertDialog from "../../../components/ViolationAlertDialog";
+
+interface LocatorTarget {
+  palettierName: string;
+  positionX: number;
+  positionY: number;
+  positionZ: number;
+  productName: string;
+}
 
 interface PaletteTableProps {
   rows: PaletteTableRow[];
@@ -74,6 +85,9 @@ const PaletteTable: FC<PaletteTableProps> = ({ rows, violationsMap }) => {
   const [sortField, setSortField] = useState<SortField>("receivedAt");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
   const [editPalette, setEditPalette] = useState<EditPaletteData | null>(null);
+  const [locatorTarget, setLocatorTarget] = useState<LocatorTarget | null>(
+    null
+  );
   const [viewViolationsPaletteId, setViewViolationsPaletteId] = useState<
     number | null
   >(null);
@@ -179,6 +193,24 @@ const PaletteTable: FC<PaletteTableProps> = ({ rows, violationsMap }) => {
                     {new Date(row.receivedAt).toLocaleDateString()}
                   </TableCell>
                   <TableCell>
+                    <Tooltip title="Locate in 3D">
+                      <IconButton
+                        size="small"
+                        aria-label="locate palette in 3D"
+                        color="warning"
+                        onClick={() => {
+                          setLocatorTarget({
+                            palettierName: row.palettierName,
+                            positionX: row.positionX,
+                            positionY: row.positionY,
+                            positionZ: row.positionZ,
+                            productName: row.productName || "Palette",
+                          });
+                        }}
+                      >
+                        <PlaceIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
                     {isFirstForPalette && (
                       <>
                         <IconButton
@@ -231,6 +263,17 @@ const PaletteTable: FC<PaletteTableProps> = ({ rows, violationsMap }) => {
           setEditPalette(null);
         }}
         palette={editPalette}
+      />
+      <PaletteLocatorDialog
+        open={locatorTarget !== null}
+        onClose={() => {
+          setLocatorTarget(null);
+        }}
+        palettierName={locatorTarget?.palettierName ?? ""}
+        positionX={locatorTarget?.positionX ?? 0}
+        positionY={locatorTarget?.positionY ?? 0}
+        positionZ={locatorTarget?.positionZ ?? 0}
+        productName={locatorTarget?.productName ?? ""}
       />
       <ViolationAlertDialog
         open={viewViolationsPaletteId !== null}

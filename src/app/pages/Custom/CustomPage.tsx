@@ -124,7 +124,7 @@ const CustomPage: FC = () => {
               Company Customization
             </Typography>
             <Typography variant="body1" color="text.secondary">
-              Personalize your ERP system with your company branding and
+              Personalize your WMS system with your company branding and
               preferences
             </Typography>
           </Box>
