@@ -3,7 +3,9 @@ import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom/vitest";
 import { MemoryRouter } from "react-router-dom";
+import { Provider } from "react-redux";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { makeStore } from "@/store/store";
 import StockPage from "./StockPage";
 import type { PaletteListItem, RuleViolation } from "./types";
 
@@ -215,6 +217,10 @@ vi.mock("./api", () => ({
     mutateAsync: mockRegisterOnboardingMutateAsync,
     isPending: false,
   }),
+  useDeletePalette: () => ({
+    mutateAsync: vi.fn().mockResolvedValue(undefined),
+    isPending: false,
+  }),
 }));
 
 const createQueryClient = () =>
@@ -226,11 +232,13 @@ const createQueryClient = () =>
 
 const renderPage = () =>
   render(
-    <QueryClientProvider client={createQueryClient()}>
-      <MemoryRouter initialEntries={["/stock"]}>
-        <StockPage />
-      </MemoryRouter>
-    </QueryClientProvider>
+    <Provider store={makeStore()}>
+      <QueryClientProvider client={createQueryClient()}>
+        <MemoryRouter initialEntries={["/stock"]}>
+          <StockPage />
+        </MemoryRouter>
+      </QueryClientProvider>
+    </Provider>
   );
 
 describe("StockPage", () => {
@@ -509,49 +517,45 @@ describe("StockPage", () => {
     ).toBeInTheDocument();
   });
 
-  it("edit button is visible on each palette row", () => {
+  it("actions button is visible on each palette row", () => {
     renderPage();
-    const editButtons = screen.getAllByRole("button", {
-      name: /edit position/i,
+    const actionsButtons = screen.getAllByRole("button", {
+      name: /palette actions/i,
     });
-    // 2 palettes = 2 edit buttons
-    expect(editButtons).toHaveLength(2);
+    // 2 palettes = 2 actions buttons
+    expect(actionsButtons).toHaveLength(2);
   });
 
-  it("clicking edit button opens position edit dialog with pre-filled values", async () => {
+  it("clicking Modify in actions menu opens position edit dialog with pre-filled values", async () => {
     const user = userEvent.setup();
     renderPage();
 
-    const editButtons = screen.getAllByRole("button", {
-      name: /edit position/i,
+    const actionsButtons = screen.getAllByRole("button", {
+      name: /palette actions/i,
     });
-    await user.click(editButtons[0]);
+    await user.click(actionsButtons[0]);
+    await user.click(screen.getByRole("menuitem", { name: /modify/i }));
 
-    // Dialog should be open
     expect(screen.getByText("Edit Palette Position")).toBeInTheDocument();
 
-    // Palettier should be pre-filled with the palette's current palettier
     const dialog = screen.getByRole("dialog");
     const palettierInput = within(dialog).getByLabelText("Palettier");
     expect(palettierInput).toHaveValue("Cold Storage A");
 
-    // Position fields should be pre-filled with palette 1's values (1, 2, 0)
-    const posXInput = screen.getByLabelText("Position X");
-    const posYInput = screen.getByLabelText("Position Y");
-    const posZInput = screen.getByLabelText("Position Z");
-    expect(posXInput).toHaveValue(1);
-    expect(posYInput).toHaveValue(2);
-    expect(posZInput).toHaveValue(0);
+    expect(screen.getByLabelText("Position X")).toHaveValue(1);
+    expect(screen.getByLabelText("Position Y")).toHaveValue(2);
+    expect(screen.getByLabelText("Position Z")).toHaveValue(0);
   });
 
   it("dialog shows palettier autocomplete and position fields", async () => {
     const user = userEvent.setup();
     renderPage();
 
-    const editButtons = screen.getAllByRole("button", {
-      name: /edit position/i,
+    const actionsButtons = screen.getAllByRole("button", {
+      name: /palette actions/i,
     });
-    await user.click(editButtons[0]);
+    await user.click(actionsButtons[0]);
+    await user.click(screen.getByRole("menuitem", { name: /modify/i }));
 
     expect(screen.getByText("Edit Palette Position")).toBeInTheDocument();
     const dialog = screen.getByRole("dialog");
@@ -567,25 +571,22 @@ describe("StockPage", () => {
     const user = userEvent.setup();
     renderPage();
 
-    const editButtons = screen.getAllByRole("button", {
-      name: /edit position/i,
+    const actionsButtons = screen.getAllByRole("button", {
+      name: /palette actions/i,
     });
-    await user.click(editButtons[0]);
+    await user.click(actionsButtons[0]);
+    await user.click(screen.getByRole("menuitem", { name: /modify/i }));
 
-    // Dialog is open
     expect(screen.getByText("Edit Palette Position")).toBeInTheDocument();
 
-    // Click cancel
     await user.click(screen.getByRole("button", { name: "Cancel" }));
 
-    // Dialog should be closed (wait for exit animation)
     await waitFor(() => {
       expect(
         screen.queryByText("Edit Palette Position")
       ).not.toBeInTheDocument();
     });
 
-    // No mutation called
     expect(mockMutateAsync).not.toHaveBeenCalled();
   });
 
@@ -594,12 +595,12 @@ describe("StockPage", () => {
     const user = userEvent.setup();
     renderPage();
 
-    const editButtons = screen.getAllByRole("button", {
-      name: /edit position/i,
+    const actionsButtons = screen.getAllByRole("button", {
+      name: /palette actions/i,
     });
-    await user.click(editButtons[0]);
+    await user.click(actionsButtons[0]);
+    await user.click(screen.getByRole("menuitem", { name: /modify/i }));
 
-    // Click Save
     await user.click(screen.getByRole("button", { name: "Save" }));
 
     await waitFor(() => {
@@ -636,10 +637,11 @@ describe("StockPage", () => {
     const user = userEvent.setup();
     renderPage();
 
-    const editButtons = screen.getAllByRole("button", {
-      name: /edit position/i,
+    const actionsButtons = screen.getAllByRole("button", {
+      name: /palette actions/i,
     });
-    await user.click(editButtons[0]);
+    await user.click(actionsButtons[0]);
+    await user.click(screen.getByRole("menuitem", { name: /modify/i }));
 
     await user.click(screen.getByRole("button", { name: "Save" }));
 
@@ -648,7 +650,7 @@ describe("StockPage", () => {
     });
   });
 
-  it("multi-product palette shows edit button only on first row", () => {
+  it("multi-product palette shows actions button only on first row", () => {
     palettesOverride = {
       data: mockMultiProductPalette,
       isPending: false,
@@ -657,13 +659,11 @@ describe("StockPage", () => {
     };
     renderPage();
 
-    // Multi-product palette has 2 rows but should only have 1 edit button
-    const editButtons = screen.getAllByRole("button", {
-      name: /edit position/i,
+    const actionsButtons = screen.getAllByRole("button", {
+      name: /palette actions/i,
     });
-    expect(editButtons).toHaveLength(1);
+    expect(actionsButtons).toHaveLength(1);
 
-    // Both rows should be visible
     expect(screen.getByText("Whole Milk")).toBeInTheDocument();
     expect(screen.getByText("Butter")).toBeInTheDocument();
   });

@@ -1,11 +1,6 @@
-import {
-  useQuery,
-  useQueries,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ApiError } from "../../hooks/useApiError";
-import { API_BASE } from "../../api-config";
+import { API_BASE, apiFetch } from "../../api-config";
 import type {
   AvailableStockItem,
   CancelPickingListResponse,
@@ -27,7 +22,7 @@ const fetchProducts = async (search: string): Promise<ProductsListResponse> => {
   if (search.length > 0) {
     params.set("search", search);
   }
-  const response = await fetch(`${API_BASE}/products?${params.toString()}`);
+  const response = await apiFetch(`${API_BASE}/products?${params.toString()}`);
   if (!response.ok) {
     throw new ApiError(response);
   }
@@ -49,7 +44,7 @@ const fetchAvailableStock = async (
   if (productIds.length === 0) return [];
   const params = new URLSearchParams();
   params.set("productIds", productIds.join(","));
-  const response = await fetch(
+  const response = await apiFetch(
     `${API_BASE}/picking-lists/available-stock?${params.toString()}`
   );
   if (!response.ok) {
@@ -58,31 +53,18 @@ const fetchAvailableStock = async (
   return response.json() as Promise<AvailableStockItem[]>;
 };
 
-export const useGetAvailableStock = (productIds: number[]) => {
-  const results = useQueries({
-    queries: productIds.map((id) => ({
-      queryKey: ["picking-lists", "available-stock", id],
-      queryFn: () => fetchAvailableStock([id]),
-      staleTime: 15_000,
-    })),
+export const useGetAvailableStock = (productIds: number[]) =>
+  useQuery({
+    queryKey: ["picking-lists", "available-stock", productIds],
+    queryFn: () => fetchAvailableStock(productIds),
+    enabled: productIds.length > 0,
+    staleTime: 15_000,
   });
-
-  const data: AvailableStockItem[] = [];
-  for (const result of results) {
-    if (result.data) {
-      for (const item of result.data) {
-        data.push(item);
-      }
-    }
-  }
-
-  return { data: data.length > 0 ? data : undefined };
-};
 
 const createPickingList = async (
   payload: CreatePickingListPayload
 ): Promise<PickingListResponse> => {
-  const response = await fetch(`${API_BASE}/picking-lists`, {
+  const response = await apiFetch(`${API_BASE}/picking-lists`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -107,7 +89,7 @@ export const useCreatePickingList = () => {
 const generatePickRoute = async (
   pickingListId: number
 ): Promise<PickRouteItem[]> => {
-  const response = await fetch(
+  const response = await apiFetch(
     `${API_BASE}/picking-lists/${String(pickingListId)}/generate-route`,
     { method: "POST" }
   );
@@ -132,7 +114,7 @@ const completePickingList = async (
   pickingListId: number,
   payload: CompletePickingListPayload
 ): Promise<PickingCompletionResponse> => {
-  const response = await fetch(
+  const response = await apiFetch(
     `${API_BASE}/picking-lists/${String(pickingListId)}/complete`,
     {
       method: "POST",
@@ -167,7 +149,7 @@ export const useCompletePickingList = () => {
 const cancelPickingList = async (
   pickingListId: number
 ): Promise<CancelPickingListResponse> => {
-  const response = await fetch(
+  const response = await apiFetch(
     `${API_BASE}/picking-lists/${String(pickingListId)}/cancel`,
     { method: "POST" }
   );

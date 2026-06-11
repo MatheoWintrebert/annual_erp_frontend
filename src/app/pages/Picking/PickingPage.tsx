@@ -54,7 +54,10 @@ const PickingPage = () => {
   const productIds = useMemo(
     () =>
       watchedItems
-        .filter((i): i is (typeof i) & { product: NonNullable<typeof i.product> } => i.product !== null)
+        .filter(
+          (i): i is typeof i & { product: NonNullable<typeof i.product> } =>
+            i.product !== null
+        )
         .map((i) => i.product.id),
     [watchedItems]
   );

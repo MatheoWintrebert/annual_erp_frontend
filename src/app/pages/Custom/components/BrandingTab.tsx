@@ -11,6 +11,8 @@ import type { FC } from "react";
 import type { TabPanelProps } from "../types";
 import { URL_PATTERN } from "../types";
 
+const isSafeImageUrl = (url: string): boolean => URL_PATTERN.test(url);
+
 const BrandingTab: FC<TabPanelProps> = ({ control, errors }) => (
   <Stack spacing={3}>
     <Typography variant="h6" fontWeight={600}>
@@ -30,6 +32,7 @@ const BrandingTab: FC<TabPanelProps> = ({ control, errors }) => (
       render={({ field }) => (
         <TextField
           {...field}
+          value={field.value ?? ""}
           label="Logo URL"
           fullWidth
           placeholder="https://example.com/logo.png"
@@ -40,15 +43,16 @@ const BrandingTab: FC<TabPanelProps> = ({ control, errors }) => (
           }
           slotProps={{
             input: {
-              startAdornment: field.value ? (
-                <InputAdornment position="start">
-                  <Avatar
-                    src={field.value}
-                    variant="rounded"
-                    sx={{ width: 32, height: 32 }}
-                  />
-                </InputAdornment>
-              ) : undefined,
+              startAdornment:
+                field.value && isSafeImageUrl(field.value) ? (
+                  <InputAdornment position="start">
+                    <Avatar
+                      src={field.value}
+                      variant="rounded"
+                      sx={{ width: 32, height: 32 }}
+                    />
+                  </InputAdornment>
+                ) : undefined,
             },
           }}
         />
@@ -69,6 +73,7 @@ const BrandingTab: FC<TabPanelProps> = ({ control, errors }) => (
           render={({ field }) => (
             <TextField
               {...field}
+              value={field.value ?? "#000000"}
               label="Primary Color"
               fullWidth
               type="color"
@@ -82,7 +87,7 @@ const BrandingTab: FC<TabPanelProps> = ({ control, errors }) => (
                           width: 24,
                           height: 24,
                           borderRadius: 1,
-                          bgcolor: field.value,
+                          bgcolor: field.value ?? "#000000",
                           border: 1,
                           borderColor: "divider",
                         }}
@@ -102,6 +107,7 @@ const BrandingTab: FC<TabPanelProps> = ({ control, errors }) => (
           render={({ field }) => (
             <TextField
               {...field}
+              value={field.value ?? "#000000"}
               label="Secondary Color"
               fullWidth
               type="color"
@@ -115,7 +121,7 @@ const BrandingTab: FC<TabPanelProps> = ({ control, errors }) => (
                           width: 24,
                           height: 24,
                           borderRadius: 1,
-                          bgcolor: field.value,
+                          bgcolor: field.value ?? "#000000",
                           border: 1,
                           borderColor: "divider",
                         }}

@@ -2,12 +2,15 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import { MemoryRouter } from "react-router-dom";
+import { Provider } from "react-redux";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { makeStore } from "@/store/store";
 import HomePage from "./HomePage";
 import type {
   DashboardAlertsResponse,
   DashboardSummaryResponse,
 } from "./types";
+import type { RuleViolation } from "../../types/rule-violation";
 
 vi.mock("../../components/ui/SnackbarProvider", () => ({
   useSnackbar: () => ({
@@ -45,6 +48,13 @@ let summaryOverride: {
   error: Error | null;
 } | null = null;
 
+let violationsOverride: {
+  data?: RuleViolation[];
+  isPending: boolean;
+  isError: boolean;
+  error: Error | null;
+} | null = null;
+
 vi.mock("./api", () => ({
   useGetDashboardAlerts: () =>
     alertsOverride ?? {
@@ -60,6 +70,13 @@ vi.mock("./api", () => ({
       isError: false,
       error: null,
     },
+  useGetRuleViolations: () =>
+    violationsOverride ?? {
+      data: undefined,
+      isPending: false,
+      isError: false,
+      error: null,
+    },
 }));
 
 const createQueryClient = () =>
@@ -69,11 +86,13 @@ const createQueryClient = () =>
 
 const renderPage = () =>
   render(
-    <QueryClientProvider client={createQueryClient()}>
-      <MemoryRouter initialEntries={["/"]}>
-        <HomePage />
-      </MemoryRouter>
-    </QueryClientProvider>
+    <Provider store={makeStore()}>
+      <QueryClientProvider client={createQueryClient()}>
+        <MemoryRouter initialEntries={["/"]}>
+          <HomePage />
+        </MemoryRouter>
+      </QueryClientProvider>
+    </Provider>
   );
 
 const mockExpiryAlerts: DashboardAlertsResponse = {
@@ -212,6 +231,7 @@ describe("HomePage", () => {
     vi.clearAllMocks();
     alertsOverride = null;
     summaryOverride = null;
+    violationsOverride = null;
   });
 
   // ---- Existing alert tests ----
@@ -524,6 +544,110 @@ describe("HomePage", () => {
     expect(screen.getByText("Add Products")).toBeInTheDocument();
     expect(screen.getByText("Define Rules")).toBeInTheDocument();
     expect(screen.getByText("Register Stock")).toBeInTheDocument();
+  });
+
+  // ---- Rule violation tests ----
+
+  it("shows loading state for violations panel while pending", () => {
+    alertsOverride = loadedAlerts(mockNoAlerts);
+    summaryOverride = loadedSummary(mockSummaryFull);
+    violationsOverride = {
+      data: undefined,
+      isPending: true,
+      isError: false,
+      error: null,
+    };
+
+    renderPage();
+
+    expect(
+      screen.getByText("Checking for rule violations...")
+    ).toBeInTheDocument();
+  });
+
+  it("shows no violations message when violations list is empty", () => {
+    alertsOverride = loadedAlerts(mockNoAlerts);
+    summaryOverride = loadedSummary(mockSummaryFull);
+    violationsOverride = {
+      data: [],
+      isPending: false,
+      isError: false,
+      error: null,
+    };
+
+    renderPage();
+
+    expect(screen.getByText(/No rule violations/)).toBeInTheDocument();
+  });
+
+  it("renders violation cards with product name, palettier, rule and resolve button", () => {
+    alertsOverride = loadedAlerts(mockNoAlerts);
+    summaryOverride = loadedSummary(mockSummaryFull);
+    violationsOverride = {
+      data: [
+        {
+          paletteId: 7,
+          palettierName: "Rack A1",
+          positionX: 0,
+          positionY: 1,
+          positionZ: 3,
+          productName: "Fragile Ceramic",
+          ruleName: "Ground Only Rule",
+          ruleType: "placement_constraint",
+          violationReason:
+            "Palette must be on ground level (position Z=0), currently at Z=3",
+        },
+      ],
+      isPending: false,
+      isError: false,
+      error: null,
+    };
+
+    renderPage();
+
+    expect(screen.getByText("Rule Violations")).toBeInTheDocument();
+    expect(screen.getByText("Fragile Ceramic")).toBeInTheDocument();
+    expect(screen.getByText(/Rack A1/)).toBeInTheDocument();
+    expect(screen.getByText(/Ground Only Rule/)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Resolve" })).toBeInTheDocument();
+  });
+
+  it("shows violation count chip when violations exist", () => {
+    alertsOverride = loadedAlerts(mockNoAlerts);
+    summaryOverride = loadedSummary(mockSummaryFull);
+    violationsOverride = {
+      data: [
+        {
+          paletteId: 7,
+          palettierName: "Rack A1",
+          positionX: 0,
+          positionY: 0,
+          positionZ: 2,
+          productName: "Heavy Box",
+          ruleName: "Max Height Rule",
+          ruleType: "placement_constraint",
+          violationReason: "Exceeds max height",
+        },
+        {
+          paletteId: 8,
+          palettierName: "Rack B2",
+          positionX: 1,
+          positionY: 0,
+          positionZ: 0,
+          productName: "Cold Item",
+          ruleName: "Refrigeration Zone",
+          ruleType: "storage_condition",
+          violationReason: "Wrong palettier type",
+        },
+      ],
+      isPending: false,
+      isError: false,
+      error: null,
+    };
+
+    renderPage();
+
+    expect(screen.getByText("2")).toBeInTheDocument();
   });
 
   it("does not render onboarding guide when all steps complete", () => {

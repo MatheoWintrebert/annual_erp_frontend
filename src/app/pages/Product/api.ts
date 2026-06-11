@@ -15,10 +15,10 @@ import type {
   CreateUnitOfMeasurePayload,
 } from "./types";
 
-const API_BASE = "http://localhost:3333";
+import { API_BASE, apiFetch } from "../../api-config";
 
 const fetchProducts = async (): Promise<ProductsListResponse> => {
-  const response = await fetch(`${API_BASE}/products?limit=100`);
+  const response = await apiFetch(`${API_BASE}/products?limit=100`);
   if (!response.ok) {
     throw new ApiError(response);
   }
@@ -26,7 +26,7 @@ const fetchProducts = async (): Promise<ProductsListResponse> => {
 };
 
 const fetchProductById = async (id: number): Promise<ProductResponse> => {
-  const response = await fetch(`${API_BASE}/products/${String(id)}`);
+  const response = await apiFetch(`${API_BASE}/products/${String(id)}`);
   if (!response.ok) {
     throw new ApiError(response);
   }
@@ -36,7 +36,7 @@ const fetchProductById = async (id: number): Promise<ProductResponse> => {
 const createProduct = async (
   data: CreateProductPayload
 ): Promise<ProductResponse> => {
-  const response = await fetch(`${API_BASE}/products`, {
+  const response = await apiFetch(`${API_BASE}/products`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -51,7 +51,7 @@ const updateProduct = async ({
   id,
   ...data
 }: UpdateProductPayload & { id: number }): Promise<UpdateProductResponse> => {
-  const response = await fetch(`${API_BASE}/products/${String(id)}`, {
+  const response = await apiFetch(`${API_BASE}/products/${String(id)}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -63,7 +63,7 @@ const updateProduct = async ({
 };
 
 const deleteProduct = async (id: number): Promise<void> => {
-  const response = await fetch(`${API_BASE}/products/${String(id)}`, {
+  const response = await apiFetch(`${API_BASE}/products/${String(id)}`, {
     method: "DELETE",
   });
   if (!response.ok) {
@@ -74,7 +74,7 @@ const deleteProduct = async (id: number): Promise<void> => {
 const fetchProductPaletteCount = async (
   id: number
 ): Promise<{ count: number }> => {
-  const response = await fetch(
+  const response = await apiFetch(
     `${API_BASE}/products/${String(id)}/palette-count`
   );
   if (!response.ok) {
@@ -84,7 +84,7 @@ const fetchProductPaletteCount = async (
 };
 
 const fetchCategories = async (): Promise<CategoriesListResponse> => {
-  const response = await fetch(`${API_BASE}/categories?limit=100`);
+  const response = await apiFetch(`${API_BASE}/categories?limit=100`);
   if (!response.ok) {
     throw new ApiError(response);
   }
@@ -92,7 +92,7 @@ const fetchCategories = async (): Promise<CategoriesListResponse> => {
 };
 
 const fetchUnitsOfMeasure = async (): Promise<UnitsOfMeasureListResponse> => {
-  const response = await fetch(`${API_BASE}/units-of-measure?limit=100`);
+  const response = await apiFetch(`${API_BASE}/units-of-measure?limit=100`);
   if (!response.ok) {
     throw new ApiError(response);
   }
@@ -102,7 +102,7 @@ const fetchUnitsOfMeasure = async (): Promise<UnitsOfMeasureListResponse> => {
 const createCategory = async (
   data: CreateCategoryPayload
 ): Promise<Category> => {
-  const response = await fetch(`${API_BASE}/categories`, {
+  const response = await apiFetch(`${API_BASE}/categories`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -116,7 +116,7 @@ const createCategory = async (
 const createUnitOfMeasure = async (
   data: CreateUnitOfMeasurePayload
 ): Promise<UnitOfMeasure> => {
-  const response = await fetch(`${API_BASE}/units-of-measure`, {
+  const response = await apiFetch(`${API_BASE}/units-of-measure`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -128,7 +128,7 @@ const createUnitOfMeasure = async (
 };
 
 const fetchRules = async (): Promise<RulesListResponse> => {
-  const response = await fetch(`${API_BASE}/rules?limit=100`);
+  const response = await apiFetch(`${API_BASE}/rules?limit=100`);
   if (!response.ok) {
     throw new ApiError(response);
   }

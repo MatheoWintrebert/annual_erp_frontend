@@ -8,10 +8,10 @@ import type {
   PaletteCountResponse,
 } from "./types";
 
-const API_BASE = "http://localhost:3333";
+import { API_BASE, apiFetch } from "../../api-config";
 
 const fetchPalettiers = async (): Promise<PalettierResponse[]> => {
-  const response = await fetch(`${API_BASE}/palettiers`);
+  const response = await apiFetch(`${API_BASE}/palettiers`);
   if (!response.ok) {
     throw new ApiError(response);
   }
@@ -19,7 +19,7 @@ const fetchPalettiers = async (): Promise<PalettierResponse[]> => {
 };
 
 const fetchPalettierById = async (id: number): Promise<PalettierResponse> => {
-  const response = await fetch(`${API_BASE}/palettiers/${String(id)}`);
+  const response = await apiFetch(`${API_BASE}/palettiers/${String(id)}`);
   if (!response.ok) {
     throw new ApiError(response);
   }
@@ -29,7 +29,7 @@ const fetchPalettierById = async (id: number): Promise<PalettierResponse> => {
 const createPalettier = async (
   data: CreatePalettierPayload
 ): Promise<PalettierResponse> => {
-  const response = await fetch(`${API_BASE}/palettiers`, {
+  const response = await apiFetch(`${API_BASE}/palettiers`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ palettiers: [data] }),
@@ -47,7 +47,7 @@ const updatePalettier = async ({
   id,
   ...data
 }: UpdatePalettierPayload & { id: number }): Promise<PalettierResponse> => {
-  const response = await fetch(`${API_BASE}/palettiers/${String(id)}`, {
+  const response = await apiFetch(`${API_BASE}/palettiers/${String(id)}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -59,7 +59,7 @@ const updatePalettier = async ({
 };
 
 const deletePalettier = async (id: number): Promise<void> => {
-  const response = await fetch(`${API_BASE}/palettiers/${String(id)}`, {
+  const response = await apiFetch(`${API_BASE}/palettiers/${String(id)}`, {
     method: "DELETE",
   });
   if (!response.ok) {
@@ -71,7 +71,7 @@ const createPalettierType = async (data: {
   name: string;
   description: string;
 }): Promise<PalettierType> => {
-  const response = await fetch(`${API_BASE}/palettier-types`, {
+  const response = await apiFetch(`${API_BASE}/palettier-types`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -83,7 +83,7 @@ const createPalettierType = async (data: {
 };
 
 const fetchPalettierTypes = async (): Promise<PalettierType[]> => {
-  const response = await fetch(`${API_BASE}/palettier-types`);
+  const response = await apiFetch(`${API_BASE}/palettier-types`);
   if (!response.ok) {
     throw new ApiError(response);
   }
@@ -93,7 +93,7 @@ const fetchPalettierTypes = async (): Promise<PalettierType[]> => {
 const fetchPaletteCountByPalettier = async (
   id: number
 ): Promise<PaletteCountResponse> => {
-  const response = await fetch(
+  const response = await apiFetch(
     `${API_BASE}/palettiers/${String(id)}/palette-count`
   );
   if (!response.ok) {

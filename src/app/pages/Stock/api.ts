@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApiError } from "../../hooks/useApiError";
-import { API_BASE } from "../../api-config";
+import { API_BASE, apiFetch } from "../../api-config";
 import type {
   PaletteListItem,
   PlacementViolationWarning,
@@ -25,7 +25,7 @@ const fetchPalettes = async (params?: {
   if (params?.search) {
     url.searchParams.set("search", params.search);
   }
-  const response = await fetch(url.toString());
+  const response = await apiFetch(url.toString());
   if (!response.ok) {
     throw new ApiError(response);
   }
@@ -33,7 +33,7 @@ const fetchPalettes = async (params?: {
 };
 
 const fetchPalettiers = async (): Promise<PalettierOption[]> => {
-  const response = await fetch(`${API_BASE}/palettiers`);
+  const response = await apiFetch(`${API_BASE}/palettiers`);
   if (!response.ok) {
     throw new ApiError(response);
   }
@@ -50,7 +50,7 @@ export const useGetPalettes = (params?: {
   });
 
 const fetchPaletteViolations = async (): Promise<RuleViolation[]> => {
-  const response = await fetch(`${API_BASE}/palettes/violations`);
+  const response = await apiFetch(`${API_BASE}/palettes/violations`);
   if (!response.ok) {
     throw new ApiError(response);
   }
@@ -81,7 +81,7 @@ const updatePalettePosition = async (
   paletteId: number,
   data: UpdatePalettePositionInput
 ): Promise<void> => {
-  const response = await fetch(
+  const response = await apiFetch(
     `${API_BASE}/palettes/${String(paletteId)}/position`,
     {
       method: "PUT",
@@ -114,7 +114,7 @@ const fetchProducts = async (search: string): Promise<ProductsListResponse> => {
   if (search) {
     url.searchParams.set("search", search);
   }
-  const response = await fetch(url.toString());
+  const response = await apiFetch(url.toString());
   if (!response.ok) {
     throw new ApiError(response);
   }
@@ -129,7 +129,7 @@ export const useGetProductsForOnboarding = (search: string) =>
   });
 
 const fetchUnitsOfMeasure = async (): Promise<UnitsOfMeasureListResponse> => {
-  const response = await fetch(`${API_BASE}/units-of-measure?limit=100`);
+  const response = await apiFetch(`${API_BASE}/units-of-measure?limit=100`);
   if (!response.ok) {
     throw new ApiError(response);
   }
@@ -146,7 +146,7 @@ const checkPlacementViolations = async (data: {
   productIds: number[];
   palettierId: number;
 }): Promise<PlacementViolationWarning[]> => {
-  const response = await fetch(
+  const response = await apiFetch(
     `${API_BASE}/palettes/check-placement-violations`,
     {
       method: "POST",
@@ -199,7 +199,7 @@ export interface RegisterOnboardingResponse {
 const registerOnboardingPalette = async (
   data: RegisterOnboardingPayload
 ): Promise<RegisterOnboardingResponse> => {
-  const response = await fetch(`${API_BASE}/palettes/intake/register`, {
+  const response = await apiFetch(`${API_BASE}/palettes/intake/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -214,6 +214,25 @@ export const useRegisterOnboardingPalette = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: registerOnboardingPalette,
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["palettes"] });
+    },
+  });
+};
+
+const deletePalette = async (paletteId: number): Promise<void> => {
+  const response = await apiFetch(`${API_BASE}/palettes/${String(paletteId)}`, {
+    method: "DELETE",
+  });
+  if (!response.ok) {
+    throw new ApiError(response);
+  }
+};
+
+export const useDeletePalette = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (paletteId: number) => deletePalette(paletteId),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["palettes"] });
     },

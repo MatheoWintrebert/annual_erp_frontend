@@ -45,19 +45,25 @@ const OnboardingPlacementStep: FC<OnboardingPlacementStepProps> = ({
     palettiers.find((p) => p.id === palettierId) ?? null;
 
   useEffect(() => {
-    if (palettierId && products.length > 0) {
-      const productIds = products.map((p) => p.productId);
-      checkViolations
-        .mutateAsync({ productIds, palettierId })
-        .then((result) => {
-          setViolations(result);
-        })
-        .catch(() => {
-          setViolations([]);
-        });
-    } else {
+    if (!palettierId || products.length === 0) {
       setViolations([]);
+      return;
     }
+
+    let cancelled = false;
+    const productIds = products.map((p) => p.productId);
+    checkViolations
+      .mutateAsync({ productIds, palettierId })
+      .then((result) => {
+        if (!cancelled) setViolations(result);
+      })
+      .catch(() => {
+        if (!cancelled) setViolations([]);
+      });
+
+    return () => {
+      cancelled = true;
+    };
     // Only re-check when palettierId or products change
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [palettierId, products]);

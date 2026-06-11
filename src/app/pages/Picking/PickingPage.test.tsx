@@ -3,7 +3,9 @@ import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom/vitest";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
+import { Provider } from "react-redux";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { makeStore } from "@/store/store";
 import PickingPage from "./PickingPage";
 import type { AvailableStockItem, PickRouteItem } from "./types";
 
@@ -205,14 +207,16 @@ const createQueryClient = () =>
 
 const renderPage = () =>
   render(
-    <QueryClientProvider client={createQueryClient()}>
-      <MemoryRouter initialEntries={["/pick"]}>
-        <Routes>
-          <Route path="/pick" element={<PickingPage />} />
-          <Route path="/" element={<div>Home</div>} />
-        </Routes>
-      </MemoryRouter>
-    </QueryClientProvider>
+    <Provider store={makeStore()}>
+      <QueryClientProvider client={createQueryClient()}>
+        <MemoryRouter initialEntries={["/pick"]}>
+          <Routes>
+            <Route path="/pick" element={<PickingPage />} />
+            <Route path="/" element={<div>Home</div>} />
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>
+    </Provider>
   );
 
 async function navigateToReviewStep(user: ReturnType<typeof userEvent.setup>) {

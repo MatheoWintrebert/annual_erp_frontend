@@ -1,9 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom/vitest";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
+import { Provider } from "react-redux";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { makeStore } from "@/store/store";
 import IntakePage from "./IntakePage";
 import type {
   ConflictPlacementResult,
@@ -164,14 +166,17 @@ const createQueryClient = () =>
 
 const renderPage = () =>
   render(
-    <QueryClientProvider client={createQueryClient()}>
-      <MemoryRouter initialEntries={["/intake"]}>
-        <Routes>
-          <Route path="/intake" element={<IntakePage />} />
-          <Route path="/" element={<div>Home</div>} />
-        </Routes>
-      </MemoryRouter>
-    </QueryClientProvider>
+    <Provider store={makeStore()}>
+      <QueryClientProvider client={createQueryClient()}>
+        <MemoryRouter initialEntries={["/intake"]}>
+          <Routes>
+            <Route path="/intake" element={<IntakePage />} />
+            <Route path="/home" element={<div>Home</div>} />
+            <Route path="/" element={<div>Root</div>} />
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>
+    </Provider>
   );
 
 describe("IntakePage", () => {
@@ -316,7 +321,9 @@ describe("IntakePage", () => {
       "success"
     );
 
-    expect(screen.getByText("Home")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("Home")).toBeInTheDocument();
+    });
   });
 
   it("should call register-palette on Register Another and reset form", async () => {

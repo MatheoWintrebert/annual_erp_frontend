@@ -4,11 +4,11 @@ export interface CompanySettings {
   name: string;
   language: string;
   timezone: string;
-  brandingLogoUrl: string;
-  primaryColor: string;
-  secondaryColor: string;
-  contactEmail: string;
-  contactPhone: string;
+  brandingLogoUrl: string | null;
+  primaryColor: string | null;
+  secondaryColor: string | null;
+  contactEmail: string | null;
+  contactPhone: string | null;
 }
 
 export interface TabPanelProps {
@@ -17,7 +17,7 @@ export interface TabPanelProps {
 }
 
 export interface SettingsPreviewProps {
-  values: CompanySettings;
+  control: Control<CompanySettings>;
 }
 
 export const LANGUAGES = [
@@ -46,11 +46,11 @@ export const EMAIL_PATTERN = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
 
 export const DEFAULT_SETTINGS: CompanySettings = {
   name: "",
-  brandingLogoUrl: "",
-  primaryColor: "#77A53C",
-  secondaryColor: "#dc1dbc",
+  brandingLogoUrl: null,
+  primaryColor: null,
+  secondaryColor: null,
   language: "en",
   timezone: "UTC",
-  contactEmail: "",
-  contactPhone: "",
+  contactEmail: null,
+  contactPhone: null,
 };

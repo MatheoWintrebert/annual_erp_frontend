@@ -19,6 +19,7 @@ const AlertCard: FC<AlertCardProps> = ({ title, severity, icon, children }) => (
     sx={{
       borderLeft: 4,
       borderColor: severityColorMap[severity],
+      "&:hover": { borderColor: severityColorMap[severity] },
     }}
   >
     <CardContent>

@@ -22,6 +22,7 @@ const ContactTab: FC<TabPanelProps> = ({ control, errors }) => (
       render={({ field }) => (
         <TextField
           {...field}
+          value={field.value ?? ""}
           label="Contact Email"
           type="email"
           fullWidth
@@ -47,6 +48,7 @@ const ContactTab: FC<TabPanelProps> = ({ control, errors }) => (
       render={({ field }) => (
         <TextField
           {...field}
+          value={field.value ?? ""}
           label="Contact Phone"
           type="tel"
           fullWidth
