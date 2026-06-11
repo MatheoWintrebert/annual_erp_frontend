@@ -64,17 +64,6 @@ const HomePage: FC = () => {
 						</Box>
 					)}
 
-					{alertsQuery.data && (
-						<>
-							<Box sx={{ mb: 4 }}>
-								<ExpiryAlertPanel alerts={alertsQuery.data.expiryAlerts} />
-							</Box>
-							<Box sx={{ mb: 4 }}>
-								<LowStockPanel alerts={alertsQuery.data.lowStockAlerts} />
-							</Box>
-						</>
-					)}
-
 					<Box sx={{ mb: 4 }}>
 						<Palettier3DPreview />
 					</Box>

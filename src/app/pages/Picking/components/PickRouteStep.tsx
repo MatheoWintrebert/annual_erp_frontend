@@ -38,7 +38,7 @@ const PickRouteStep: FC<PickRouteStepProps> = ({
   onQuantityChange,
 }) => {
   const [locatorItem, setLocatorItem] = useState<PickExecutionItem | null>(
-    null,
+    null
   );
 
   return (

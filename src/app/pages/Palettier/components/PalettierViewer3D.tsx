@@ -58,13 +58,17 @@ const TargetMarker: FC<{ position: [number, number, number] }> = ({
   useFrame(({ clock }) => {
     if (groupRef.current) {
       const t = clock.getElapsedTime();
-      groupRef.current.position.y = position[1] + SLOT_SIZE * 0.6 + Math.sin(t * 2) * 0.1;
+      groupRef.current.position.y =
+        position[1] + SLOT_SIZE * 0.6 + Math.sin(t * 2) * 0.1;
       groupRef.current.rotation.y = t * 1.5;
     }
   });
 
   return (
-    <mesh ref={groupRef} position={[position[0], position[1] + SLOT_SIZE * 0.6, position[2]]}>
+    <mesh
+      ref={groupRef}
+      position={[position[0], position[1] + SLOT_SIZE * 0.6, position[2]]}
+    >
       <coneGeometry args={[0.15, 0.3, 4]} />
       <meshStandardMaterial
         color={COLORS.target}
@@ -96,12 +100,10 @@ const PaletteBox: FC<{
   if (!isOccupied && !isHighlighted && !isTarget) {
     return (
       <mesh position={position}>
-        <boxGeometry args={[SLOT_SIZE * 0.9, SLOT_SIZE * 0.3, SLOT_SIZE * 0.9]} />
-        <meshStandardMaterial
-          color={COLORS.empty}
-          transparent
-          opacity={0.35}
+        <boxGeometry
+          args={[SLOT_SIZE * 0.9, SLOT_SIZE * 0.3, SLOT_SIZE * 0.9]}
         />
+        <meshStandardMaterial color={COLORS.empty} transparent opacity={0.35} />
       </mesh>
     );
   }
@@ -159,7 +161,11 @@ const RackFrame: FC<{
   height: number;
 }> = ({ width, depth, height }) => {
   const beams = useMemo(() => {
-    const result: { key: string; pos: [number, number, number]; size: [number, number, number] }[] = [];
+    const result: {
+      key: string;
+      pos: [number, number, number];
+      size: [number, number, number];
+    }[] = [];
 
     for (let x = 0; x <= width; x++) {
       for (let z = 0; z <= depth; z++) {
@@ -201,7 +207,11 @@ const RackFrame: FC<{
       {beams.map((beam) => (
         <mesh key={beam.key} position={beam.pos}>
           <boxGeometry args={beam.size} />
-          <meshStandardMaterial color={COLORS.beam} metalness={0.6} roughness={0.3} />
+          <meshStandardMaterial
+            color={COLORS.beam}
+            metalness={0.6}
+            roughness={0.3}
+          />
         </mesh>
       ))}
     </group>

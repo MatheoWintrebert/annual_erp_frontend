@@ -1,4 +1,10 @@
-import { Box, Button, CircularProgress, Paper, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Paper,
+  Typography,
+} from "@mui/material";
 import ViewInArIcon from "@mui/icons-material/ViewInAr";
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
@@ -35,7 +41,8 @@ const Palettier3DPreview: FC = () => {
     [palettes]
   );
 
-  const isLoading = isLoadingPalettiers || (firstPalettier && isLoadingPalettes);
+  const isLoading =
+    isLoadingPalettiers || (firstPalettier && isLoadingPalettes);
 
   return (
     <Box>

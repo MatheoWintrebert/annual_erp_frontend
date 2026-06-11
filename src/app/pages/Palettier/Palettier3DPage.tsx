@@ -58,7 +58,9 @@ const Palettier3DPage: FC = () => {
   );
 
   const effectivePalettierId =
-    selectedPalettierId !== "" ? selectedPalettierId : (palettiers[0]?.id ?? "");
+    selectedPalettierId !== ""
+      ? selectedPalettierId
+      : (palettiers[0]?.id ?? "");
 
   const selectedPalettier = useMemo(
     () =>
@@ -68,9 +70,12 @@ const Palettier3DPage: FC = () => {
     [palettiers, effectivePalettierId]
   );
 
-  const handlePalettierChange = useCallback((event: SelectChangeEvent<number | "">) => {
-    setSelectedPalettierId(event.target.value);
-  }, []);
+  const handlePalettierChange = useCallback(
+    (event: SelectChangeEvent<number | "">) => {
+      setSelectedPalettierId(event.target.value);
+    },
+    []
+  );
 
   const slots: SlotData[] = useMemo(() => {
     if (!selectedPalettier) return [];
@@ -107,21 +112,24 @@ const Palettier3DPage: FC = () => {
     <Box minHeight="100vh" display="flex" flexDirection="column">
       <Header />
       <Box flex={1} display="flex" flexDirection="column">
-        <Container maxWidth="xl" sx={{ flex: 1, display: "flex", flexDirection: "column", pb: 2 }}>
-          <Box
-            display="flex"
-            alignItems="center"
-            gap={1}
-            mt={4}
-            mb={2}
-          >
+        <Container
+          maxWidth="xl"
+          sx={{ flex: 1, display: "flex", flexDirection: "column", pb: 2 }}
+        >
+          <Box display="flex" alignItems="center" gap={1} mt={4} mb={2}>
             <ViewInArIcon color="secondary" fontSize="large" />
             <Typography variant="h4" color="text.primary" fontWeight={600}>
               Palettier 3D View
             </Typography>
           </Box>
 
-          <Box display="flex" gap={2} mb={2} flexWrap="wrap" alignItems="center">
+          <Box
+            display="flex"
+            gap={2}
+            mb={2}
+            flexWrap="wrap"
+            alignItems="center"
+          >
             <FormControl size="small" sx={{ minWidth: 200 }}>
               <InputLabel>Palettier</InputLabel>
               <Select
@@ -131,7 +139,8 @@ const Palettier3DPage: FC = () => {
               >
                 {palettiers.map((p: PalettierResponse) => (
                   <MenuItem key={p.id} value={p.id}>
-                    {p.name} ({String(p.width)}x{String(p.depth)}x{String(p.height)})
+                    {p.name} ({String(p.width)}x{String(p.depth)}x
+                    {String(p.height)})
                   </MenuItem>
                 ))}
               </Select>
@@ -171,11 +180,21 @@ const Palettier3DPage: FC = () => {
           </Box>
 
           {isLoading ? (
-            <Box display="flex" justifyContent="center" alignItems="center" flex={1}>
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              flex={1}
+            >
               <CircularProgress color="secondary" />
             </Box>
           ) : !selectedPalettier ? (
-            <Box display="flex" justifyContent="center" alignItems="center" flex={1}>
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              flex={1}
+            >
               <Typography color="text.secondary">
                 Select a palettier to view in 3D
               </Typography>

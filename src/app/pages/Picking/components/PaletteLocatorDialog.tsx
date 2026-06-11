@@ -45,11 +45,11 @@ const PaletteLocatorDialog: FC<PaletteLocatorDialogProps> = ({
     () =>
       palettiers.find((p: PalettierResponse) => p.name === palettierName) ??
       null,
-    [palettiers, palettierName],
+    [palettiers, palettierName]
   );
 
   const { data: palettes = [], isPending: isLoadingPalettes } = useGetPalettes(
-    palettier ? { palettierId: palettier.id } : undefined,
+    palettier ? { palettierId: palettier.id } : undefined
   );
 
   const slots: SlotData[] = useMemo(() => {
