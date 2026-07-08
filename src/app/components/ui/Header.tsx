@@ -17,7 +17,14 @@ import { setAuthenticated, setToken, getAuth } from "@/store/auth/slice";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { useCompanySettings } from "../../context/CompanySettingsContext";
 
-const setupRoutes = ["/custom", "/palettier", "/rules", "/product", "/stock"];
+const setupRoutes = [
+	"/custom",
+	"/palettier",
+	"/rules",
+	"/product",
+	"/stock",
+	"/users",
+];
 
 const Header: React.FC = () => {
 	const location = useLocation();
@@ -31,7 +38,7 @@ const Header: React.FC = () => {
 	const handleLogout = () => {
 		dispatch(setAuthenticated(false));
 		dispatch(setToken(null));
-		navigate("/signin");
+		void navigate("/signin");
 	};
 
 	const isSetupActive = setupRoutes.includes(location.pathname);
@@ -318,6 +325,28 @@ const Header: React.FC = () => {
 						/>
 						Stock
 					</MenuItem>
+
+					<MenuItem
+						component={RouterLink}
+						to="/users"
+						onClick={handleSetupMenuClose}
+						selected={location.pathname === "/users"}
+					>
+						<Box
+							component="span"
+							sx={{
+								width: 6,
+								height: 6,
+								borderRadius: "50%",
+								bgcolor:
+									location.pathname === "/users"
+										? "secondary.main"
+										: "transparent",
+								mr: 1.5,
+							}}
+						/>
+						Users
+					</MenuItem>
 				</Menu>
 
 				<Box flexGrow={1} />
@@ -342,7 +371,9 @@ const Header: React.FC = () => {
 					<Button
 						color="primary"
 						variant="outlined"
-						onClick={() => navigate("/signin")}
+						onClick={() => {
+							void navigate("/signin");
+						}}
 						sx={{
 							ml: 2,
 							fontWeight: 600,
@@ -357,23 +388,47 @@ const Header: React.FC = () => {
 						Login
 					</Button>
 				) : (
-					<Button
-						color="primary"
-						variant="outlined"
-						onClick={handleLogout}
-						sx={{
-							ml: 2,
-							fontWeight: 600,
-							borderColor: (theme) => alpha(theme.palette.primary.main, 0.2),
-							"&:hover": {
-								borderColor: "secondary.main",
-								color: "secondary.main",
-								bgcolor: (theme) => alpha(theme.palette.secondary.main, 0.08),
-							},
-						}}
-					>
-						Logout
-					</Button>
+					<>
+						<Button
+							component={RouterLink}
+							to="/profile"
+							color="primary"
+							variant="outlined"
+							sx={{
+								ml: 2,
+								fontWeight: 600,
+								color:
+									location.pathname === "/profile"
+										? "secondary.main"
+										: "text.primary",
+								borderColor: (theme) => alpha(theme.palette.primary.main, 0.2),
+								"&:hover": {
+									borderColor: "secondary.main",
+									color: "secondary.main",
+									bgcolor: (theme) => alpha(theme.palette.secondary.main, 0.08),
+								},
+							}}
+						>
+							Profile
+						</Button>
+						<Button
+							color="primary"
+							variant="outlined"
+							onClick={handleLogout}
+							sx={{
+								ml: 2,
+								fontWeight: 600,
+								borderColor: (theme) => alpha(theme.palette.primary.main, 0.2),
+								"&:hover": {
+									borderColor: "secondary.main",
+									color: "secondary.main",
+									bgcolor: (theme) => alpha(theme.palette.secondary.main, 0.08),
+								},
+							}}
+						>
+							Logout
+						</Button>
+					</>
 				)}
 			</Toolbar>
 		</AppBar>

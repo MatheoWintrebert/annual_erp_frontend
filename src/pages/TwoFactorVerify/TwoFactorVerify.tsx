@@ -1,51 +1,52 @@
-import { useLoginMutation } from "@/services";
+import { useEffect, useRef, useState } from "react";
 import {
+  Alert,
   Box,
   Container,
+  InputAdornment,
   Paper,
   Stack,
   TextField,
   Typography,
-  Alert,
-  InputAdornment,
 } from "@mui/material";
-import { Email, Lock } from "@mui/icons-material";
-import { useRef, useState } from "react";
+import { Tag } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
+import { useVerify2FAMutation } from "@/services";
+import { getAuth } from "@/store/auth/slice";
 import { CustomLoadingButton } from "@/components/CustomLoadingButton/CustomLoadingButton";
 
-interface SignInFormInputs {
-  email: string;
-  password: string;
+interface CodeFormInputs {
+  code: string;
 }
 
-export const SignIn = () => {
-  const [login, { isLoading }] = useLoginMutation();
+export const TwoFactorVerify = () => {
   const navigate = useNavigate();
+  const { token } = useSelector(getAuth);
+  const [verify2FA, { isLoading }] = useVerify2FAMutation();
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const methods = useForm<SignInFormInputs>({
-    defaultValues: {
-      email: "",
-      password: "",
-    },
-  });
-  const { handleSubmit, trigger } = methods;
-
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  const onSubmit = handleSubmit(
-    async ({ email, password }: SignInFormInputs) => {
-      try {
-        setErrorMessage("");
-        const { user } = await login({ email, password }).unwrap();
-        // Second factor: either configure a brand new 2FA or validate the code.
-        void navigate(user.isTwoFactorEnabled ? "/2fa-verify" : "/2fa-setup");
-      } catch {
-        setErrorMessage("Login failed. Please check your credentials.");
-      }
+  const methods = useForm<CodeFormInputs>({ defaultValues: { code: "" } });
+  const { handleSubmit, trigger } = methods;
+
+  // No intermediate token means the user skipped step 1.
+  useEffect(() => {
+    if (!token) {
+      void navigate("/signin", { replace: true });
     }
-  );
+  }, [token, navigate]);
+
+  const onSubmit = handleSubmit(async ({ code }: CodeFormInputs) => {
+    try {
+      setErrorMessage("");
+      await verify2FA({ code }).unwrap();
+      void navigate("/home");
+    } catch {
+      setErrorMessage("Invalid code. Please try again.");
+    }
+  });
 
   return (
     <Box
@@ -67,14 +68,19 @@ export const SignIn = () => {
           }}
         >
           <Stack spacing={3}>
-            <Typography
-              variant="h4"
-              textAlign="center"
-              fontWeight={700}
-              sx={{ mb: 1 }}
-            >
-              Sign In
-            </Typography>
+            <Box>
+              <Typography variant="h4" textAlign="center" fontWeight={700}>
+                Two-factor authentication
+              </Typography>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                textAlign="center"
+                sx={{ mt: 1 }}
+              >
+                Enter the code from your authenticator app.
+              </Typography>
+            </Box>
 
             {errorMessage && (
               <Alert
@@ -88,45 +94,26 @@ export const SignIn = () => {
             )}
 
             <TextField
-              type="email"
-              label="Email"
+              type="text"
+              label="Authentication code"
               fullWidth
-              error={!!methods.formState.errors.email}
-              helperText={methods.formState.errors.email?.message}
+              autoFocus
+              error={!!methods.formState.errors.code}
+              helperText={methods.formState.errors.code?.message}
               slotProps={{
                 input: {
                   startAdornment: (
                     <InputAdornment position="start">
-                      <Email fontSize="small" />
+                      <Tag fontSize="small" />
                     </InputAdornment>
                   ),
                 },
               }}
-              {...methods.register("email", {
-                required: "Email is required",
-              })}
-            />
-
-            <TextField
-              type="password"
-              label="Password"
-              fullWidth
-              error={!!methods.formState.errors.password}
-              helperText={methods.formState.errors.password?.message}
-              slotProps={{
-                input: {
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Lock fontSize="small" />
-                    </InputAdornment>
-                  ),
-                },
-              }}
-              {...methods.register("password", {
-                required: "Password is required",
+              {...methods.register("code", {
+                required: "Code is required",
               })}
               onChange={(e) => {
-                void methods.register("password").onChange(e);
+                void methods.register("code").onChange(e);
                 setErrorMessage("");
               }}
               onKeyDown={(e) => {
@@ -150,9 +137,9 @@ export const SignIn = () => {
               }}
               loading={isLoading}
               ref={buttonRef}
-              sx={{ py: 1.5, mt: 1 }}
+              sx={{ py: 1.5 }}
             >
-              Login
+              Verify
             </CustomLoadingButton>
           </Stack>
         </Paper>

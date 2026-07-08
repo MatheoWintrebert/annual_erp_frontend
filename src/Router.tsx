@@ -9,8 +9,12 @@ import RulesPage from "./app/pages/Rules/RulesPage";
 import IntakePage from "./app/pages/Intake/IntakePage";
 import PickingPage from "./app/pages/Picking/PickingPage";
 import StockPage from "./app/pages/Stock/StockPage";
+import ProfilePage from "./app/pages/Profile/ProfilePage";
+import UsersPage from "./app/pages/Users/UsersPage";
 import App from "./App";
 import { SignIn } from "./pages/SignIn";
+import { TwoFactorSetup } from "./pages/TwoFactorSetup";
+import { TwoFactorVerify } from "./pages/TwoFactorVerify";
 import ProtectedRoute from "./app/components/auth/ProtectedRoute";
 
 const Router: React.FC = () => (
@@ -18,6 +22,8 @@ const Router: React.FC = () => (
     <Routes>
       <Route path="/" element={<Navigate to="/signin" replace />} />
       <Route path="/signin" element={<SignIn />} />
+      <Route path="/2fa-setup" element={<TwoFactorSetup />} />
+      <Route path="/2fa-verify" element={<TwoFactorVerify />} />
       <Route element={<ProtectedRoute />}>
         <Route path="/app" element={<App />} />
         <Route path="/home" element={<HomePage />} />
@@ -29,6 +35,8 @@ const Router: React.FC = () => (
         <Route path="/product" element={<ProductPage />} />
         <Route path="/rules" element={<RulesPage />} />
         <Route path="/stock" element={<StockPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/users" element={<UsersPage />} />
         <Route path="*" element={<Navigate to="/home" replace />} />
       </Route>
     </Routes>
