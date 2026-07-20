@@ -9,29 +9,25 @@ import {
   Alert,
   InputAdornment,
 } from "@mui/material";
-import { Email, Lock, Tag } from "@mui/icons-material";
+import { Email, Lock } from "@mui/icons-material";
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { storage } from "@/utils";
 import { useForm } from "react-hook-form";
 import { CustomLoadingButton } from "@/components/CustomLoadingButton/CustomLoadingButton";
-import { setAuthenticatedUser } from "@/store/auth/slice";
 
 interface SignInFormInputs {
   email: string;
   password: string;
-  code: string;
 }
 
 export const SignIn = () => {
   const [login, { isLoading }] = useLoginMutation();
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState<string>("");
   const methods = useForm<SignInFormInputs>({
     defaultValues: {
-      code: storage.getItem("email") ?? "",
+      email: "",
+      password: "",
     },
   });
   const { handleSubmit, trigger } = methods;
@@ -39,12 +35,11 @@ export const SignIn = () => {
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   const onSubmit = handleSubmit(
-    async ({ email, password, code }: SignInFormInputs) => {
+    async ({ email, password }: SignInFormInputs) => {
       try {
         setErrorMessage("");
-        const result = await login({ email, password, code }).unwrap();
-        dispatch(setAuthenticatedUser(result));
-        void navigate("/home");
+        const { user } = await login({ email, password }).unwrap();
+        void navigate(user.isTwoFactorEnabled ? "/2fa-verify" : "/2fa-setup");
       } catch {
         setErrorMessage("Login failed. Please check your credentials.");
       }
@@ -148,30 +143,6 @@ export const SignIn = () => {
                     }
                   }
                 })();
-              }}
-            />
-
-            <TextField
-              type="text"
-              label="Code"
-              fullWidth
-              error={!!methods.formState.errors.code}
-              helperText={methods.formState.errors.code?.message}
-              slotProps={{
-                input: {
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Tag fontSize="small" />
-                    </InputAdornment>
-                  ),
-                },
-              }}
-              {...methods.register("code", {
-                required: "Code is required",
-              })}
-              onChange={(e) => {
-                void methods.register("code").onChange(e);
-                setErrorMessage("");
               }}
             />
 

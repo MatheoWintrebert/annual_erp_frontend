@@ -64,9 +64,10 @@ const HomePage: FC = () => {
 						</Box>
 					)}
 
-					<Box sx={{ mb: 4 }}>
-						<Palettier3DPreview />
-					</Box>
+				<Box sx={{ mb: 4 }}>
+					<Palettier3DPreview />
+				</Box>
+
 
 					{summaryQuery.data && (
 						<>
