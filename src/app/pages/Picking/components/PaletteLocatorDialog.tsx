@@ -71,10 +71,12 @@ const PaletteLocatorDialog: FC<PaletteLocatorDialogProps> = ({
       onClose={onClose}
       maxWidth="lg"
       fullWidth
-      PaperProps={{
-        sx: {
-          height: "80vh",
-          maxHeight: "80vh",
+      slotProps={{
+        paper: {
+          sx: {
+            height: "80vh",
+            maxHeight: "80vh",
+          },
         },
       }}
     >

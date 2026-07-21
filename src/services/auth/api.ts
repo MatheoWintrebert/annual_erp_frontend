@@ -1,11 +1,7 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 
 import { baseQuery } from "@/services/baseQuery";
-import {
-  setRegister,
-  setToken,
-  setAuthenticated,
-} from "@/store/auth/slice";
+import { setRegister, setToken, setAuthenticated } from "@/store/auth/slice";
 import { setUser } from "@/store/account/slice";
 import type {
   CreateUserParams,

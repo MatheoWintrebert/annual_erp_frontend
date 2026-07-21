@@ -58,7 +58,9 @@ export const CreateUserDialog: FC<CreateUserDialogProps> = ({
       const { password } = await createUser({ email }).unwrap();
       setGeneratedPassword(password);
     } catch {
-      setErrorMessage("Could not create the user. The email may already exist.");
+      setErrorMessage(
+        "Could not create the user. The email may already exist."
+      );
     }
   });
 

@@ -18,12 +18,12 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { useCompanySettings } from "../../context/CompanySettingsContext";
 
 const setupRoutes = [
-	"/custom",
-	"/palettier",
-	"/rules",
-	"/product",
-	"/stock",
-	"/users",
+  "/custom",
+  "/palettier",
+  "/rules",
+  "/product",
+  "/stock",
+  "/users",
 ];
 
 const Header: React.FC = () => {
@@ -35,11 +35,11 @@ const Header: React.FC = () => {
   const setupMenuOpen = Boolean(setupAnchorEl);
   const { settings } = useCompanySettings();
 
-	const handleLogout = () => {
-		dispatch(setAuthenticated(false));
-		dispatch(setToken(null));
-		void navigate("/signin");
-	};
+  const handleLogout = () => {
+    dispatch(setAuthenticated(false));
+    dispatch(setToken(null));
+    void navigate("/signin");
+  };
 
   const isSetupActive = setupRoutes.includes(location.pathname);
 
@@ -304,50 +304,50 @@ const Header: React.FC = () => {
             Products
           </MenuItem>
 
-					<MenuItem
-						component={RouterLink}
-						to="/stock"
-						onClick={handleSetupMenuClose}
-						selected={location.pathname === "/stock"}
-					>
-						<Box
-							component="span"
-							sx={{
-								width: 6,
-								height: 6,
-								borderRadius: "50%",
-								bgcolor:
-									location.pathname === "/stock"
-										? "secondary.main"
-										: "transparent",
-								mr: 1.5,
-							}}
-						/>
-						Stock
-					</MenuItem>
+          <MenuItem
+            component={RouterLink}
+            to="/stock"
+            onClick={handleSetupMenuClose}
+            selected={location.pathname === "/stock"}
+          >
+            <Box
+              component="span"
+              sx={{
+                width: 6,
+                height: 6,
+                borderRadius: "50%",
+                bgcolor:
+                  location.pathname === "/stock"
+                    ? "secondary.main"
+                    : "transparent",
+                mr: 1.5,
+              }}
+            />
+            Stock
+          </MenuItem>
 
-					<MenuItem
-						component={RouterLink}
-						to="/users"
-						onClick={handleSetupMenuClose}
-						selected={location.pathname === "/users"}
-					>
-						<Box
-							component="span"
-							sx={{
-								width: 6,
-								height: 6,
-								borderRadius: "50%",
-								bgcolor:
-									location.pathname === "/users"
-										? "secondary.main"
-										: "transparent",
-								mr: 1.5,
-							}}
-						/>
-						Users
-					</MenuItem>
-				</Menu>
+          <MenuItem
+            component={RouterLink}
+            to="/users"
+            onClick={handleSetupMenuClose}
+            selected={location.pathname === "/users"}
+          >
+            <Box
+              component="span"
+              sx={{
+                width: 6,
+                height: 6,
+                borderRadius: "50%",
+                bgcolor:
+                  location.pathname === "/users"
+                    ? "secondary.main"
+                    : "transparent",
+                mr: 1.5,
+              }}
+            />
+            Users
+          </MenuItem>
+        </Menu>
 
         <Box flexGrow={1} />
 
@@ -367,72 +367,72 @@ const Header: React.FC = () => {
           </Tooltip>
         )}
 
-				{!isAuthenticated ? (
-					<Button
-						color="primary"
-						variant="outlined"
-						onClick={() => {
-							void navigate("/signin");
-						}}
-						sx={{
-							ml: 2,
-							fontWeight: 600,
-							borderColor: (theme) => alpha(theme.palette.primary.main, 0.2),
-							"&:hover": {
-								borderColor: "secondary.main",
-								color: "secondary.main",
-								bgcolor: (theme) => alpha(theme.palette.secondary.main, 0.08),
-							},
-						}}
-					>
-						Login
-					</Button>
-				) : (
-					<>
-						<Button
-							component={RouterLink}
-							to="/profile"
-							color="primary"
-							variant="outlined"
-							sx={{
-								ml: 2,
-								fontWeight: 600,
-								color:
-									location.pathname === "/profile"
-										? "secondary.main"
-										: "text.primary",
-								borderColor: (theme) => alpha(theme.palette.primary.main, 0.2),
-								"&:hover": {
-									borderColor: "secondary.main",
-									color: "secondary.main",
-									bgcolor: (theme) => alpha(theme.palette.secondary.main, 0.08),
-								},
-							}}
-						>
-							Profile
-						</Button>
-						<Button
-							color="primary"
-							variant="outlined"
-							onClick={handleLogout}
-							sx={{
-								ml: 2,
-								fontWeight: 600,
-								borderColor: (theme) => alpha(theme.palette.primary.main, 0.2),
-								"&:hover": {
-									borderColor: "secondary.main",
-									color: "secondary.main",
-									bgcolor: (theme) => alpha(theme.palette.secondary.main, 0.08),
-								},
-							}}
-						>
-							Logout
-						</Button>
-					</>
-				)}
-			</Toolbar>
-		</AppBar>
-	);
+        {!isAuthenticated ? (
+          <Button
+            color="primary"
+            variant="outlined"
+            onClick={() => {
+              void navigate("/signin");
+            }}
+            sx={{
+              ml: 2,
+              fontWeight: 600,
+              borderColor: (theme) => alpha(theme.palette.primary.main, 0.2),
+              "&:hover": {
+                borderColor: "secondary.main",
+                color: "secondary.main",
+                bgcolor: (theme) => alpha(theme.palette.secondary.main, 0.08),
+              },
+            }}
+          >
+            Login
+          </Button>
+        ) : (
+          <>
+            <Button
+              component={RouterLink}
+              to="/profile"
+              color="primary"
+              variant="outlined"
+              sx={{
+                ml: 2,
+                fontWeight: 600,
+                color:
+                  location.pathname === "/profile"
+                    ? "secondary.main"
+                    : "text.primary",
+                borderColor: (theme) => alpha(theme.palette.primary.main, 0.2),
+                "&:hover": {
+                  borderColor: "secondary.main",
+                  color: "secondary.main",
+                  bgcolor: (theme) => alpha(theme.palette.secondary.main, 0.08),
+                },
+              }}
+            >
+              Profile
+            </Button>
+            <Button
+              color="primary"
+              variant="outlined"
+              onClick={handleLogout}
+              sx={{
+                ml: 2,
+                fontWeight: 600,
+                borderColor: (theme) => alpha(theme.palette.primary.main, 0.2),
+                "&:hover": {
+                  borderColor: "secondary.main",
+                  color: "secondary.main",
+                  bgcolor: (theme) => alpha(theme.palette.secondary.main, 0.08),
+                },
+              }}
+            >
+              Logout
+            </Button>
+          </>
+        )}
+      </Toolbar>
+    </AppBar>
+  );
 };
 
 export default Header;

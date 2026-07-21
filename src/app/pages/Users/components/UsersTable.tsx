@@ -107,8 +107,8 @@ export const UsersTable: FC<UsersTableProps> = ({ rows }) => {
         <DialogContent>
           <DialogContentText>
             Are you sure you want to delete{" "}
-            {userToDelete ? userToDelete.email : "this user"}? This action cannot
-            be undone.
+            {userToDelete ? userToDelete.email : "this user"}? This action
+            cannot be undone.
           </DialogContentText>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2 }}>
