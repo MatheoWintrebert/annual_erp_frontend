@@ -9,8 +9,10 @@ import {
   Typography,
 } from "@mui/material";
 import WarningIcon from "@mui/icons-material/Warning";
+import { useMemo } from "react";
 import type { FC } from "react";
 import type { AvailableStockItem, PickingProductEntry } from "../types";
+import { useGetUnitsOfMeasure } from "../../Stock/api";
 
 interface ReviewListStepProps {
   items: PickingProductEntry[];
@@ -19,6 +21,12 @@ interface ReviewListStepProps {
 
 const ReviewListStep: FC<ReviewListStepProps> = ({ items, stockMap }) => {
   const validItems = items.filter((item) => item.product !== null);
+
+  const { data: unitsData } = useGetUnitsOfMeasure();
+  const unitsOfMeasure = useMemo(
+    () => unitsData?.unitsOfMeasure ?? [],
+    [unitsData?.unitsOfMeasure]
+  );
 
   return (
     <>
@@ -65,7 +73,9 @@ const ReviewListStep: FC<ReviewListStepProps> = ({ items, stockMap }) => {
                   </TableCell>
                   <TableCell>
                     {stock?.unitOfMeasureName ??
-                      item.product?.unitOfMeasureName ??
+                      unitsOfMeasure.find(
+                        (u) => u.id === item.product?.unitOfMeasureId
+                      )?.name ??
                       ""}
                   </TableCell>
                 </TableRow>

@@ -40,16 +40,24 @@ const mockProducts = {
       id: 1,
       name: "Whole Milk",
       reference: "WM-001",
-      unitOfMeasureName: "L",
+      unitOfMeasureId: 1,
     },
     {
       id: 2,
       name: "Cable Ties",
       reference: "CT-100",
-      unitOfMeasureName: "pcs",
+      unitOfMeasureId: 2,
     },
   ],
   meta: { total: 2, page: 1, limit: 20, totalPages: 1 },
+};
+
+const mockUnitsOfMeasure = {
+  unitsOfMeasure: [
+    { id: 1, name: "L", abbreviation: "L", createdAt: "", updatedAt: "" },
+    { id: 2, name: "pcs", abbreviation: "pcs", createdAt: "", updatedAt: "" },
+  ],
+  meta: { total: 2, page: 1, limit: 100, totalPages: 1 },
 };
 
 const mockStock: AvailableStockItem[] = [
@@ -198,6 +206,15 @@ vi.mock("./api", () => ({
   useGeneratePickRoute: () => mockGeneratePickRoute() as unknown,
   useCompletePickingList: () => mockCompletePickingList() as unknown,
   useCancelPickingList: () => mockCancelPickingList() as unknown,
+}));
+
+vi.mock("../Stock/api", () => ({
+  useGetUnitsOfMeasure: () => ({
+    data: mockUnitsOfMeasure,
+    isLoading: false,
+    error: null,
+    isPending: false,
+  }),
 }));
 
 const createQueryClient = () =>

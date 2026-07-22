@@ -2,7 +2,7 @@ export interface ProductOption {
   id: number;
   name: string;
   reference: string;
-  unitOfMeasureName: string;
+  unitOfMeasureId: number;
 }
 
 export interface AvailableStockItem {

@@ -21,6 +21,7 @@ import type {
   ProductOption,
 } from "../types";
 import { useSearchProducts } from "../api";
+import { useGetUnitsOfMeasure } from "../../Stock/api";
 
 interface ProductSelectStepProps {
   control: Control<PickingFormData>;
@@ -51,6 +52,12 @@ const ProductItem: FC<ProductItemProps> = ({
     [productsData?.products]
   );
 
+  const { data: unitsData } = useGetUnitsOfMeasure();
+  const unitsOfMeasure = useMemo(
+    () => unitsData?.unitsOfMeasure ?? [],
+    [unitsData?.unitsOfMeasure]
+  );
+
   const selectedProduct = useWatch({
     control,
     name: `items.${String(index)}.product` as const,
@@ -63,6 +70,10 @@ const ProductItem: FC<ProductItemProps> = ({
   const stock = selectedProduct ? stockMap.get(selectedProduct.id) : undefined;
   const isInsufficient =
     stock != null && requestedQuantity > stock.availableQuantity;
+  const selectedProductUnitName = selectedProduct
+    ? (unitsOfMeasure.find((u) => u.id === selectedProduct.unitOfMeasureId)
+        ?.name ?? "")
+    : "";
 
   return (
     <Box
@@ -146,14 +157,7 @@ const ProductItem: FC<ProductItemProps> = ({
                 label="Quantity"
                 fullWidth
                 error={!!error}
-                helperText={
-                  error?.message ??
-                  (stock
-                    ? `Available: ${String(stock.availableQuantity)} ${stock.unitOfMeasureName}`
-                    : selectedProduct?.unitOfMeasureName
-                      ? `Unit: ${selectedProduct.unitOfMeasureName}`
-                      : "")
-                }
+                helperText={error?.message}
                 slotProps={{ htmlInput: { min: 1 } }}
                 onChange={(e) => {
                   ctrlField.onChange(
@@ -161,6 +165,24 @@ const ProductItem: FC<ProductItemProps> = ({
                   );
                 }}
               />
+              {!error && (selectedProductUnitName || stock) && (
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  sx={{ mt: 0.5, px: 1.75 }}
+                >
+                  <Typography variant="caption" color="text.secondary">
+                    {selectedProductUnitName
+                      ? `Unit: ${selectedProductUnitName}`
+                      : ""}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    {stock
+                      ? `Available: ${String(stock.availableQuantity)} ${stock.unitOfMeasureName}`
+                      : ""}
+                  </Typography>
+                </Box>
+              )}
               {isInsufficient && (
                 <Alert severity="warning" sx={{ mt: 1 }}>
                   Only {stock.availableQuantity} {stock.unitOfMeasureName}{" "}

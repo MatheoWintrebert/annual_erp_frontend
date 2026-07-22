@@ -104,6 +104,8 @@ export const useUpdatePalettePosition = () => {
       updatePalettePosition(paletteId, data),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["palettes"] });
+      void queryClient.invalidateQueries({ queryKey: ["rules", "violations"] });
+      void queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });
 };

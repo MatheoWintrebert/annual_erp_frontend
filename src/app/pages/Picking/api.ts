@@ -59,6 +59,7 @@ export const useGetAvailableStock = (productIds: number[]) =>
     queryFn: () => fetchAvailableStock(productIds),
     enabled: productIds.length > 0,
     staleTime: 15_000,
+    placeholderData: (prev) => prev,
   });
 
 const createPickingList = async (
